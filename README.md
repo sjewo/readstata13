@@ -2,7 +2,7 @@
 
 Package to read the new Stata 13 file format (dta version 117) into a R data.frame. 
 
-The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Because of the different structure and features of dta 117 files we wrote a new file reader in Rccp.
+The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rccp.
 
 
 ## Installation
@@ -31,7 +31,7 @@ devtools::install_github("sjewo/readstata13")
 * handle different NA values
 * character encoding
 * add test datasets
-* write stata 13 files
+* write stata 13 dta files
 * cleanup of Rccp code
 
 ## Authors

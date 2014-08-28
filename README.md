@@ -20,7 +20,7 @@ devtools::install_github("sjewo/readstata13")
 ```
 ## Current Status
 
-[![Build Status](https://travis-ci.org/sjewo/readstata13.png)](https://travis-ci.org/sjewo/readstata13)
+[![Build Status](https://travis-ci.org/sjewo/readstata13.svg?branch=master)](https://travis-ci.org/sjewo/readstata13)
 
 ### Working features
 

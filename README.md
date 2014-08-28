@@ -7,10 +7,15 @@ The function ```read.dta``` from the foreign package imports only dta files from
 
 ## Installation
 
-To install the current development version from github:
+To install the current release (0.1) from github:
 
 ```R
 # install.packages("devtools")
+devtools::install_github("sjewo/readstata13", ref="0.1")
+```
+To install the current development version from github:
+
+```R
 devtools::install_github("sjewo/readstata13")
 ```
 ## Current Status

@@ -484,14 +484,13 @@ List stata(const char * filePath)
         label[i] = lab;
       }
       
-      // create list for actual label set
+      // create table for actual label set
       string const labset = nlabname;
-      List lset = List();
-      lset["code"] = code;
-      lset["label"] = label;
+      code.attr("names") = label;
+      code.attr("class") = "table";
       
       // add this set to output list
-      labelList[labset] = lset;
+      labelList[labset] = code;
       
       fseek(file, 6, SEEK_CUR); //</lbl>
       
@@ -523,7 +522,7 @@ List stata(const char * filePath)
   ddf.attr("val.labels") = valLabels;
   ddf.attr("var.labels") = varLabels;
   ddf.attr("version") = version;
-  ddf.attr("label") = labelList;
+  ddf.attr("label.table") = labelList;
   ddf.attr("expansion.field") = ch;
   ddf.attr("strl") = strlstable;
   

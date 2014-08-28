@@ -15,7 +15,7 @@
 #'   \item{val.labels}{For each variable the name of the associated value labels in "label"}
 #'   \item{var.labels}{Variable labels}
 #'   \item{version}{dta file format version}
-#'   \item{label}{List of value labels: ["labelname"]["code"] is a numeric vector with codes and ["labelname"]["label"] ia a character vector with label text. }
+#'   \item{label.table}{List of value labels}
 #'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier, and the second element the string.}
 #' }
 #' @note If you catch a bug, please do not sue us, we do not have any money.
@@ -45,8 +45,9 @@ read.dta13 <- function(path, convert.factors = TRUE) {
       vartype <- type[i]
       #don't convert columns of type double or float to factor
       if(labname!="" & labname %in% names(label) & vartype>65527) { 
-        data[,i] <- factor(data[,i], levels=label[[labname]][["code"]],
-                           labels=label[[labname]][["label"]])
+        data[,i] <- factor(data[,i], 
+                           levels=label[[labname]],
+                           labels=names(label[[labname]]))
       }
     }
   }

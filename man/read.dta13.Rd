@@ -21,7 +21,7 @@ The function returns a data.frame with attributs. The attributes include
   \item{val.labels}{For each variable the name of the associated value labels in "label"}
   \item{var.labels}{Variable labels}
   \item{version}{dta file format version}
-  \item{label}{List of value labels: ["labelname"]["code"] is a numeric vector with codes and ["labelname"]["label"] ia a character vector with label text. }
+  \item{label.table}{List of value labels}
   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier, and the second element the string.}
 }
 }

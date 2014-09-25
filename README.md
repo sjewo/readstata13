@@ -18,6 +18,13 @@ To install the current development version from github:
 ```R
 devtools::install_github("sjewo/readstata13")
 ```
+
+## Usage
+```R
+library(readstata13)
+dat <- read.dta13("path to file.dta")
+```
+
 ## Current Status
 
 [![Build Status](https://travis-ci.org/sjewo/readstata13.svg?branch=master)](https://travis-ci.org/sjewo/readstata13)

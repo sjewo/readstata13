@@ -154,92 +154,77 @@ List stata(const char * filePath)
   CharacterVector formats(k);
   for (int i=0; i<k; i++)
   {
-    char nformats[49+1];
-    if ( fgets (nformats, 49+1 , file) != NULL )
+    char nformats[49];
+    if ( fread(nformats, sizeof(nformats), 1 , file) != NULL )
       formats[i] = nformats;
   }
-  
-  fseek(file, 29, SEEK_CUR); //</formats><value_label_names>
   
   //value_label_names
   CharacterVector valLabels(k);
   for (int i=0; i<k; i++)
   {
-    char nvalLabels[33+1];
-    if ( fgets (nvalLabels, 33+1 , file) != NULL )
+    char nvalLabels[33];
+    if ( fread(nvalLabels, sizeof(nvalLabels), 1 , file) != NULL )
       valLabels[i] = nvalLabels;
   }
+  
   fseek(file, 37, SEEK_CUR); //</value_label_names><variable_labels>
   
   // variabel_labels
   CharacterVector varLabels(k);
   for (int i=0; i<k; i++)
   {
-    char nvarLabels[81+1];
-    if ( fgets (nvarLabels, 81+1 , file) != NULL )
+    char nvarLabels[81];
+    if ( fread(nvarLabels, sizeof(nvarLabels), 1, file) != NULL )
       varLabels[i] = nvarLabels;
   }
   
   fseek(file, 35, SEEK_CUR); //</variable_labels><characteristics> 
   
   // characteristics
-  string const c = "</ch";
+  string const c = "<ch>";
   
   List ch = List();
-  
+  CharacterVector chs(3);
   
   char tago[4+1];
-  if (fgets (tago, 4+1 , file) == NULL) 
+  if (fgets (tago, sizeof(tago), file) == NULL) 
     perror ("Error reading characteristics");
-  if (tago != c)
-  {
-    CharacterVector chs(3);
-    unsigned int nocharacter;
-    if (fread (&nocharacter, sizeof(int), 1, file) == 0) 
-      perror ("Error reading length of characteristics");
-    
-    char nnocharacter[nocharacter+1-66];
-    char chvarname[33+1];
-    char chcharact[33+1];
-    // FixMe: two lines of notes.
-    if ( (fgets(chvarname,33+1,file) == NULL) &
-         (fgets(chcharact,33+1,file) == NULL) & 
-         (fgets(nnocharacter,nocharacter+1-66,file) == NULL) 
-       )
-      perror ("Error reading characteristics");
-    chs[0] = chvarname;
-    chs[1] = chcharact;
-    chs[2] = nnocharacter;
-    
-    ch.push_front( chs );
-    // 5 more bytes
-    fseek(file, 5, SEEK_CUR);
-    
-    char tagi[4+1];
-    if (fgets (tagi, 4+1 , file) == NULL)
-      perror ("Error reading characteristics");
-    if (tagi != c){
-      if (fread (&nocharacter, sizeof(int), 1, file) == 0)
+  
+    printf("tago: %s \n", tago);
+    while (tago == c)
+    {
+      
+      unsigned int nocharacter;
+      if (fread (&nocharacter, sizeof(nocharacter), 1, file) == 0) 
         perror ("Error reading length of characteristics");
-      if ( (fgets(chvarname,33+1,file) == NULL) &
-           (fgets(chcharact,33+1,file) == NULL) & 
-           (fgets(nnocharacter,nocharacter+1-66,file) == NULL) 
-         )
+        char chvarname[33];
+        char chcharact[33];
+        char nnocharacter[nocharacter-66];
+        
+          
+        if ( (fread(chvarname,33, 1,file) == NULL) &
+             (fread(chcharact,33, 1,file) == NULL) & 
+             (fread(nnocharacter,nocharacter-66, 1, file) == NULL) 
+           )
+            perror ("Error reading characteristics");
+          
+        // chs vector
+        CharacterVector chs(3);
+        chs[0] = chvarname;
+        chs[1] = chcharact;
+        chs[2] = nnocharacter;
+        
+        // add characteristics to the list
+        ch.push_back( chs );
+        
+      // </ch>
+      fseek(file, 4+1, SEEK_CUR);
+      
+      // read next tag
+      if (fgets (tago, sizeof(tago), file) == NULL)
         perror ("Error reading characteristics");
-      // new chs vector
-      CharacterVector chs(3);
-      chs[0] = chvarname;
-      chs[1] = chcharact;
-      chs[2] = nnocharacter;
-      
-      ch.push_front( chs );
-      // 5 more bytes
-      fseek(file, 5, SEEK_CUR);
-      
-      if (fgets (tagi, 4+1 , file) == NULL)
-      perror ("Error reading characteristics");
     }
-  }
   
   fseek(file, 20, SEEK_CUR); //aracteristics><data>
   
@@ -423,7 +408,7 @@ List stata(const char * filePath)
   // after strls
   fseek(file, 19, SEEK_CUR); //trls><value_labels>
   
-  // Value Labels  
+    // Value Labels  
   List labelList = List(); //put labels into this list
   char tag[6];
   if (fgets(tag, 6, file) == NULL) 
@@ -436,23 +421,27 @@ List stata(const char * filePath)
       int nlen;
       if (fread (&nlen, sizeof(int), 1, file) == 0)
         perror ("Error reading  length of value_label_table");
+        printf("Length of Value_labels: %d \n", nlen);
       
       // name of this label set
       char nlabname[33];
-      if (fgets(nlabname, 33, file) == NULL) 
+      if (fread(nlabname, sizeof(nlabname), 1, file) == NULL) 
         perror ("Error reading labelname");
+        printf("Name of value_label %s \n", nlabname);
       
       //padding
-      fseek(file, 3+1, SEEK_CUR);
+      fseek(file, 3, SEEK_CUR);
       
       // value_label_table for actual label set
       int labn;
       if (fread(&labn, sizeof(int), 1, file) == 0)
         perror ("Error reading length of label set entry");
+        printf("Length of label set %d \n", labn);
       
       int txtlen;
       if (fread(&txtlen, sizeof(int), 1, file) == 0)
         perror ("Error reading length of label text");
+        printf("Length of Label Text %d \n", txtlen);
       
       // offset for each label
       // off0 : label 0 starts at off0
@@ -462,9 +451,12 @@ List stata(const char * filePath)
         int noff;
         if (fread(&noff, sizeof(int), 1, file) == 0)
           perror ("Error reading label offset");
+          printf("Offset %d \n", noff);
         off[i] = noff;
       }
+      
       off[labn] = txtlen; // needs txtlen for loop
+      std::sort(off.begin(), off.end());
       
       // code for each label
       NumericVector code(labn);
@@ -472,18 +464,21 @@ List stata(const char * filePath)
         int val;
         if (fread(&val, sizeof(int), 1, file) == 0)
           perror ("Error reading label code");
+          printf("Labelcode %d \n", val);
         code[i] = val;
-      }    
+      }
       
       // label text
       CharacterVector label(labn);
       for (int i=0; i < labn; i++) {
-        int const lablen = off[i+1]-off[i]+1;
+        int const lablen = off[i+1]-off[i];
         char lab[lablen];
-        if (fgets(lab, lablen, file) == NULL) perror ("Error reading label");
+        if (fread(lab, lablen,1, file) == NULL)
+          perror ("Error reading label");
+          printf("Labeltext %s \n", lab);
         label[i] = lab;
       }
-      
+            
       // create table for actual label set
       string const labset = nlabname;
       code.attr("names") = label;
@@ -494,7 +489,8 @@ List stata(const char * filePath)
       
       fseek(file, 6, SEEK_CUR); //</lbl>
       
-      if (fgets(tag, 6, file) == NULL) perror ("Error reading label tag"); // next <lbl>?
+      if (fgets(tag, 6, file) == NULL)
+        perror ("Error reading label tag"); // next <lbl>?
       
     }  
   }

@@ -9,7 +9,7 @@ Authors@R: c(
     email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = "aut")
     )
 Description: Function to read the Stata 13 file format
-License: GPL (>= 2) + file LICENSE
+License: GPL-2 | file LICENSE
 Imports:
     Rcpp (>= 0.11.2)
 LinkingTo: Rcpp

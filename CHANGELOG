@@ -1,0 +1,13 @@
+0.2 
+- read stata characteristics and save them in extension.table attribute
+- more robust handling of factor labels
+- set file encoding for all strings and convert them to system encoding
+- fixed compiler warnings
+
+0.1
+- reading data files and create a data.frame
+- assign variable names
+- read the new strL strings and save them as attribute
+- convert stata label to factors and save them as attribute
+- read some meta data (timestamp, dataset label, formats,...)
+

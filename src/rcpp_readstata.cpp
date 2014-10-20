@@ -211,7 +211,7 @@ List stata(const char * filePath)
   if (fgets (tago, sizeof(tago), file) == NULL)
     perror ("Error reading characteristics");
 
-    printf("tago: %s \n", tago);
+    //printf("tago: %s \n", tago);
     while (tago == c)
     {
 
@@ -355,7 +355,7 @@ List stata(const char * filePath)
         if (fread (&o, sizeof(int), 1, file) == 0)
           perror ("Error reading strl");
         char erg[22];
-        //sprintf(erg, "%010d%010d", v, o);
+        sprintf(erg, "%010d%010d", v, o);
         as<CharacterVector>(df[i])[j] = erg;
         break;
         }
@@ -387,7 +387,7 @@ List stata(const char * filePath)
       if (fread(&o, sizeof(int), 1, file) == 0)
         perror ("Error reading strL o");
       char erg[22];
-      //sprintf(erg, "%010d%010d", v, o);
+      sprintf(erg, "%010d%010d", v, o);
 
       strls(0) = erg;
 

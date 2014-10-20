@@ -3,9 +3,10 @@
 #' \code{read.dta13} reads a Stata 13 dta file bytewise and imports the data 
 #' into a data.frame. 
 #'
-#' @param path The dta file you want to import.
-#' @param convert.factors logical Use Stata value labels to create factors? 
-#' (Version 6.0 or later).
+#' @param path  string path to the dta file you want to import
+#' @param convert.factors logical create factors from Stata value labels
+#' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding
+#' 
 #' @return The function returns a data.frame with attributs. The attributes include
 #' \describe{
 #'   \item{datalabel}{Dataset label}
@@ -17,7 +18,7 @@
 #'   \item{version}{dta file format version}
 #'   \item{lable.table}{List of value labels.}
 #'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
-#'   \item{characteristics}{data.frame providing variable name, characteristic name and the contents of characteristic.}
+#'   \item{expansion.field}{list providing variable name, characteristic name and the contents of stata characteristic field.}
 #' }
 #' @note If you catch a bug, please do not sue us, we do not have any money.
 #' @seealso \code{\link{read.dta}} and \code{memisc} for dta files from Stata 
@@ -27,8 +28,7 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de} 
 #' @useDynLib readstata13
 #' @export
-
-read.dta13 <- function(path, convert.factors = TRUE) {      
+read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL) {      
   
   # construct filepath and read file
   filepath <- get.filepath(path)
@@ -42,18 +42,60 @@ read.dta13 <- function(path, convert.factors = TRUE) {
   label <- attr(data, "label.table")
   
   # make characteristics more usefull
-  characteristics <- do.call(rbind.data.frame, attr(data, "characteristics"))
-  names(characteristics) <- c("varname","charname","contents")
-  attr(data, "characteristics") <- characteristics
-
+  #characteristics <- do.call(rbind.data.frame, attr(data, "characteristics"))
+  #names(characteristics) <- c("varname","charname","contents")
+  #attr(data, "characteristics") <- characteristics
+  
+  if(!is.null(fileEncoding)) {
+    # varnames
+    Encoding(names(data)) <- fileEncoding
+    names(data) <- enc2native(names(data))
+    
+    # val.lables
+    Encoding(val.labels) <- fileEncoding
+    names(val.labels) <- enc2native(val.labels)
+    
+    # label    
+    Encoding(names(label)) <- fileEncoding
+    names(label) <- enc2native(names(label))
+    
+    if (length(label) > 0) {
+      for (i in 1:length(label))  {
+        Encoding(names(label[[i]])) <- fileEncoding
+        names(label[[i]]) <- enc2native(names(label[[i]]))
+      }
+      attr(data, "label.table") <- label
+    }
+    
+    # expansion.field
+    efi <- attr(data, "expansion.field")
+    if (length(efi) > 0) {
+      efiChar <- unlist(lapply(efi, is.character))
+      for (i in (1:length(efi))[efiChar])  {
+        Encoding(efi[[i]]) <- fileEncoding
+        efi[[i]] <- enc2native(efi[[i]])
+        }
+      attr(data, "expansion.field") <- efi
+    }
+    
+    #strl
+    strl <- attr(data, "strl")
+    if (length(strl) > 0) {
+      for (i in 1:length(strl))  {
+        Encoding(strl[[i]]) <- fileEncoding
+        strl[[i]] <- enc2native(strl[[i]])
+        }
+      attr(data, "strl") <- strl
+    }
+  }  
+  
   if(convert.factors==T) {
     for (i in seq_along(val.labels)) {
       labname <- val.labels[i]
       vartype <- type[i]
       #don't convert columns of type double or float to factor
       if(labname!="" & labname %in% names(label) & vartype>65527) { 
-        data[,i] <- factor(data[,i], 
-                           levels=label[[labname]],
+        data[,i] <- factor(data[,i], levels=label[[labname]],
                            labels=names(label[[labname]]))
       }
     }

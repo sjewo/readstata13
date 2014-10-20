@@ -52,27 +52,27 @@ List stata(const char * filePath)
 
   // Number of Variables
   unsigned short k;
-  if (fread (&k, sizeof(unsigned short) , 1, file) == 0)
+  if (!fread (&k, sizeof(unsigned short) , 1, file))
     perror ("Error reading number of variables");
 
   fseek(file, 7, SEEK_CUR); //</K><N>
 
   // Number of Observations
   unsigned int n;
-  if (fread (&n, sizeof(n), 1, file) == 0)
+  if (!fread (&n, sizeof(n), 1, file))
     perror ("Error reading number of cases");
 
   fseek(file, 11, SEEK_CUR); //</N><label>
 
   // char length dataset label
   unsigned char ndlabel;
-  if (fread (&ndlabel, sizeof(ndlabel), 1, file) == 0)
+  if (!fread (&ndlabel, sizeof(ndlabel), 1, file))
     perror ("Error reading length of dataset label");
 
   char datalabel [ndlabel];
   if (ndlabel>0)
   {
-    if (fread(datalabel, ndlabel, 1, file) == NULL)
+    if (!fread(datalabel, ndlabel, 1, file))
       perror ("Error reading dataset label");
   }
 
@@ -81,13 +81,13 @@ List stata(const char * filePath)
 
   // timestamp
   unsigned char ntimestamp;
-  if (fread (&ntimestamp, sizeof(ntimestamp), 1, file) == 0)
+  if (!fread (&ntimestamp, sizeof(ntimestamp), 1, file))
     perror ("Error reading length of timestamp");
 
   char timestamp [ntimestamp];
   if (ntimestamp == 17) // ntimestap is 0 or 17
   {
-    if (fread(timestamp, ntimestamp, 1, file) == NULL)
+    if (!fread(timestamp, ntimestamp, 1, file))
       perror ("Error reading timestamp");
   }
 
@@ -99,7 +99,7 @@ List stata(const char * filePath)
   for (int i=0; i <14; i++)
   {
     long long nmap;
-    if (fread (&nmap, sizeof(nmap) , 1, file) == 0)
+    if (!fread (&nmap, sizeof(nmap) , 1, file))
       perror ("Error reading mapping");
     map[i] = nmap;
   }
@@ -111,7 +111,7 @@ List stata(const char * filePath)
   for (int i=0; i<k; i++)
   {
     unsigned short nvartype;
-    if (fread (&nvartype, sizeof(nvartype), 1, file) == 0)
+    if (!fread (&nvartype, sizeof(nvartype), 1, file))
       perror ("Error reading vartypes");
     vartype[i] = nvartype;
   }
@@ -123,7 +123,7 @@ List stata(const char * filePath)
   for (int i=0; i<k; i++)
   {
     char nvarnames [33];
-    if ( fread (nvarnames, sizeof(nvarnames) ,1 , file) != NULL )
+    if (fread (nvarnames, sizeof(nvarnames) ,1 , file))
       varnames[i] = nvarnames;
   }
 
@@ -138,7 +138,7 @@ List stata(const char * filePath)
     for (int i=0; i<k+1; i++)
     {
       unsigned short nsortlist;
-      if (fread (&nsortlist, sizeof(nsortlist), 1, file) == 0)
+      if (!fread (&nsortlist, sizeof(nsortlist), 1, file))
         perror ("Error reading sortlist");
       sortlist[i] = nsortlist;
     }
@@ -153,7 +153,7 @@ List stata(const char * filePath)
   for (int i=0; i<k; i++)
   {
     char nformats[49];
-    if ( fread(nformats, sizeof(nformats), 1 , file) != NULL )
+    if (fread(nformats, sizeof(nformats), 1 , file))
       formats[i] = nformats;
   }
 
@@ -164,7 +164,7 @@ List stata(const char * filePath)
   for (int i=0; i<k; i++)
   {
     char nvalLabels[33];
-    if ( fread(nvalLabels, sizeof(nvalLabels), 1 , file) != NULL )
+    if (fread(nvalLabels, sizeof(nvalLabels), 1 , file))
       valLabels[i] = nvalLabels;
   }
   fseek(file, 37, SEEK_CUR); //</value_label_names><variable_labels>
@@ -174,7 +174,7 @@ List stata(const char * filePath)
   for (int i=0; i<k; i++)
   {
     char nvarLabels[81];
-    if ( fread(nvarLabels, sizeof(nvarLabels), 1, file) != NULL )
+    if (fread(nvarLabels, sizeof(nvarLabels), 1, file))
       varLabels[i] = nvarLabels;
   }
 
@@ -194,16 +194,16 @@ List stata(const char * filePath)
     {
 
       unsigned int nocharacter;
-      if (fread (&nocharacter, sizeof(nocharacter), 1, file) == 0)
+      if (!fread (&nocharacter, sizeof(nocharacter), 1, file))
         perror ("Error reading length of characteristics");
         char chvarname[33];
         char chcharact[33];
         char nnocharacter[nocharacter-66];
 
 
-        if ( (fread(chvarname,33, 1,file) == NULL) &
-             (fread(chcharact,33, 1,file) == NULL) &
-             (fread(nnocharacter,nocharacter-66, 1, file) == NULL)
+        if ( (!fread(chvarname,33, 1,file)) &
+             (!fread(chcharact,33, 1,file)) &
+             (!fread(nnocharacter,nocharacter-66, 1, file))
            )
             perror ("Error reading characteristics");
 
@@ -421,7 +421,7 @@ List stata(const char * filePath)
 
       // name of this label set
       char nlabname[33];
-      if (fread(nlabname, sizeof(nlabname), 1, file) == NULL)
+      if (!fread(nlabname, sizeof(nlabname), 1, file))
         perror ("Error reading labelname");
 
       //padding
@@ -479,7 +479,7 @@ List stata(const char * filePath)
       for (int i=0; i < labn; i++) {
         int const lablen = off[i+1]-off[i];
         char lab[lablen];
-        if (fread(lab, lablen,1, file) == NULL)
+        if (!fread(lab, lablen,1, file))
           perror ("Error reading label");
         label[i] = lab;
       }

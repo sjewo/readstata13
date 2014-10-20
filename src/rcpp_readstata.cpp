@@ -191,7 +191,6 @@ List stata(const char * filePath)
   if (fgets (tago, sizeof(tago), file) == NULL) 
     perror ("Error reading characteristics");
   
-    printf("tago: %s \n", tago);
     while (tago == c)
     {
       
@@ -335,7 +334,7 @@ List stata(const char * filePath)
         if (fread (&o, sizeof(int), 1, file) == 0) 
           perror ("Error reading strl");
         char erg[22];
-        sprintf(erg, "%010d%010d", v, o);
+        //sprintf(erg, "%010d%010d", v, o);
         as<CharacterVector>(df[i])[j] = erg;
         break;
         }
@@ -367,7 +366,7 @@ List stata(const char * filePath)
       if (fread(&o, sizeof(int), 1, file) == 0) 
         perror ("Error reading strL o");
       char erg[22];
-      sprintf(erg, "%010d%010d", v, o);
+      //sprintf(erg, "%010d%010d", v, o);
       
       strls(0) = erg;
     
@@ -407,7 +406,7 @@ List stata(const char * filePath)
   // after strls
   fseek(file, 19, SEEK_CUR); //trls><value_labels>
   
-    // Value Labels  
+  // Value Labels  
   List labelList = List(); //put labels into this list
   char tag[6];
   if (fgets(tag, 6, file) == NULL) 
@@ -420,13 +419,11 @@ List stata(const char * filePath)
       int nlen;
       if (fread (&nlen, sizeof(int), 1, file) == 0)
         perror ("Error reading  length of value_label_table");
-        printf("Length of Value_labels: %d \n", nlen);
       
       // name of this label set
       char nlabname[33];
       if (fread(nlabname, sizeof(nlabname), 1, file) == NULL) 
         perror ("Error reading labelname");
-        printf("Name of value_label %s \n", nlabname);
       
       //padding
       fseek(file, 3, SEEK_CUR);
@@ -435,12 +432,10 @@ List stata(const char * filePath)
       int labn;
       if (fread(&labn, sizeof(int), 1, file) == 0)
         perror ("Error reading length of label set entry");
-        printf("Length of label set %d \n", labn);
       
       int txtlen;
       if (fread(&txtlen, sizeof(int), 1, file) == 0)
         perror ("Error reading length of label text");
-        printf("Length of Label Text %d \n", txtlen);
       
       // offset for each label
       // off0 : label 0 starts at off0
@@ -450,7 +445,6 @@ List stata(const char * filePath)
         int noff;
         if (fread(&noff, sizeof(int), 1, file) == 0)
           perror ("Error reading label offset");
-          printf("Offset %d \n", noff);
         off[i] = noff;
       }
       
@@ -489,14 +483,12 @@ List stata(const char * filePath)
         char lab[lablen];
         if (fread(lab, lablen,1, file) == NULL)
           perror ("Error reading label");
-          printf("Labeltext %s \n", lab);
         label[i] = lab;
       }
       
       // sort labels according to indx
       CharacterVector labelo(labn);
       for (int i=0; i < labn; i++) {
-        //int const nwi = indx[i]-1;
         labelo[i] = label[indx[i]-1];
       }
                 

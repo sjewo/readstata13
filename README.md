@@ -42,12 +42,12 @@ dat <- read.dta13("path to file.dta")
 * read the new strL strings and save them as attribute
 * convert stata label to factors and save them as attribute
 * read some meta data (timestamp, dataset label, formats,...)
+* convert strings to system encoding
 
 ### Todo
 
 * convert dates
 * handle different NA values
-* character encoding
 * add test datasets
 * write stata 13 dta files
 * cleanup of Rccp code

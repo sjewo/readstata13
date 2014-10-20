@@ -29,11 +29,18 @@
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL) {
-
-	# construct filepath and read file
-	filepath <- get.filepath(path)
-	if(!file.exists(filepath))
-		return(message("File not found."))
+	# Check if path is a url
+	if(length(grep("^(http|ftp|https)://", path))) {
+		tmp <- tempfile()
+		download.file(path, tmp, quiet = TRUE, mode = "wb")
+		filepath <- tmp
+		on.exit(unlink(filepath))
+	} else {
+		# construct filepath and read file
+		filepath <- get.filepath(path)
+	}
+		if(!file.exists(filepath))
+			return(message("File not found."))
 
 	data <- stata(filepath)
 

@@ -48,9 +48,24 @@ dat <- read.dta13("path to file.dta")
 
 * convert dates
 * handle different NA values
-* add test datasets
 * write stata 13 dta files
 * cleanup of Rccp code
+
+### Test
+Since our attributes differ from foreign::read.dta all.equal and identical report false. If you check the values, everything is identical.
+
+```R
+library("foreign")
+r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta")
+r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+
+Map(identical,r12,r13)
+
+r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta",convert.factors=F)
+r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",convert.factors=F)
+
+Map(identical,r12,r13)
+```
 
 ## Authors
 

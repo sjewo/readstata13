@@ -15,8 +15,9 @@
 #'   \item{val.labels}{For each variable the name of the associated value labels in "label"}
 #'   \item{var.labels}{Variable labels}
 #'   \item{version}{dta file format version}
-#'   \item{label.table}{List of value labels}
-#'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier, and the second element the string.}
+#'   \item{lable.table}{List of value labels.}
+#'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
+#'   \item{characteristics}{data.frame providing variable name, characteristic name and the contents of characteristic.}
 #' }
 #' @note If you catch a bug, please do not sue us, we do not have any money.
 #' @seealso \code{\link{read.dta}} and \code{memisc} for dta files from Stata 
@@ -26,6 +27,7 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de} 
 #' @useDynLib readstata13
 #' @export
+
 read.dta13 <- function(path, convert.factors = TRUE) {      
   
   # construct filepath and read file
@@ -37,8 +39,13 @@ read.dta13 <- function(path, convert.factors = TRUE) {
   
   val.labels <- attr(data, "val.labels")
   type <- attr(data, "type")
-  label <- attr(data, "label")
+  label <- attr(data, "label.table")
   
+  # make characteristics more usefull
+  characteristics <- do.call(rbind.data.frame, attr(data, "characteristics"))
+  names(characteristics) <- c("varname","charname","contents")
+  attr(data, "characteristics") <- characteristics
+
   if(convert.factors==T) {
     for (i in seq_along(val.labels)) {
       labname <- val.labels[i]

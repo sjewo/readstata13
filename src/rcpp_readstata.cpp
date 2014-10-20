@@ -404,7 +404,6 @@ List stata(const char * filePath)
     }
   }
   
-  
   // after strls
   fseek(file, 19, SEEK_CUR); //trls><value_labels>
   
@@ -446,7 +445,7 @@ List stata(const char * filePath)
       // offset for each label
       // off0 : label 0 starts at off0
       // off1 : label 1 starts at off1 ...
-      NumericVector off(labn+1);
+      NumericVector off(labn);
       for (int i=0; i < labn; i++) {
         int noff;
         if (fread(&noff, sizeof(int), 1, file) == 0)
@@ -455,8 +454,23 @@ List stata(const char * filePath)
         off[i] = noff;
       }
       
-      off[labn] = txtlen; // needs txtlen for loop
+      // needed for match
+      NumericVector laborder = clone(off);
+      //laborder.erase(labn+1);
+      NumericVector labordersort = clone(off);
+      //labordersort.erase(labn+1);
+      std::sort(labordersort.begin(), labordersort.end());
+      
+      // needs txtlen for loop
+      off.push_back(txtlen); 
+            
+      // sort offsets so we can read labels sequentially
       std::sort(off.begin(), off.end());
+      
+      // create an index to sort lables along the code values
+      // this is done while factor creation
+      NumericVector indx(labn);
+      indx = match(laborder,labordersort);
       
       // code for each label
       NumericVector code(labn);
@@ -466,7 +480,7 @@ List stata(const char * filePath)
           perror ("Error reading label code");
           printf("Labelcode %d \n", val);
         code[i] = val;
-      }
+      }    
       
       // label text
       CharacterVector label(labn);
@@ -478,19 +492,26 @@ List stata(const char * filePath)
           printf("Labeltext %s \n", lab);
         label[i] = lab;
       }
-            
+      
+      // sort labels according to indx
+      CharacterVector labelo(labn);
+      for (int i=0; i < labn; i++) {
+        //int const nwi = indx[i]-1;
+        labelo[i] = label[indx[i]-1];
+      }
+                
       // create table for actual label set
       string const labset = nlabname;
-      code.attr("names") = label;
+      code.attr("names") = labelo;
       code.attr("class") = "table";
+      code.attr("laborder") = indx;
       
       // add this set to output list
       labelList[labset] = code;
       
       fseek(file, 6, SEEK_CUR); //</lbl>
       
-      if (fgets(tag, 6, file) == NULL)
-        perror ("Error reading label tag"); // next <lbl>?
+      if (fgets(tag, 6, file) == NULL) perror ("Error reading label tag"); // next <lbl>?
       
     }  
   }

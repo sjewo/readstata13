@@ -24,7 +24,7 @@ The function returns a data.frame with attributs. The attributes include
   \item{version}{dta file format version}
   \item{lable.table}{List of value labels.}
   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
-  \item{expansion.field}{list providing variable name, characteristic name and the contents of stata characteristic field.}
+  \item{expansion.table}{list providing variable name, characteristic name and the contents of stata characteristic field.}
 }
 }
 \description{

@@ -25,9 +25,7 @@ List stata(const char * filePath)
   char one[2];
   if (fgets(one, sizeof(one), file) == NULL)
     perror ("Error reading bytorder");
-    //printf("%s \n", one);
   string const two = "<";
-
   if (one != two)
     throw std::range_error("Not a version 13 dta-file.");
 
@@ -38,7 +36,6 @@ List stata(const char * filePath)
   char release [4];
   if (fgets(release, sizeof(release), file) == NULL)
     perror ("Error reading release");
-  //printf("release: %s \n", release);
 
   // check the release version. continue if "117"
   if (release != gversion)
@@ -50,7 +47,6 @@ List stata(const char * filePath)
   char byteorder [4];
   if (fgets(byteorder, sizeof(byteorder), file) == NULL)
     perror ("Error reading bytorder");
-  //printf("byteorder: %s \n", byteorder);
 
   fseek(file, 15, SEEK_CUR);
 
@@ -58,15 +54,13 @@ List stata(const char * filePath)
   unsigned short k;
   if (fread (&k, sizeof(unsigned short) , 1, file) == 0)
     perror ("Error reading number of variables");
-  //printf("number of vars: %d \n", k);
 
   fseek(file, 7, SEEK_CUR); //</K><N>
 
-  //Number of Observations
+  // Number of Observations
   unsigned int n;
   if (fread (&n, sizeof(n), 1, file) == 0)
     perror ("Error reading number of cases");
-    //printf("number of obs: %d \n", n);
 
   fseek(file, 11, SEEK_CUR); //</N><label>
 
@@ -81,7 +75,6 @@ List stata(const char * filePath)
     if (fread(datalabel, ndlabel, 1, file) == NULL)
       perror ("Error reading dataset label");
   }
-  //printf("label: %s \n", datalabel);
 
   fseek(file, 19, SEEK_CUR); //</label><timestamp>
 
@@ -97,7 +90,6 @@ List stata(const char * filePath)
     if (fread(timestamp, ntimestamp, 1, file) == NULL)
       perror ("Error reading timestamp");
   }
-  //printf("timestamp: %s \n", timestamp);
 
 
   fseek(file, 26, SEEK_CUR); //</timestamp></header><map>
@@ -137,7 +129,7 @@ List stata(const char * filePath)
 
   fseek(file, 21, SEEK_CUR); //</varnames><sortlist>
 
- 	// byte order
+  // byte order
   string const s = "LSF";
   // byteorder == "LSF"
   if (byteorder == s)
@@ -163,16 +155,9 @@ List stata(const char * filePath)
     char nformats[49];
     if ( fread(nformats, sizeof(nformats), 1 , file) != NULL )
       formats[i] = nformats;
-      //printf("%s \n",nformats);
   }
 
-  fseek(file, 30, SEEK_CUR); //</formats><value_label_names>
-
-	/*
-  char format2[30];
-  fgets (format2, 30 , file);
-  printf("format2: %s \n", format2);
-	*/
+  fseek(file, 29, SEEK_CUR); //</formats><value_label_names>
 
   //value_label_names
   CharacterVector valLabels(k);
@@ -182,7 +167,7 @@ List stata(const char * filePath)
     if ( fread(nvalLabels, sizeof(nvalLabels), 1 , file) != NULL )
       valLabels[i] = nvalLabels;
   }
-  fseek(file, 35, SEEK_CUR); //</value_label_names><variable_labels>
+  fseek(file, 37, SEEK_CUR); //</value_label_names><variable_labels>
 
   // variabel_labels
   CharacterVector varLabels(k);
@@ -193,13 +178,7 @@ List stata(const char * filePath)
       varLabels[i] = nvarLabels;
   }
 
-  /*
-  char varlab[36];
-  fgets (varlab, 36 , file);
-  printf("format2: %s \n", varlab);
-  */
-
-  fseek(file, 36, SEEK_CUR); //</variable_labels><characteristics>
+  fseek(file, 35, SEEK_CUR); //</variable_labels><characteristics>
 
   // characteristics
   string const c = "<ch>";
@@ -211,7 +190,6 @@ List stata(const char * filePath)
   if (fgets (tago, sizeof(tago), file) == NULL)
     perror ("Error reading characteristics");
 
-    //printf("tago: %s \n", tago);
     while (tago == c)
     {
 
@@ -262,7 +240,6 @@ List stata(const char * filePath)
     else
       df[i] = CharacterVector(n);
   }
-
 
   // fill with data
   for(unsigned int j=0; j<n; j++)
@@ -424,6 +401,7 @@ List stata(const char * filePath)
     }
   }
 
+
   // after strls
   fseek(file, 19, SEEK_CUR); //trls><value_labels>
 
@@ -493,7 +471,6 @@ List stata(const char * filePath)
         int val;
         if (fread(&val, sizeof(int), 1, file) == 0)
           perror ("Error reading label code");
-          //printf("Labelcode %d \n", val);
         code[i] = val;
       }
 
@@ -510,6 +487,7 @@ List stata(const char * filePath)
       // sort labels according to indx
       CharacterVector labelo(labn);
       for (int i=0; i < labn; i++) {
+        //int const nwi = indx[i]-1;
         labelo[i] = label[indx[i]-1];
       }
 
@@ -542,9 +520,6 @@ List stata(const char * filePath)
   // convert list to data.frame
   DataFrame ddf = DataFrame::create(df,  _["stringsAsFactors"] = false );
   // assign attributes
-  //  may also include:
-  //    "label.table"
-  //    "expansion.table"
   ddf.attr("datalabel") = datalabelCV;
   ddf.attr("time.stamp") = timestampCV;
   ddf.attr("formats") = formats;
@@ -553,7 +528,7 @@ List stata(const char * filePath)
   ddf.attr("var.labels") = varLabels;
   ddf.attr("version") = version;
   ddf.attr("label.table") = labelList;
-  ddf.attr("expansion.field") = ch;
+  ddf.attr("expansion.table") = ch;
   ddf.attr("strl") = strlstable;
 
   fclose(file);

@@ -3,7 +3,8 @@
 \alias{read.dta13}
 \title{Read Stata 13 Binary Files}
 \usage{
-read.dta13(path, convert.factors = TRUE, fileEncoding = NULL)
+read.dta13(path, convert.factors = TRUE, fileEncoding = NULL,
+  convert.underscore = FALSE)
 }
 \arguments{
 \item{path}{string path to the dta file you want to import}
@@ -11,6 +12,8 @@ read.dta13(path, convert.factors = TRUE, fileEncoding = NULL)
 \item{convert.factors}{logical create factors from Stata value labels}
 
 \item{fileEncoding}{string If not null, strings will be converted from fileEncoding to system encoding}
+
+\item{convert.underscore}{logical changes variable name from _ to .}
 }
 \value{
 The function returns a data.frame with attributs. The attributes include

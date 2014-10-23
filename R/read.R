@@ -6,6 +6,7 @@
 #' @param path  string path to the dta file you want to import
 #' @param convert.factors logical create factors from Stata value labels
 #' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding
+#' @param convert.underscore logical changes variable name from _ to .
 #'
 #' @return The function returns a data.frame with attributs. The attributes include
 #' \describe{
@@ -28,7 +29,8 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
 #' @useDynLib readstata13
 #' @export
-read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL) {
+read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
+											 convert.underscore = FALSE) {
 	# Check if path is a url
 	if(length(grep("^(http|ftp|https)://", path))) {
 		tmp <- tempfile()
@@ -43,6 +45,9 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL) {
 			return(message("File not found."))
 
 	data <- stata(filepath)
+
+	if(convert.underscore)
+		names(data) <- gsub("_", ".", names(data))
 
 	val.labels <- attr(data, "val.labels")
 	type <- attr(data, "type")

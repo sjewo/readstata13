@@ -4,9 +4,10 @@
 #' Reads the binary Stata file
 #'
 #' @param filePath The full systempath to the dta file you want to import.
+#' @param missing logical if missings should be converted outside of Rcpp.
 #' @import Rcpp
-#' @export 
-stata <- function(filePath) {
-    .Call('readstata13_stata', PACKAGE = 'readstata13', filePath)
+#' @export
+stata <- function(filePath, missing) {
+    .Call('readstata13_stata', PACKAGE = 'readstata13', filePath, missing)
 }
 

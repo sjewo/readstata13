@@ -8,6 +8,7 @@
 #' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding
 #' @param convert.underscore logical changes variable name from _ to .
 #' @param missing.type logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes()$missing will be created.
+#' @param replace.strl logical Replace the reference to a STRL string in the data.frame with the actual value
 #'
 #' @return The function returns a data.frame with attributs. The attributes include
 #' \describe{
@@ -24,120 +25,128 @@
 #' }
 #' @note If you catch a bug, please do not sue us, we do not have any money.
 #' @seealso \code{\link{read.dta}} and \code{memisc} for dta files from Stata
-#' Versions < 13
+#' versions < 13
 #' @references Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@rub.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
-											 convert.underscore = FALSE, missing.type = FALSE) {
-	# Check if path is a url
-	if(length(grep("^(http|ftp|https)://", path))) {
-		tmp <- tempfile()
-		download.file(path, tmp, quiet = TRUE, mode = "wb")
-		filepath <- tmp
-		on.exit(unlink(filepath))
-	} else {
-		# construct filepath and read file
-		filepath <- get.filepath(path)
-	}
-		if(!file.exists(filepath))
-			return(message("File not found."))
+                       convert.underscore = FALSE, missing.type = FALSE,
+                       replace.strl = FALSE) {
+  # Check if path is a url
+  if(length(grep("^(http|ftp|https)://", path))) {
+    tmp <- tempfile()
+    download.file(path, tmp, quiet = TRUE, mode = "wb")
+    filepath <- tmp
+    on.exit(unlink(filepath))
+  } else {
+    # construct filepath and read file
+    filepath <- get.filepath(path)
+  }
+  if(!file.exists(filepath))
+    return(message("File not found."))
 
-	data <- stata(filepath,missing.type)
+  data <- stata(filepath,missing.type)
 
-	if(convert.underscore)
-		names(data) <- gsub("_", ".", names(data))
+  if(convert.underscore)
+    names(data) <- gsub("_", ".", names(data))
 
-	types <- attr(data, "types")
-	stata.na <- data.frame(type = 65526L:65530L,
-                           min = c(101, 32741, 2147483621, 2^127, 2^1023),
-                           inc = c(1,1,1,2^115,2^1011)
-	)
+  types <- attr(data, "types")
+  stata.na <- data.frame(type = 65526L:65530L,
+                         min = c(101, 32741, 2147483621, 2^127, 2^1023),
+                         inc = c(1,1,1,2^115,2^1011)
+  )
 
-	if(missing.type)
-    {
-		if (as.numeric(attr(data, "version")) >= 117L) {
-			missings <- vector("list", length(data))
-			names(missings) <- names(data)
-			for(v in which(types > 65525L)) {
-				this.type <- abs(types[v] - 65530L)+1
-				nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
-				natype <- (data[[v]][nas] - stata.na$min[this.type])/stata.na$inc[this.type]
-				natype[is.na(natype)] <- 0L
-				missings[[v]] <- rep(NA, NROW(data))
-				missings[[v]][nas] <- natype
-				data[[v]][nas] <- NA
-			}
-			attr(data,"missing") <- missings
-		} else
-			warning("'missing.type' only applicable to version >= 13 files")
-	}
+  if(replace.strl) {
+    for(i in (1:ncol(data))[types==32768] ) {
+      strl <- do.call(rbind, attr(data,"strl"))
+      data[,i] <- as.character(merge(as.character(data[,i]), strl, by.x=1, by.y=1, all.x=T, all.y=F)[,2])
+    }
+  }
 
-	val.labels <- attr(data, "val.labels")
-	type <- attr(data, "type")
-	label <- attr(data, "label.table")
+  if(missing.type)
+  {
+    if (as.numeric(attr(data, "version")) >= 117L) {
+      missings <- vector("list", length(data))
+      names(missings) <- names(data)
+      for(v in which(types > 65525L)) {
+        this.type <- abs(types[v] - 65530L)+1
+        nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
+        natype <- (data[[v]][nas] - stata.na$min[this.type])/stata.na$inc[this.type]
+        natype[is.na(natype)] <- 0L
+        missings[[v]] <- rep(NA, NROW(data))
+        missings[[v]][nas] <- natype
+        data[[v]][nas] <- NA
+      }
+      attr(data,"missing") <- missings
+    } else
+      warning("'missing.type' only applicable to version >= 13 files")
+  }
 
-	# make characteristics more usefull
-	#characteristics <- do.call(rbind.data.frame, attr(data, "characteristics"))
-	#names(characteristics) <- c("varname","charname","contents")
-	#attr(data, "characteristics") <- characteristics
+  val.labels <- attr(data, "val.labels")
+  type <- attr(data, "type")
+  label <- attr(data, "label.table")
 
-	if(!is.null(fileEncoding)) {
-		# varnames
-		Encoding(names(data)) <- fileEncoding
-		names(data) <- enc2native(names(data))
+  # make characteristics more usefull
+  #characteristics <- do.call(rbind.data.frame, attr(data, "characteristics"))
+  #names(characteristics) <- c("varname","charname","contents")
+  #attr(data, "characteristics") <- characteristics
 
-		# val.lables
-		Encoding(val.labels) <- fileEncoding
-		names(val.labels) <- enc2native(val.labels)
+  if(!is.null(fileEncoding)) {
+    # varnames
+    Encoding(names(data)) <- fileEncoding
+    names(data) <- enc2native(names(data))
 
-		# label
-		Encoding(names(label)) <- fileEncoding
-		names(label) <- enc2native(names(label))
+    # val.lables
+    Encoding(val.labels) <- fileEncoding
+    names(val.labels) <- enc2native(val.labels)
 
-		if (length(label) > 0) {
-			for (i in 1:length(label))  {
-				Encoding(names(label[[i]])) <- fileEncoding
-				names(label[[i]]) <- enc2native(names(label[[i]]))
-			}
-			attr(data, "label.table") <- label
-		}
+    # label
+    Encoding(names(label)) <- fileEncoding
+    names(label) <- enc2native(names(label))
 
-		# expansion.field
-		efi <- attr(data, "expansion.table")
-		if (length(efi) > 0) {
-			efiChar <- unlist(lapply(efi, is.character))
-			for (i in (1:length(efi))[efiChar])  {
-				Encoding(efi[[i]]) <- fileEncoding
-				efi[[i]] <- enc2native(efi[[i]])
-			}
-			attr(data, "expansion.table") <- efi
-		}
+    if (length(label) > 0) {
+      for (i in 1:length(label))  {
+        Encoding(names(label[[i]])) <- fileEncoding
+        names(label[[i]]) <- enc2native(names(label[[i]]))
+      }
+      attr(data, "label.table") <- label
+    }
 
-		#strl
-		strl <- attr(data, "strl")
-		if (length(strl) > 0) {
-			for (i in 1:length(strl))  {
-				Encoding(strl[[i]]) <- fileEncoding
-				strl[[i]] <- enc2native(strl[[i]])
-			}
-			attr(data, "strl") <- strl
-		}
-	}
+    # expansion.field
+    efi <- attr(data, "expansion.table")
+    if (length(efi) > 0) {
+      efiChar <- unlist(lapply(efi, is.character))
+      for (i in (1:length(efi))[efiChar])  {
+        Encoding(efi[[i]]) <- fileEncoding
+        efi[[i]] <- enc2native(efi[[i]])
+      }
+      attr(data, "expansion.table") <- efi
+    }
 
-	if(convert.factors==T) {
-		for (i in seq_along(val.labels)) {
-			labname <- val.labels[i]
-			vartype <- type[i]
-			#don't convert columns of type double or float to factor
-			if(labname!="" & labname %in% names(label) & vartype>65527) {
-				data[,i] <- factor(data[,i], levels=label[[labname]],
-													 labels=names(label[[labname]]))
-			}
-		}
-	}
+    #strl
+    strl <- attr(data, "strl")
+    if (length(strl) > 0) {
+      for (i in 1:length(strl))  {
+        Encoding(strl[[i]]) <- fileEncoding
+        strl[[i]] <- enc2native(strl[[i]])
+      }
+      attr(data, "strl") <- strl
+    }
+  }
 
-	return(data)
+  if(convert.factors==T) {
+    for (i in seq_along(val.labels)) {
+      labname <- val.labels[i]
+      vartype <- type[i]
+      #don't convert columns of type double or float to factor
+      if(labname!="" & labname %in% names(label) & vartype>65527) {
+        data[,i] <- factor(data[,i], levels=label[[labname]],
+                           labels=names(label[[labname]]))
+      }
+    }
+  }
+
+  return(data)
 }

@@ -4,7 +4,7 @@
 \title{Read Stata 13 Binary Files}
 \usage{
 read.dta13(path, convert.factors = TRUE, fileEncoding = NULL,
-  convert.underscore = FALSE)
+  convert.underscore = FALSE, missing.type = FALSE)
 }
 \arguments{
 \item{path}{string path to the dta file you want to import}
@@ -14,6 +14,8 @@ read.dta13(path, convert.factors = TRUE, fileEncoding = NULL,
 \item{fileEncoding}{string If not null, strings will be converted from fileEncoding to system encoding}
 
 \item{convert.underscore}{logical changes variable name from _ to .}
+
+\item{missing.type}{logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes()$missing will be created.}
 }
 \value{
 The function returns a data.frame with attributs. The attributes include
@@ -49,4 +51,3 @@ Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/hel
 \code{\link{read.dta}} and \code{memisc} for dta files from Stata
 Versions < 13
 }
-

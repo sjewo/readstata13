@@ -2,6 +2,7 @@ testing
 - reading file from url.
   Example: `read.dta13("http://www.stata-press.com/data/r13/auto.dta")`
 - convert.underscore from foreign::read.dta(): converts _ to .
+- missing.type parts from foreign::read.dta(). If TRUE return "missing"
 
 0.2 
 - read stata characteristics and save them in extension.table attribute

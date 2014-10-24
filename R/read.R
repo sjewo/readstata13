@@ -7,6 +7,7 @@
 #' @param convert.factors logical create factors from Stata value labels
 #' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding
 #' @param convert.underscore logical changes variable name from _ to .
+#' @param missing.type logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes()$missing will be created.
 #'
 #' @return The function returns a data.frame with attributs. The attributes include
 #' \describe{
@@ -30,7 +31,7 @@
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
-											 convert.underscore = FALSE) {
+											 convert.underscore = FALSE, missing.type = FALSE) {
 	# Check if path is a url
 	if(length(grep("^(http|ftp|https)://", path))) {
 		tmp <- tempfile()
@@ -44,10 +45,35 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
 		if(!file.exists(filepath))
 			return(message("File not found."))
 
-	data <- stata(filepath)
+	data <- stata(filepath,missing.type)
 
 	if(convert.underscore)
 		names(data) <- gsub("_", ".", names(data))
+
+	types <- attr(data, "types")
+	stata.na <- data.frame(type = 65526L:65530L,
+												 min = c(101, 32741, 2147483621, 2^127, 2^1023),
+												 inc = c(1,1,1,2^115,2^1011)
+	)
+
+	if(missing.type)
+    {
+		if (as.numeric(attr(data, "version")) >= 117L) {
+			missings <- vector("list", length(data))
+			names(missings) <- names(data)
+			for(v in which(types > 65525L)) {
+				this.type <- abs(types[v] - 65530L)+1
+				nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
+				natype <- (data[[v]][nas] - stata.na$min[this.type])/stata.na$inc[this.type]
+				natype[is.na(natype)] <- 0L
+				missings[[v]] <- rep(NA, NROW(data))
+				missings[[v]][nas] <- natype
+				data[[v]][nas] <- NA
+			}
+			attr(data,"missing") <- missings
+		} else
+			warning("'missing.type' only applicable to version >= 13 files")
+	}
 
 	val.labels <- attr(data, "val.labels")
 	type <- attr(data, "type")

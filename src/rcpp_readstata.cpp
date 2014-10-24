@@ -12,15 +12,15 @@ using namespace std;
 //' @import Rcpp
 //' @export
 // [[Rcpp::export]]
-List stata(const char * filePath)
+List stata(const char * filePath, bool missing)
 {
-  FILE *file = NULL;		// File pointer
+  FILE *file = NULL;  	// File pointer
 
   // Open the file in binary mode using the "rb" format string
   // This also checks if the file exists and/or can be opened for reading correctly
   if ((file = fopen(filePath, "rb")) == NULL)
       throw std::range_error("Could not open specified file.");
-
+ 
   // check the first byte. continue if "<"
   char one[2];
   if (fgets(one, sizeof(one), file) == NULL)
@@ -200,7 +200,6 @@ List stata(const char * filePath)
         char chcharact[33];
         char nnocharacter[nocharacter-66];
 
-
         if ( (!fread(chvarname,33, 1,file)) &
              (!fread(chcharact,33, 1,file)) &
              (!fread(nnocharacter,nocharacter-66, 1, file))
@@ -257,7 +256,7 @@ List stata(const char * filePath)
           double const dmax = 0x1.fffffffffffffp1022;
           if (fread (&erg, sizeof(double), 1, file) == 0)
             perror ("Error reading data");
-          if ((erg<dmin) | (erg>dmax))
+          if (missing == FALSE & ((erg<dmin) | (erg>dmax)) )
             as<NumericVector>(df[i])[j] = NA_REAL;
           else
             as<NumericVector>(df[i])[j] = erg;
@@ -270,7 +269,7 @@ List stata(const char * filePath)
           float const minmax = 0x1.fffffp126;
           if (fread (&erg, sizeof(float), 1, file) == 0)
             perror ("Error reading data");
-          if ((erg<(-minmax)) | (erg>minmax))
+          if (missing == FALSE & ((erg<(-minmax)) | (erg>minmax)) )
             as<NumericVector>(df[i])[j] = NA_REAL;
           else
             as<NumericVector>(df[i])[j] = erg;
@@ -282,7 +281,7 @@ List stata(const char * filePath)
           signed int erg;
           if (fread (&erg, sizeof(signed int), 1, file) == 0)
             perror ("Error reading data");
-          if ((erg<(-2147483647)) | (erg>2147483620))
+          if (missing == FALSE & ((erg<(-2147483647)) | (erg>2147483620)) )
             as<IntegerVector>(df[i])[j] = NA_REAL;
           else
             as<IntegerVector>(df[i])[j] = erg;
@@ -294,7 +293,7 @@ List stata(const char * filePath)
           short int erg;
           if (fread (&erg, sizeof(short int), 1, file) == 0)
             perror ("Error reading data");
-          if ((erg<(-32767)) | (erg>32740))
+          if (missing == FALSE & ((erg<(-32767)) | (erg>32740)) )
             as<IntegerVector>(df[i])[j] = NA_REAL;
           else
             as<IntegerVector>(df[i])[j] = erg;
@@ -306,7 +305,7 @@ List stata(const char * filePath)
           char erg;
           if (fread (&erg, sizeof(char), 1, file) == 0)
             perror ("Error reading data");
-          if ((erg<(-127)) | (erg>100))
+          if (missing == FALSE & ( (erg<(-127)) | (erg>100)) )
             as<IntegerVector>(df[i])[j] = NA_REAL;
           else
             as<IntegerVector>(df[i])[j] = erg;
@@ -393,7 +392,6 @@ List stata(const char * filePath)
           strls(1) = strl;
         }
       }
-
       strlstable.push_back( strls );
 
       if (fgets(tags, 4, file) == NULL)

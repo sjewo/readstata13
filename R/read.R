@@ -52,8 +52,8 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
 
 	types <- attr(data, "types")
 	stata.na <- data.frame(type = 65526L:65530L,
-												 min = c(101, 32741, 2147483621, 2^127, 2^1023),
-												 inc = c(1,1,1,2^115,2^1011)
+                           min = c(101, 32741, 2147483621, 2^127, 2^1023),
+                           inc = c(1,1,1,2^115,2^1011)
 	)
 
 	if(missing.type)

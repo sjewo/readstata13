@@ -3,12 +3,13 @@
 \alias{stata}
 \title{Reads the binary Stata file}
 \usage{
-stata(filePath)
+stata(filePath, missing)
 }
 \arguments{
 \item{filePath}{The full systempath to the dta file you want to import.}
+
+\item{missing}{logical if missings should be converted outside of Rcpp.}
 }
 \description{
 Reads the binary Stata file
 }
-

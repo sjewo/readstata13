@@ -51,3 +51,4 @@ Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/hel
 \code{\link{read.dta}} and \code{memisc} for dta files from Stata
 Versions < 13
 }
+

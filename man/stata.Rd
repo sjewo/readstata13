@@ -13,3 +13,4 @@ stata(filePath, missing)
 \description{
 Reads the binary Stata file
 }
+

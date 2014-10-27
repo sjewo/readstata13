@@ -15,13 +15,13 @@ using namespace std;
 // [[Rcpp::export]]
 List stata(const char * filePath, bool missing)
 {
-  FILE *file = NULL;  	// File pointer
+  FILE *file = NULL;    // File pointer
 
   // Open the file in binary mode using the "rb" format string
   // This also checks if the file exists and/or can be opened for reading correctly
   if ((file = fopen(filePath, "rb")) == NULL)
-      throw std::range_error("Could not open specified file.");
- 
+    throw std::range_error("Could not open specified file.");
+
   // check the first byte. continue if "<"
   char one[2];
   if (fgets(one, sizeof(one), file) == NULL)
@@ -191,38 +191,38 @@ List stata(const char * filePath, bool missing)
   if (fgets (tago, sizeof(tago), file) == NULL)
     perror ("Error reading characteristics");
 
-    while (tago == c)
-    {
+  while (tago == c)
+  {
 
-      unsigned int nocharacter;
-      if (!fread (&nocharacter, sizeof(nocharacter), 1, file))
-        perror ("Error reading length of characteristics");
-        char chvarname[33];
-        char chcharact[33];
-        char nnocharacter[nocharacter-66];
+    unsigned int nocharacter;
+    if (!fread (&nocharacter, sizeof(nocharacter), 1, file))
+      perror ("Error reading length of characteristics");
+    char chvarname[33];
+    char chcharact[33];
+    char nnocharacter[nocharacter-66];
 
-        if ( (!fread(chvarname,33, 1,file)) &
-             (!fread(chcharact,33, 1,file)) &
-             (!fread(nnocharacter,nocharacter-66, 1, file))
-           )
-            perror ("Error reading characteristics");
+    if ( (!fread(chvarname,33, 1,file)) &
+      (!fread(chcharact,33, 1,file)) &
+      (!fread(nnocharacter,nocharacter-66, 1, file))
+    )
+      perror ("Error reading characteristics");
 
-        // chs vector
-        CharacterVector chs(3);
-        chs[0] = chvarname;
-        chs[1] = chcharact;
-        chs[2] = nnocharacter;
+    // chs vector
+    CharacterVector chs(3);
+    chs[0] = chvarname;
+    chs[1] = chcharact;
+    chs[2] = nnocharacter;
 
-        // add characteristics to the list
-        ch.push_back( chs );
+    // add characteristics to the list
+    ch.push_back( chs );
 
-      // </ch>
-      fseek(file, 4+1, SEEK_CUR);
+    // </ch>
+    fseek(file, 4+1, SEEK_CUR);
 
-      // read next tag
-      if (fgets (tago, sizeof(tago), file) == NULL)
-        perror ("Error reading characteristics");
-    }
+    // read next tag
+    if (fgets (tago, sizeof(tago), file) == NULL)
+      perror ("Error reading characteristics");
+  }
 
   fseek(file, 20, SEEK_CUR); //aracteristics><data>
 
@@ -250,81 +250,81 @@ List stata(const char * filePath, bool missing)
       switch(type < 2046 ? 2045 : type)
       {
         // double
-        case 65526:
-        {
-          double erg;
-          double const dmin = -0x1.fffffffffffffp1023;
-          double const dmax = 0x1.fffffffffffffp1022;
-          if (fread (&erg, sizeof(double), 1, file) == 0)
-            perror ("Error reading data");
-          if (missing == FALSE & ((erg<dmin) | (erg>dmax)) )
-            as<NumericVector>(df[i])[j] = NA_REAL;
-          else
-            as<NumericVector>(df[i])[j] = erg;
-          break;
-        }
+      case 65526:
+      {
+        double erg;
+        double const dmin = -0x1.fffffffffffffp1023;
+        double const dmax = 0x1.fffffffffffffp1022;
+        if (fread (&erg, sizeof(double), 1, file) == 0)
+          perror ("Error reading data");
+        if (missing == FALSE & ((erg<dmin) | (erg>dmax)) )
+          as<NumericVector>(df[i])[j] = NA_REAL;
+        else
+          as<NumericVector>(df[i])[j] = erg;
+        break;
+      }
         // float
-        case 65527:
-        {
-          float erg;
-          float const minmax = 0x1.fffffp126;
-          if (fread (&erg, sizeof(float), 1, file) == 0)
-            perror ("Error reading data");
-          if (missing == FALSE & ((erg<(-minmax)) | (erg>minmax)) )
-            as<NumericVector>(df[i])[j] = NA_REAL;
-          else
-            as<NumericVector>(df[i])[j] = erg;
-          break;
-        }
+      case 65527:
+      {
+        float erg;
+        float const minmax = 0x1.fffffp126;
+        if (fread (&erg, sizeof(float), 1, file) == 0)
+          perror ("Error reading data");
+        if (missing == FALSE & ((erg<(-minmax)) | (erg>minmax)) )
+          as<NumericVector>(df[i])[j] = NA_REAL;
+        else
+          as<NumericVector>(df[i])[j] = erg;
+        break;
+      }
         //long
-        case 65528:
-        {
-          signed int erg;
-          if (fread (&erg, sizeof(signed int), 1, file) == 0)
-            perror ("Error reading data");
-          if (missing == FALSE & ((erg<(-2147483647)) | (erg>2147483620)) )
-            as<IntegerVector>(df[i])[j] = NA_REAL;
-          else
-            as<IntegerVector>(df[i])[j] = erg;
-          break;
-        }
+      case 65528:
+      {
+        signed int erg;
+        if (fread (&erg, sizeof(signed int), 1, file) == 0)
+          perror ("Error reading data");
+        if (missing == FALSE & ((erg<(-2147483647)) | (erg>2147483620)) )
+          as<IntegerVector>(df[i])[j] = NA_REAL;
+        else
+          as<IntegerVector>(df[i])[j] = erg;
+        break;
+      }
         // int
-        case 65529:
-        {
-          short int erg;
-          if (fread (&erg, sizeof(short int), 1, file) == 0)
-            perror ("Error reading data");
-          if (missing == FALSE & ((erg<(-32767)) | (erg>32740)) )
-            as<IntegerVector>(df[i])[j] = NA_REAL;
-          else
-            as<IntegerVector>(df[i])[j] = erg;
-          break;
-        }
+      case 65529:
+      {
+        short int erg;
+        if (fread (&erg, sizeof(short int), 1, file) == 0)
+          perror ("Error reading data");
+        if (missing == FALSE & ((erg<(-32767)) | (erg>32740)) )
+          as<IntegerVector>(df[i])[j] = NA_REAL;
+        else
+          as<IntegerVector>(df[i])[j] = erg;
+        break;
+      }
         // byte
-        case 65530:
-        {
-          char erg;
-          if (fread (&erg, sizeof(char), 1, file) == 0)
-            perror ("Error reading data");
-          if (missing == FALSE & ( (erg<(-127)) | (erg>100)) )
-            as<IntegerVector>(df[i])[j] = NA_REAL;
-          else
-            as<IntegerVector>(df[i])[j] = erg;
-          break;
-        }
+      case 65530:
+      {
+        char erg;
+        if (fread (&erg, sizeof(char), 1, file) == 0)
+          perror ("Error reading data");
+        if (missing == FALSE & ( (erg<(-127)) | (erg>100)) )
+          as<IntegerVector>(df[i])[j] = NA_REAL;
+        else
+          as<IntegerVector>(df[i])[j] = erg;
+        break;
+      }
         // strings with 2045 or fewer characters
-        case 2045:
-        {
-          int gre = vartype[i]+1;
-          char erg[gre];
-          if (fgets (erg, gre , file) == NULL)
-            perror ("Error reading data");
-          as<CharacterVector>(df[i])[j] = erg;
-          break;
-        }
+      case 2045:
+      {
+        int gre = vartype[i]+1;
+        char erg[gre];
+        if (fgets (erg, gre , file) == NULL)
+          perror ("Error reading data");
+        as<CharacterVector>(df[i])[j] = erg;
+        break;
+      }
         // string of any length
-        case 32768:
-        {// strL 2 4bit
+      case 32768:
+      {// strL 2 4bit
         int v;
         if (fread (&v, sizeof(int), 1, file) == 0)
           perror ("Error reading strl");
@@ -335,7 +335,7 @@ List stata(const char * filePath, bool missing)
         sprintf(erg, "%010d%010d", v, o);
         as<CharacterVector>(df[i])[j] = erg;
         break;
-        }
+      }
       }
     }
   }

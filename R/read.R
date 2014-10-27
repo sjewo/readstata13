@@ -61,7 +61,7 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
   if(replace.strl) {
     for(i in (1:ncol(data))[types==32768] ) {
       strl <- do.call(rbind, attr(data,"strl"))
-      data[,i] <- as.character(merge(as.character(data[,i]), strl, by.x=1, by.y=1, all.x=T, all.y=F)[,2])
+      data[,i] <- as.character(merge(as.character(data[,i]), strl, by.x=1, by.y=1, all.x=T, all.y=F, sort=F)[,2])
     }
   }
 

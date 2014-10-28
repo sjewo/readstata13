@@ -7,16 +7,16 @@ The function ```read.dta``` from the foreign package imports only dta files from
 
 ## Installation
 
-To install the current release (0.1) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
+To install the current release (0.3) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.2")
+devtools::install_github("sjewo/readstata13", ref="0.3")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.2")
+install_github("readstata13", username="sjewo", ref="0.3")
 ```
 
 To install the current development version from github:
@@ -37,7 +37,7 @@ dat <- read.dta13("path to file.dta")
 
 ### Working features
 
-* reading data files and create a data.frame
+* reading data files from disk or url and create a data.frame
 * assign variable names
 * read the new strL strings and save them as attribute
 * convert stata label to factors and save them as attribute

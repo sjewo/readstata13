@@ -1,7 +1,7 @@
 Package: readstata13
 Type: Package
 Title: Import Stata 13 Datafiles
-Version: 0.2
+Version: 0.3
 Authors@R: c(
     person("Marvin", "Garbuszus",
     email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre")),

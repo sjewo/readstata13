@@ -1,7 +1,7 @@
 #include <Rcpp.h>
-#include <stdio.h>
-#include <iostream>
 #include "string"
+#include <stdint.h>
+// #include <cstdint> //C++11
 
 using namespace Rcpp;
 using namespace std;
@@ -24,42 +24,46 @@ List stata(const char * filePath, bool missing)
 
   // check the first byte. continue if "<"
   char one[2];
-  if (fgets(one, sizeof(one), file) == NULL)
+  if (fread(one, sizeof(one),1, file) == NULL)
     perror ("Error reading bytorder");
+  one[1] = '\0';
+
   string const two = "<";
   if (one != two)
     throw std::range_error("Not a version 13 dta-file.");
 
-  fseek(file, 27, SEEK_CUR);
+  fseek(file, 26, SEEK_CUR);
 
   // release
   string const gversion = "117";
   char release [4];
-  if (fgets(release, sizeof(release), file) == NULL)
+  if (fread(release, sizeof(release), 1, file) == NULL)
     perror ("Error reading release");
+  release[3] = '\0';
 
   // check the release version. continue if "117"
   if (release != gversion)
     throw std::range_error("Not a version 13 dta-file.");
 
-  fseek(file, 21, SEEK_CUR);
+  fseek(file, 20, SEEK_CUR);
 
   // LSF or MSF
   char byteorder [4];
-  if (fgets(byteorder, sizeof(byteorder), file) == NULL)
+  if (fread(&byteorder, sizeof(byteorder), 1, file) == NULL)
     perror ("Error reading bytorder");
+  byteorder[3] = '\0';
 
-  fseek(file, 15, SEEK_CUR);
+  fseek(file, 14, SEEK_CUR);
 
   // Number of Variables
-  unsigned short k;
-  if (!fread (&k, sizeof(unsigned short) , 1, file))
+  uint16_t k;
+  if (!fread (&k, sizeof(k) , 1, file))
     perror ("Error reading number of variables");
 
   fseek(file, 7, SEEK_CUR); //</K><N>
 
   // Number of Observations
-  unsigned int n;
+  uint32_t n;
   if (!fread (&n, sizeof(n), 1, file))
     perror ("Error reading number of cases");
 
@@ -81,7 +85,7 @@ List stata(const char * filePath, bool missing)
 
 
   // timestamp
-  unsigned char ntimestamp;
+  uint8_t ntimestamp;
   if (!fread (&ntimestamp, sizeof(ntimestamp), 1, file))
     perror ("Error reading length of timestamp");
 
@@ -90,8 +94,8 @@ List stata(const char * filePath, bool missing)
   {
     if (!fread(timestamp, ntimestamp, 1, file))
       perror ("Error reading timestamp");
+    timestamp[ntimestamp] = '\0';
   }
-
 
   fseek(file, 26, SEEK_CUR); //</timestamp></header><map>
 
@@ -99,7 +103,7 @@ List stata(const char * filePath, bool missing)
   NumericVector map(14);
   for (int i=0; i <14; ++i)
   {
-    long long nmap;
+    uint64_t nmap;
     if (!fread (&nmap, sizeof(nmap) , 1, file))
       perror ("Error reading mapping");
     map[i] = nmap;
@@ -109,9 +113,9 @@ List stata(const char * filePath, bool missing)
 
   //vartypes
   NumericVector vartype(k);
-  for (int i=0; i<k; ++i)
+  for (unsigned int i=0; i<k; ++i)
   {
-    unsigned short nvartype;
+    uint16_t nvartype;
     if (!fread (&nvartype, sizeof(nvartype), 1, file))
       perror ("Error reading vartypes");
     vartype[i] = nvartype;
@@ -121,7 +125,7 @@ List stata(const char * filePath, bool missing)
 
   //varnames
   CharacterVector varnames(k);
-  for (int i=0; i<k; ++i)
+  for (unsigned int i=0; i<k; ++i)
   {
     char nvarnames [33];
     if (fread (nvarnames, sizeof(nvarnames) ,1 , file))
@@ -136,9 +140,9 @@ List stata(const char * filePath, bool missing)
   if (byteorder == s)
   {
     NumericVector sortlist(k+1);
-    for (int i=0; i<k+1; ++i)
+    for (unsigned int i=0; i<k+1; ++i)
     {
-      unsigned short nsortlist;
+      uint16_t nsortlist;
       if (!fread (&nsortlist, sizeof(nsortlist), 1, file))
         perror ("Error reading sortlist");
       sortlist[i] = nsortlist;
@@ -151,7 +155,7 @@ List stata(const char * filePath, bool missing)
 
   //formats
   CharacterVector formats(k);
-  for (int i=0; i<k; ++i)
+  for (unsigned int i=0; i<k; ++i)
   {
     char nformats[49];
     if (fread(nformats, sizeof(nformats), 1 , file))
@@ -162,7 +166,7 @@ List stata(const char * filePath, bool missing)
 
   //value_label_names
   CharacterVector valLabels(k);
-  for (int i=0; i<k; ++i)
+  for (unsigned int i=0; i<k; ++i)
   {
     char nvalLabels[33];
     if (fread(nvalLabels, sizeof(nvalLabels), 1 , file))
@@ -172,7 +176,7 @@ List stata(const char * filePath, bool missing)
 
   // variabel_labels
   CharacterVector varLabels(k);
-  for (int i=0; i<k; ++i)
+  for (unsigned int i=0; i<k; ++i)
   {
     char nvarLabels[81];
     if (fread(nvarLabels, sizeof(nvarLabels), 1, file))
@@ -187,23 +191,25 @@ List stata(const char * filePath, bool missing)
   List ch = List();
   CharacterVector chs(3);
 
-  char tago[4+1];
-  if (fgets (tago, sizeof(tago), file) == NULL)
+  char tago[5];
+  if (fread (tago, sizeof(tago)-1,1, file)==NULL)
     perror ("Error reading characteristics");
+  tago[4] = '\0';
 
   while (tago == c)
   {
-
-    unsigned int nocharacter;
+    uint32_t nocharacter;
     if (!fread (&nocharacter, sizeof(nocharacter), 1, file))
       perror ("Error reading length of characteristics");
+
     char chvarname[33];
     char chcharact[33];
     char nnocharacter[nocharacter-66];
 
-    if ( (!fread(chvarname,33, 1,file)) &
-      (!fread(chcharact,33, 1,file)) &
-      (!fread(nnocharacter,nocharacter-66, 1, file))
+    if(
+        (!fread(&chvarname, sizeof(chvarname), 1, file)) &
+          (!fread(&chcharact, sizeof(chcharact), 1, file)) &
+          (!fread(&nnocharacter, sizeof(nnocharacter), 1, file))
     )
       perror ("Error reading characteristics");
 
@@ -216,19 +222,19 @@ List stata(const char * filePath, bool missing)
     // add characteristics to the list
     ch.push_back( chs );
 
-    // </ch>
-    fseek(file, 4+1, SEEK_CUR);
+    fseek(file, 5, SEEK_CUR); // </ch>
 
     // read next tag
-    if (fgets (tago, sizeof(tago), file) == NULL)
+    if (fread (tago, sizeof(tago)-1,1, file) == NULL)
       perror ("Error reading characteristics");
+    tago[4] = '\0';
   }
 
   fseek(file, 20, SEEK_CUR); //aracteristics><data>
 
   // build list and add vector of right type for each variable
   List df(k);
-  for (int i=0;i<k;++i)
+  for (unsigned int i=0;i<k;++i)
   {
     if (vartype[i] > 32768)
     {
@@ -244,7 +250,7 @@ List stata(const char * filePath, bool missing)
   // fill with data
   for(unsigned int j=0; j<n; ++j)
   {
-    for (int i=0; i<k; ++i)
+    for (unsigned int i=0; i<k; ++i)
     {
       int const type = vartype[i];
       switch(type < 2046 ? 2045 : type)
@@ -279,7 +285,7 @@ List stata(const char * filePath, bool missing)
         //long
       case 65528:
       {
-        signed int erg;
+        int32_t erg;
         if (fread (&erg, sizeof(signed int), 1, file) == 0)
           perror ("Error reading data");
         if (missing == FALSE & ((erg<(-2147483647)) | (erg>2147483620)) )
@@ -291,7 +297,7 @@ List stata(const char * filePath, bool missing)
         // int
       case 65529:
       {
-        short int erg;
+        int16_t erg;
         if (fread (&erg, sizeof(short int), 1, file) == 0)
           perror ("Error reading data");
         if (missing == FALSE & ((erg<(-32767)) | (erg>32740)) )
@@ -315,21 +321,22 @@ List stata(const char * filePath, bool missing)
         // strings with 2045 or fewer characters
       case 2045:
       {
-        int gre = vartype[i]+1;
+        int32_t gre = vartype[i];
         char erg[gre];
-        if (fgets (erg, gre , file) == NULL)
+        if (!fread (erg, gre, 1, file))
           perror ("Error reading data");
+        erg[gre] = '\0';
         as<CharacterVector>(df[i])[j] = erg;
         break;
       }
         // string of any length
       case 32768:
       {// strL 2 4bit
-        int v;
-        if (fread (&v, sizeof(int), 1, file) == 0)
+        int32_t v;
+        if (fread (&v, sizeof(v), 1, file) == 0)
           perror ("Error reading strl");
-        int o;
-        if (fread (&o, sizeof(int), 1, file) == 0)
+        int32_t o;
+        if (fread (&o, sizeof(o), 1, file) == 0)
           perror ("Error reading strl");
         char erg[22];
         sprintf(erg, "%010d%010d", v, o);
@@ -346,9 +353,11 @@ List stata(const char * filePath, bool missing)
 
   //strL
   List strlstable = List(); //put strLs into this list
+
   char tags[4];
-  if (fgets(tags,4,file) == NULL)
+  if (fread(tags, sizeof(tags)-1, 1, file) == NULL)
     perror ("Error reading tags");
+  tags[3] = '\0';
   string const gso = "GSO";
   if (tags == gso)
   {
@@ -356,47 +365,48 @@ List stata(const char * filePath, bool missing)
     {
 
       CharacterVector strls(2);
-      int v, o;
+      int32_t v, o;
 
       // 2x4 bit (strl[vo1,vo2])
-      if (fread(&v, sizeof(int), 1, file) == 0)
+      if (fread(&v, sizeof(v), 1, file) == 0)
         perror ("Error reading strL v");
-      if (fread(&o, sizeof(int), 1, file) == 0)
+      if (fread(&o, sizeof(o), 1, file) == 0)
         perror ("Error reading strL o");
       char erg[22];
       sprintf(erg, "%010d%010d", v, o);
 
       strls(0) = erg;
 
-      unsigned char t;
+      uint8_t t;
       // (129 = binary) | (130 = ascii)
-      if (fread(&t, sizeof(unsigned char), 1, file) == 0)
-        perror ("Error reading strL type");
+      if (fread(&t, sizeof(t), 1, file) == 0)
+        perror ("Error reading StrL type");
 
-      unsigned int len;
-      if (fread(&len, sizeof(unsigned int), 1, file) == 0)
-        perror ("Error reading strL length");
+      uint32_t len;
+      if (fread(&len, sizeof(len), 1, file) == 0)
+        perror ("Error reading StrL length");
 
       if (t==129)
       {
         char strl [len];
-        if (fgets (strl, len , file) == NULL)
-          perror ("Error reading strL");
+        if (fread (strl, len-1, 1, file) == NULL)
+          perror ("Error reading StrL");
         strls(1) = strl;
       } else
       {
         if (t==130)
         {
           char strl [len+1];
-          if (fgets (strl, len+1 , file) == NULL)
-            perror ("Error reading strL");
+          if (fread (strl, len+1-1, 1, file) == NULL)
+            perror ("Error reading StrL");
           strls(1) = strl;
         }
       }
       strlstable.push_back( strls );
 
-      if (fgets(tags, 4, file) == NULL)
+      if (fread(tags, sizeof(tags)-1, 1, file) == NULL)
         perror ("Error reading tags");
+      tags[3] = '\0';
     }
   }
 
@@ -407,15 +417,16 @@ List stata(const char * filePath, bool missing)
   // Value Labels
   List labelList = List(); //put labels into this list
   char tag[6];
-  if (fgets(tag, 6, file) == NULL)
+  if (!fread(tag, sizeof(tag)-1, 1, file))
     perror ("Error reading label tag");
+  tag[5] = '\0';
   string const lbltag = "<lbl>" ;
   if (tag == lbltag) {
     while(tag == lbltag) {
 
       // length of value_label_table
-      int nlen;
-      if (fread (&nlen, sizeof(int), 1, file) == 0)
+      int32_t nlen;
+      if (fread (&nlen, sizeof(nlen), 1, file) == 0)
         perror ("Error reading  length of value_label_table");
 
       // name of this label set
@@ -428,11 +439,11 @@ List stata(const char * filePath, bool missing)
 
       // value_label_table for actual label set
       int labn;
-      if (fread(&labn, sizeof(int), 1, file) == 0)
+      if (fread(&labn, sizeof(labn), 1, file) == 0)
         perror ("Error reading length of label set entry");
 
       int txtlen;
-      if (fread(&txtlen, sizeof(int), 1, file) == 0)
+      if (fread(&txtlen, sizeof(txtlen), 1, file) == 0)
         perror ("Error reading length of label text");
 
       // offset for each label
@@ -467,8 +478,8 @@ List stata(const char * filePath, bool missing)
       // code for each label
       NumericVector code(labn);
       for (int i=0; i < labn; ++i) {
-        int val;
-        if (fread(&val, sizeof(int), 1, file) == 0)
+        int32_t val;
+        if (fread(&val, sizeof(val), 1, file) == 0)
           perror ("Error reading label code");
         code[i] = val;
       }
@@ -486,7 +497,6 @@ List stata(const char * filePath, bool missing)
       // sort labels according to indx
       CharacterVector labelo(labn);
       for (int i=0; i < labn; ++i) {
-        //int const nwi = indx[i]-1;
         labelo[i] = label[indx[i]-1];
       }
 
@@ -501,8 +511,9 @@ List stata(const char * filePath, bool missing)
 
       fseek(file, 6, SEEK_CUR); //</lbl>
 
-      if (fgets(tag, 6, file) == NULL) perror ("Error reading label tag"); // next <lbl>?
-
+      if (!fread(tag, sizeof(tag)-1, 1, file))
+        perror ("Error reading label tag2"); // next <lbl>?
+      tag[5] = '\0';
     }
   }
 

@@ -97,7 +97,7 @@ List stata(const char * filePath, bool missing)
 
   // map
   NumericVector map(14);
-  for (int i=0; i <14; i++)
+  for (int i=0; i <14; ++i)
   {
     long long nmap;
     if (!fread (&nmap, sizeof(nmap) , 1, file))
@@ -109,7 +109,7 @@ List stata(const char * filePath, bool missing)
 
   //vartypes
   NumericVector vartype(k);
-  for (int i=0; i<k; i++)
+  for (int i=0; i<k; ++i)
   {
     unsigned short nvartype;
     if (!fread (&nvartype, sizeof(nvartype), 1, file))
@@ -121,7 +121,7 @@ List stata(const char * filePath, bool missing)
 
   //varnames
   CharacterVector varnames(k);
-  for (int i=0; i<k; i++)
+  for (int i=0; i<k; ++i)
   {
     char nvarnames [33];
     if (fread (nvarnames, sizeof(nvarnames) ,1 , file))
@@ -136,7 +136,7 @@ List stata(const char * filePath, bool missing)
   if (byteorder == s)
   {
     NumericVector sortlist(k+1);
-    for (int i=0; i<k+1; i++)
+    for (int i=0; i<k+1; ++i)
     {
       unsigned short nsortlist;
       if (!fread (&nsortlist, sizeof(nsortlist), 1, file))
@@ -151,7 +151,7 @@ List stata(const char * filePath, bool missing)
 
   //formats
   CharacterVector formats(k);
-  for (int i=0; i<k; i++)
+  for (int i=0; i<k; ++i)
   {
     char nformats[49];
     if (fread(nformats, sizeof(nformats), 1 , file))
@@ -162,7 +162,7 @@ List stata(const char * filePath, bool missing)
 
   //value_label_names
   CharacterVector valLabels(k);
-  for (int i=0; i<k; i++)
+  for (int i=0; i<k; ++i)
   {
     char nvalLabels[33];
     if (fread(nvalLabels, sizeof(nvalLabels), 1 , file))
@@ -172,7 +172,7 @@ List stata(const char * filePath, bool missing)
 
   // variabel_labels
   CharacterVector varLabels(k);
-  for (int i=0; i<k; i++)
+  for (int i=0; i<k; ++i)
   {
     char nvarLabels[81];
     if (fread(nvarLabels, sizeof(nvarLabels), 1, file))
@@ -228,7 +228,7 @@ List stata(const char * filePath, bool missing)
 
   // build list and add vector of right type for each variable
   List df(k);
-  for (int i=0;i<k;i++)
+  for (int i=0;i<k;++i)
   {
     if (vartype[i] > 32768)
     {
@@ -242,9 +242,9 @@ List stata(const char * filePath, bool missing)
   }
 
   // fill with data
-  for(unsigned int j=0; j<n; j++)
+  for(unsigned int j=0; j<n; ++j)
   {
-    for (int i=0; i<k; i++)
+    for (int i=0; i<k; ++i)
     {
       int const type = vartype[i];
       switch(type < 2046 ? 2045 : type)
@@ -439,7 +439,7 @@ List stata(const char * filePath, bool missing)
       // off0 : label 0 starts at off0
       // off1 : label 1 starts at off1 ...
       NumericVector off(labn);
-      for (int i=0; i < labn; i++) {
+      for (int i=0; i < labn; ++i) {
         int noff;
         if (fread(&noff, sizeof(int), 1, file) == 0)
           perror ("Error reading label offset");
@@ -466,7 +466,7 @@ List stata(const char * filePath, bool missing)
 
       // code for each label
       NumericVector code(labn);
-      for (int i=0; i < labn; i++) {
+      for (int i=0; i < labn; ++i) {
         int val;
         if (fread(&val, sizeof(int), 1, file) == 0)
           perror ("Error reading label code");
@@ -475,7 +475,7 @@ List stata(const char * filePath, bool missing)
 
       // label text
       CharacterVector label(labn);
-      for (int i=0; i < labn; i++) {
+      for (int i=0; i < labn; ++i) {
         int const lablen = off[i+1]-off[i];
         char lab[lablen];
         if (!fread(lab, lablen,1, file))
@@ -485,7 +485,7 @@ List stata(const char * filePath, bool missing)
 
       // sort labels according to indx
       CharacterVector labelo(labn);
-      for (int i=0; i < labn; i++) {
+      for (int i=0; i < labn; ++i) {
         //int const nwi = indx[i]-1;
         labelo[i] = label[indx[i]-1];
       }

@@ -8,11 +8,12 @@ read.dta13(path, convert.factors = TRUE, fileEncoding = NULL,
   replace.strl = FALSE)
 }
 \arguments{
-\item{path}{string path to the dta file you want to import}
+\item{path}{string path to the dta file you want to import.}
 
-\item{convert.factors}{logical create factors from Stata value labels}
+\item{convert.factors}{logical create factors from Stata value labels.}
 
-\item{fileEncoding}{string If not null, strings will be converted from fileEncoding to system encoding}
+\item{fileEncoding}{string If not null, strings will be converted from fileEncoding to system encoding.
+Examples options are "utf8" or "latin1".}
 
 \item{convert.underscore}{logical changes variable name from _ to .}
 

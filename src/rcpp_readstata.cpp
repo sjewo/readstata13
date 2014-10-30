@@ -24,7 +24,7 @@ List stata(const char * filePath, bool missing)
 
   // check the first byte. continue if "<"
   char one[2];
-  if (fread(one, sizeof(one),1, file) == NULL)
+  if (!fread(one, sizeof(one),1, file))
     perror ("Error reading bytorder");
   one[1] = '\0';
 
@@ -37,7 +37,7 @@ List stata(const char * filePath, bool missing)
   // release
   string const gversion = "117";
   char release [4];
-  if (fread(release, sizeof(release), 1, file) == NULL)
+  if (!fread(release, sizeof(release), 1, file))
     perror ("Error reading release");
   release[3] = '\0';
 
@@ -49,7 +49,7 @@ List stata(const char * filePath, bool missing)
 
   // LSF or MSF
   char byteorder [4];
-  if (fread(&byteorder, sizeof(byteorder), 1, file) == NULL)
+  if (!fread(&byteorder, sizeof(byteorder), 1, file))
     perror ("Error reading bytorder");
   byteorder[3] = '\0';
 
@@ -192,7 +192,7 @@ List stata(const char * filePath, bool missing)
   CharacterVector chs(3);
 
   char tago[5];
-  if (fread (tago, sizeof(tago)-1,1, file)==NULL)
+  if (!fread (tago, sizeof(tago)-1,1, file))
     perror ("Error reading characteristics");
   tago[4] = '\0';
 
@@ -225,7 +225,7 @@ List stata(const char * filePath, bool missing)
     fseek(file, 5, SEEK_CUR); // </ch>
 
     // read next tag
-    if (fread (tago, sizeof(tago)-1,1, file) == NULL)
+    if (!fread (tago, sizeof(tago)-1,1, file))
       perror ("Error reading characteristics");
     tago[4] = '\0';
   }
@@ -355,7 +355,7 @@ List stata(const char * filePath, bool missing)
   List strlstable = List(); //put strLs into this list
 
   char tags[4];
-  if (fread(tags, sizeof(tags)-1, 1, file) == NULL)
+  if (!fread(tags, sizeof(tags)-1, 1, file))
     perror ("Error reading tags");
   tags[3] = '\0';
   string const gso = "GSO";
@@ -389,7 +389,7 @@ List stata(const char * filePath, bool missing)
       if (t==129)
       {
         char strl [len];
-        if (fread (strl, len-1, 1, file) == NULL)
+        if (!fread (strl, len-1, 1, file))
           perror ("Error reading StrL");
         strls(1) = strl;
       } else
@@ -397,14 +397,14 @@ List stata(const char * filePath, bool missing)
         if (t==130)
         {
           char strl [len+1];
-          if (fread (strl, len+1-1, 1, file) == NULL)
+          if (!fread (strl, len+1-1, 1, file))
             perror ("Error reading StrL");
           strls(1) = strl;
         }
       }
       strlstable.push_back( strls );
 
-      if (fread(tags, sizeof(tags)-1, 1, file) == NULL)
+      if (!fread(tags, sizeof(tags)-1, 1, file))
         perror ("Error reading tags");
       tags[3] = '\0';
     }

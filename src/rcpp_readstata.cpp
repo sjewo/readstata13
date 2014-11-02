@@ -79,6 +79,7 @@ List stata(const char * filePath, bool missing)
   {
     if (!fread(datalabel, ndlabel, 1, file))
       perror ("Error reading dataset label");
+    datalabel[ndlabel] = '\0';
   }
 
   fseek(file, 19, SEEK_CUR); //</label><timestamp>

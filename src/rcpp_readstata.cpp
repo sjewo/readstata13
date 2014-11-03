@@ -98,7 +98,9 @@ List stata(const char * filePath, bool missing)
     if (!fread(timestamp, ntimestamp, 1, file))
       perror ("Error reading timestamp");
     timestamp[ntimestamp] = '\0';
-  }
+  } else {
+    timestamp[0] = '\0';
+  };
 
   fseek(file, 26, SEEK_CUR); //</timestamp></header><map>
 

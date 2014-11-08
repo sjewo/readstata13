@@ -481,7 +481,7 @@ List stata(const char * filePath, bool missing)
       indx = match(laborder,labordersort);
 
       // code for each label
-      NumericVector code(labn);
+      IntegerVector code(labn);
       for (int i=0; i < labn; ++i) {
         int32_t val;
         if (fread(&val, sizeof(val), 1, file) == 0)
@@ -508,11 +508,9 @@ List stata(const char * filePath, bool missing)
       // create table for actual label set
       string const labset = nlabname;
       code.attr("names") = labelo;
-      code.attr("class") = "table";
-      code.attr("laborder") = indx;
 
       // add this set to output list
-      labelList[labset] = code;
+      labelList.push_front( code, labset);
 
       fseek(file, 6, SEEK_CUR); //</lbl>
 

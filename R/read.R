@@ -174,13 +174,18 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
   }
 
   if(convert.factors==T) {
+    vnames <- names(data)
     for (i in seq_along(val.labels)) {
       labname <- val.labels[i]
       vartype <- type[i]
       #don't convert columns of type double or float to factor
       if(labname!="" & labname %in% names(label) & vartype>65527) {
+        if (all(unique(data[,i])%in%label[[labname]])) {
         data[,i] <- factor(data[,i], levels=label[[labname]],
                            labels=names(label[[labname]]))
+        } else {
+        warning(paste("Missing factor labels for", vnames[i], "- no labels assigned."))
+        }
       }
     }
   }

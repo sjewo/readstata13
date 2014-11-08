@@ -22,7 +22,7 @@ Examples options are "utf8" or "latin1".}
 
 \item{convert.dates}{logical: Whether or not Stata dates should be converted.}
 
-\item{replace.strl}{logical Replace the reference to a STRL string in the data.frame with the actual value}
+\item{replace.strl}{logical Replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
 }
 \value{
 The function returns a data.frame with attributs. The attributes include

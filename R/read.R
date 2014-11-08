@@ -10,7 +10,7 @@
 #' @param convert.underscore logical changes variable name from _ to .
 #' @param missing.type logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
 #' ()$missing will be created.
-#' @param replace.strl logical Replace the reference to a STRL string in the data.frame with the actual value
+#' @param replace.strl logical Replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
 #' @param convert.dates logical: Whether or not Stata dates should be converted.
 #'
 #' @return The function returns a data.frame with attributs. The attributes include

@@ -62,6 +62,10 @@ r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
 
 Map(identical,r12,r13)
 
+att <- names(attributes(r12))
+for (i in seq(att))
+	cat(att[i],":", all.equal(attr(r12,att[i]),attr(r13,att[i])),"\n")
+
 r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta",convert.factors=F)
 r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",convert.factors=F)
 

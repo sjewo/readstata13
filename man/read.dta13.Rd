@@ -4,18 +4,25 @@
 \title{Read Stata 13 Binary Files}
 \usage{
 read.dta13(path, convert.factors = TRUE, fileEncoding = NULL,
-  convert.underscore = FALSE, missing.type = FALSE)
+  convert.underscore = FALSE, missing.type = FALSE, convert.dates = TRUE,
+  replace.strl = FALSE)
 }
 \arguments{
-\item{path}{string path to the dta file you want to import}
+\item{path}{string path to the dta file you want to import.}
 
-\item{convert.factors}{logical create factors from Stata value labels}
+\item{convert.factors}{logical create factors from Stata value labels.}
 
-\item{fileEncoding}{string If not null, strings will be converted from fileEncoding to system encoding}
+\item{fileEncoding}{string If not null, strings will be converted from fileEncoding to system encoding.
+Examples options are "utf8" or "latin1".}
 
 \item{convert.underscore}{logical changes variable name from _ to .}
 
-\item{missing.type}{logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes()$missing will be created.}
+\item{missing.type}{logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
+()$missing will be created.}
+
+\item{convert.dates}{logical: Whether or not Stata dates should be converted.}
+
+\item{replace.strl}{logical Replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
 }
 \value{
 The function returns a data.frame with attributs. The attributes include
@@ -29,7 +36,8 @@ The function returns a data.frame with attributs. The attributes include
   \item{version}{dta file format version}
   \item{lable.table}{List of value labels.}
   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
-  \item{expansion.table}{list providing variable name, characteristic name and the contents of stata characteristic field.}
+  \item{expansion.fields}{list providing variable name, characteristic name
+   and the contents of stata characteristic field.}
 }
 }
 \description{
@@ -37,7 +45,7 @@ The function returns a data.frame with attributs. The attributes include
 into a data.frame.
 }
 \note{
-If you catch a bug, please do not sue us, we do not have any money.
+read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@rub.de}
@@ -49,6 +57,6 @@ Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/hel
 }
 \seealso{
 \code{\link{read.dta}} and \code{memisc} for dta files from Stata
-Versions < 13
+versions < 13.
 }
 

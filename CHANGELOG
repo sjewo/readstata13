@@ -1,10 +1,17 @@
+0.4
+- convert.dates from foreign::read.dta()
+- handle different NA values
+- convert strings to system encoding
+- some checks on label assignment
+
 0.3
 - reading file from url.
   Example: `read.dta13("http://www.stata-press.com/data/r13/auto.dta")`
 - convert.underscore from foreign::read.dta(): converts _ to .
 - missing.type parts from foreign::read.dta(). If TRUE return "missing"
+- replace.strl option to replace the reference to a STRL string in the data.frame with the actual value
 
-0.2 
+0.2
 - read stata characteristics and save them in extension.table attribute
 - more robust handling of factor labels
 - set file encoding for all strings and convert them to system encoding

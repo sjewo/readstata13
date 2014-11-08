@@ -7,16 +7,16 @@ The function ```read.dta``` from the foreign package imports only dta files from
 
 ## Installation
 
-To install the current release (0.3) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
+To install the current release (0.4) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.3")
+devtools::install_github("sjewo/readstata13", ref="0.4")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.3")
+install_github("readstata13", username="sjewo", ref="0.4")
 ```
 
 To install the current development version from github:
@@ -43,11 +43,12 @@ dat <- read.dta13("path to file.dta")
 * convert stata label to factors and save them as attribute
 * read some meta data (timestamp, dataset label, formats,...)
 * convert strings to system encoding
+* handle different NA values
+* convert dates
 
 ### Todo
 
-* convert dates
-* handle different NA values
+* handle some more dates
 * write stata 13 dta files
 * cleanup of Rccp code
 
@@ -60,6 +61,10 @@ r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta")
 r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
 
 Map(identical,r12,r13)
+
+att <- names(attributes(r12))
+for (i in seq(att))
+	cat(att[i],":", all.equal(attr(r12,att[i]),attr(r13,att[i])),"\n")
 
 r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta",convert.factors=F)
 r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",convert.factors=F)

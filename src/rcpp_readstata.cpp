@@ -543,7 +543,7 @@ List stata(const char * filePath, bool missing)
   ddf.attr("var.labels") = varLabels;
   ddf.attr("version") = version;
   ddf.attr("label.table") = labelList;
-  ddf.attr("expansion.table") = ch;
+  ddf.attr("expansion.fields") = ch;
   ddf.attr("strl") = strlstable;
 
   fclose(file);

@@ -24,7 +24,7 @@
 #'   \item{version}{dta file format version}
 #'   \item{lable.table}{List of value labels.}
 #'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
-#'   \item{expansion.table}{list providing variable name, characteristic name
+#'   \item{expansion.fields}{list providing variable name, characteristic name
 #'    and the contents of stata characteristic field.}
 #' }
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().
@@ -107,14 +107,14 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
     }
 
     # expansion.field
-    efi <- attr(data, "expansion.table")
+    efi <- attr(data, "expansion.fields")
     if (length(efi) > 0) {
       efiChar <- unlist(lapply(efi, is.character))
       for (i in (1:length(efi))[efiChar])  {
         Encoding(efi[[i]]) <- fileEncoding
         efi[[i]] <- enc2native(efi[[i]])
       }
-      attr(data, "expansion.table") <- efi
+      attr(data, "expansion.fields") <- efi
     }
 
     #strl

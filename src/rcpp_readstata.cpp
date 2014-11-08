@@ -225,7 +225,7 @@ List stata(const char * filePath, bool missing)
     chs[2] = nnocharacter;
 
     // add characteristics to the list
-    ch.push_back( chs );
+    ch.push_front( chs );
 
     fseek(file, 5, SEEK_CUR); // </ch>
 

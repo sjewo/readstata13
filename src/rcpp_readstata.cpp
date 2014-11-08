@@ -105,7 +105,7 @@ List stata(const char * filePath, bool missing)
   fseek(file, 26, SEEK_CUR); //</timestamp></header><map>
 
   // map
-  NumericVector map(14);
+  IntegerVector map(14);
   for (int i=0; i <14; ++i)
   {
     uint64_t nmap;
@@ -117,7 +117,7 @@ List stata(const char * filePath, bool missing)
   fseek(file, 22, SEEK_CUR); //</map><variable_types>
 
   //vartypes
-  NumericVector vartype(k);
+  IntegerVector vartype(k);
   for (unsigned int i=0; i<k; ++i)
   {
     uint16_t nvartype;
@@ -454,7 +454,7 @@ List stata(const char * filePath, bool missing)
       // offset for each label
       // off0 : label 0 starts at off0
       // off1 : label 1 starts at off1 ...
-      NumericVector off(labn);
+      IntegerVector off(labn);
       for (int i=0; i < labn; ++i) {
         int32_t noff;
         if (fread(&noff, sizeof(noff), 1, file) == 0)
@@ -463,9 +463,9 @@ List stata(const char * filePath, bool missing)
       }
 
       // needed for match
-      NumericVector laborder = clone(off);
+      IntegerVector laborder = clone(off);
       //laborder.erase(labn+1);
-      NumericVector labordersort = clone(off);
+      IntegerVector labordersort = clone(off);
       //labordersort.erase(labn+1);
       std::sort(labordersort.begin(), labordersort.end());
 
@@ -477,11 +477,11 @@ List stata(const char * filePath, bool missing)
 
       // create an index to sort lables along the code values
       // this is done while factor creation
-      NumericVector indx(labn);
+      IntegerVector indx(labn);
       indx = match(laborder,labordersort);
 
       // code for each label
-      NumericVector code(labn);
+      IntegerVector code(labn);
       for (int i=0; i < labn; ++i) {
         int32_t val;
         if (fread(&val, sizeof(val), 1, file) == 0)

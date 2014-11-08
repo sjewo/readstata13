@@ -1,5 +1,8 @@
-testing
+0.4
 - convert.dates from foreign::read.dta()
+- handle different NA values
+- convert strings to system encoding
+- some checks on label assignment
 
 0.3
 - reading file from url.

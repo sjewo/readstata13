@@ -443,11 +443,11 @@ List stata(const char * filePath, bool missing)
       fseek(file, 3, SEEK_CUR);
 
       // value_label_table for actual label set
-      int labn;
+      int32_t labn;
       if (fread(&labn, sizeof(labn), 1, file) == 0)
         perror ("Error reading length of label set entry");
 
-      int txtlen;
+      int32_t txtlen;
       if (fread(&txtlen, sizeof(txtlen), 1, file) == 0)
         perror ("Error reading length of label text");
 
@@ -456,8 +456,8 @@ List stata(const char * filePath, bool missing)
       // off1 : label 1 starts at off1 ...
       NumericVector off(labn);
       for (int i=0; i < labn; ++i) {
-        int noff;
-        if (fread(&noff, sizeof(int), 1, file) == 0)
+        int32_t noff;
+        if (fread(&noff, sizeof(noff), 1, file) == 0)
           perror ("Error reading label offset");
         off[i] = noff;
       }

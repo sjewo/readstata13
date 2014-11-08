@@ -58,13 +58,6 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
                          inc = c(1,1,1,2^115,2^1011)
   )
 
-  if(replace.strl) {
-    for(i in (1:ncol(data))[types==32768] ) {
-      strl <- do.call(rbind, attr(data,"strl"))
-      data[,i] <- as.character(merge(as.character(data[,i]), strl, by.x=1, by.y=1, all.x=T, all.y=F, sort=F)[,2])
-    }
-  }
-
   if(missing.type)
   {
     if (as.numeric(attr(data, "version")) >= 117L) {
@@ -135,6 +128,21 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
       attr(data, "strl") <- strl
     }
   }
+
+  if(replace.strl) {
+    strl <- do.call(rbind, attr(data,"strl"))
+    for(j in seq(ncol(data))[types==32768] )
+    {
+      refs <- unique(data[,j])
+      for(ref in refs) {
+        if(length(strl[strl[,1]==ref,2])!=0){
+          data[data[,j]==ref,j]<-strl[strl[,1]==ref,2]
+        }
+      }
+    }
+    attr(data, "strl") <- NULL
+  }
+
 
   if(convert.factors==T) {
     for (i in seq_along(val.labels)) {

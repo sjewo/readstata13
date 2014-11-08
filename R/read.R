@@ -3,12 +3,15 @@
 #' \code{read.dta13} reads a Stata 13 dta file bytewise and imports the data
 #' into a data.frame.
 #'
-#' @param path  string path to the dta file you want to import
-#' @param convert.factors logical create factors from Stata value labels
-#' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding
+#' @param path  string path to the dta file you want to import.
+#' @param convert.factors logical create factors from Stata value labels.
+#' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding.
+#'  Examples options are "utf8" or "latin1".
 #' @param convert.underscore logical changes variable name from _ to .
-#' @param missing.type logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes()$missing will be created.
+#' @param missing.type logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
+#' ()$missing will be created.
 #' @param replace.strl logical Replace the reference to a STRL string in the data.frame with the actual value
+#' @param convert.dates logical: Whether or not Stata dates should be converted.
 #'
 #' @return The function returns a data.frame with attributs. The attributes include
 #' \describe{
@@ -21,11 +24,12 @@
 #'   \item{version}{dta file format version}
 #'   \item{lable.table}{List of value labels.}
 #'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
-#'   \item{expansion.table}{list providing variable name, characteristic name and the contents of stata characteristic field.}
+#'   \item{expansion.table}{list providing variable name, characteristic name
+#'    and the contents of stata characteristic field.}
 #' }
-#' @note If you catch a bug, please do not sue us, we do not have any money.
+#' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().
 #' @seealso \code{\link{read.dta}} and \code{memisc} for dta files from Stata
-#' versions < 13
+#' versions < 13.
 #' @references Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@rub.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
@@ -33,7 +37,7 @@
 #' @export
 read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
-                       replace.strl = FALSE) {
+                       convert.dates = TRUE, replace.strl = FALSE) {
   # Check if path is a url
   if(length(grep("^(http|ftp|https)://", path))) {
     tmp <- tempfile()
@@ -80,11 +84,6 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
   val.labels <- attr(data, "val.labels")
   type <- attr(data, "type")
   label <- attr(data, "label.table")
-
-  # make characteristics more usefull
-  #characteristics <- do.call(rbind.data.frame, attr(data, "characteristics"))
-  #names(characteristics) <- c("varname","charname","contents")
-  #attr(data, "characteristics") <- characteristics
 
   if(!is.null(fileEncoding)) {
     # varnames
@@ -143,6 +142,36 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
     attr(data, "strl") <- NULL
   }
 
+  convert_dt_c <- function(x)
+    as.POSIXct((x+0.1)/1000, origin = "1960-01-01") # avoid rounding down
+
+  convert_dt_C <- function(x) {
+    ls <- .leap.seconds + seq_along(.leap.seconds)
+    z <- (x+0.1)/1000 # avoid rounding down
+    z <- z - rowSums(outer(z, ls, ">="))
+    as.POSIXct(z, origin = "1960-01-01")
+  }
+
+  if (convert.dates) {
+    ff <- attr(data, "formats")
+    ## dates <- grep("%-*d", ff)
+    ## Stata 12 introduced 'business dates'
+    ## 'Formats beginning with %t or %-t are Stata's date and time formats.'
+    ## but it seems some are earlier.
+    ## The dta_115 description suggests this is too inclusive:
+    ## 'Stata has an old *%d* format notation and some datasets
+    ##  still have them. Format *%d*... is equivalent to modern
+    ##  format *%td*... and *%-d*... is equivalent to *%-td*...'
+
+    dates <- if (attr(data, "version") >= 8L) grep('^%(-|)(d|td)', ff)
+    else grep("%-*d", ff)
+    ## avoid as.Date in case strptime is messed up
+    base <- structure(-3653L, class = "Date") # Stata dates are integer vars
+    for(v in dates) data[[v]] <- structure(base + data[[v]], class = "Date")
+
+    for(v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]])
+    for(v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]])
+  }
 
   if(convert.factors==T) {
     for (i in seq_along(val.labels)) {

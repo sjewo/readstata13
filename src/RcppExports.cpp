@@ -6,14 +6,14 @@
 using namespace Rcpp;
 
 // stata
-List stata(const char * filePath, bool missing);
+List stata(const char * filePath, const bool missing);
 RcppExport SEXP readstata13_stata(SEXP filePathSEXP, SEXP missingSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP );
-        Rcpp::traits::input_parameter< bool >::type missing(missingSEXP );
+        Rcpp::traits::input_parameter< const bool >::type missing(missingSEXP );
         List __result = stata(filePath, missing);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }

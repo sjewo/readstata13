@@ -13,7 +13,7 @@ using namespace std;
 //' @import Rcpp
 //' @export
 // [[Rcpp::export]]
-List stata(const char * filePath, bool missing)
+List stata(const char * filePath, const bool missing)
 {
   FILE *file = NULL;    // File pointer
 
@@ -27,22 +27,24 @@ List stata(const char * filePath, bool missing)
   if (!fread(one, sizeof(one),1, file))
     perror ("Error reading bytorder");
   one[1] = '\0';
+  string onestr(one);
 
   string const two = "<";
-  if (one != two)
+  if (onestr != two)
     throw std::range_error("Not a version 13 dta-file.");
 
   fseek(file, 26, SEEK_CUR);
 
   // release
-  string const gversion = "117";
+  string const gversion("117");
   char release [4];
   if (!fread(release, sizeof(release), 1, file))
     perror ("Error reading release");
   release[3] = '\0';
+  string const relver(release);
 
   // check the release version. continue if "117"
-  if (release != gversion)
+  if (relver != gversion)
     throw std::range_error("Not a version 13 dta-file.");
 
   fseek(file, 20, SEEK_CUR);
@@ -528,7 +530,7 @@ List stata(const char * filePath, bool missing)
   timestampCV[0] = timestamp;
 
   CharacterVector version(1);
-  version[0] = release;
+  version[0] = relver;
 
   // convert list to data.frame
   DataFrame ddf = DataFrame::create(df,  _["stringsAsFactors"] = false );

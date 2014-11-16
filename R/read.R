@@ -3,28 +3,28 @@
 #' \code{read.dta13} reads a Stata 13 dta file bytewise and imports the data
 #' into a data.frame.
 #'
-#' @param path  string path to the dta file you want to import.
-#' @param convert.factors logical create factors from Stata value labels.
-#' @param fileEncoding string If not null, strings will be converted from fileEncoding to system encoding.
+#' @param path  string. Path to the dta file you want to import.
+#' @param convert.factors logical. If TRUE factors from Stata value labels are created.
+#' @param fileEncoding string. If not NULL, strings will be converted from fileEncoding to system encoding.
 #'  Examples options are "utf8" or "latin1".
-#' @param convert.underscore logical changes variable name from _ to .
-#' @param missing.type logical Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
+#' @param convert.underscore logical. changes variable name from "_" to "."
+#' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
 #' ()$missing will be created.
-#' @param replace.strl logical Replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
-#' @param convert.dates logical: Whether or not Stata dates should be converted.
+#' @param replace.strl logical. If TRUE replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
+#' @param convert.dates logical. If TRUE Stata dates are converted.
 #'
 #' @return The function returns a data.frame with attributs. The attributes include
 #' \describe{
-#'   \item{datalabel}{Dataset label}
-#'   \item{time.stamp}{Timestamp of file creation}
-#'   \item{formats}{Stata display formats. May be used with \code{\link{sprintf}}}
-#'   \item{type}{Stata data type (see Stata Corp 2014)}
-#'   \item{val.labels}{For each variable the name of the associated value labels in "label"}
-#'   \item{var.labels}{Variable labels}
-#'   \item{version}{dta file format version}
-#'   \item{lable.table}{List of value labels.}
-#'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
-#'   \item{expansion.fields}{list providing variable name, characteristic name
+#'   \item{datalabel:}{Dataset label}
+#'   \item{time.stamp:}{Timestamp of file creation}
+#'   \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
+#'   \item{type:}{Stata data type (see Stata Corp 2014)}
+#'   \item{val.labels:}{For each variable the name of the associated value labels in "label"}
+#'   \item{var.labels:}{Variable labels}
+#'   \item{version:}{dta file format version}
+#'   \item{lable.table:}{List of value labels.}
+#'   \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
+#'   \item{expansion.fields:}{list providing variable name, characteristic name
 #'    and the contents of stata characteristic field.}
 #' }
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().

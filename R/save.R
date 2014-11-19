@@ -1,21 +1,21 @@
 #' Write Stata 13 Binary Files
 #'
-#' \code{write.dta13} writes a Stata 13 dta file bytewise and stores the data
+#' \code{write.dta13} writes a Stata 13 dta file bytewise and saves the data
 #' into a dta-file.
 #'
-#' @param path  string path to the dta file you want to exmport.
-#' @param data  a data.frame Object.
-#' @param data.label String Name of the dta-file.
-#' @param time.stamp Whether or not a time.stamp should be added to the dta-file.
-#' @return The function returns a dta-file. It includes
+#' @param path string. Path to the dta file you want to export.
+#' @param data data.frame. A data.frame Object.
+#' @param data.label string. Name of the dta-file.
+#' @param time.stamp logical. If TRUE add a time.stamp to the dta-file.
+#' @return The function writes a dta-file to disk. The following features of the dta file format are supported: 
 #' \describe{
-#'   \item{datalabel}{Dataset label}
-#'   \item{time.stamp}{Timestamp of file creation}
-#'   \item{formats}{Stata display formats. May be used with \code{\link{sprintf}}}
-#'   \item{type}{Stata data type (see Stata Corp 2014)}
-#'   \item{var.labels}{Variable labels}
-#'   \item{version}{dta file format version}
-#'   \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
+#'   \item{datalabel:}{Dataset label}
+#'   \item{time.stamp:}{Timestamp of file creation}
+#'   \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
+#'   \item{type:}{Stata data type (see Stata Corp 2014)}
+#'   \item{var.labels:}{Variable labels}
+#'   \item{version:}{dta file format version}
+#'   \item{strl:}{List of character vectors for the new strL string variable type. The first element is the identifier and the second element the string.}
 #' }
 #' @seealso \code{\link{write.dta}} and \code{memisc} for dta files from Stata
 #' versions < 13.
@@ -24,13 +24,13 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
 #' @useDynLib readstata13
 #' @export
-save.dta13 <- function(data, path="path", data.label=NULL, time.stamp=TRUE,
+save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE){
 
   if(!is.data.frame(data))
     message("Object is not of class data.frame.")
 
-  filepath <- path.expand(path)
+  filepath <- path.expand(file)
 
   # For now we handle numeric and integers
   vartypen <- sapply(data, class)

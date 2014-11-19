@@ -13,6 +13,7 @@
 #' "missing" will be created.
 #' @param replace.strl logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
 #' @param convert.dates logical. If TRUE Stata dates are converted.
+#' @param add.rownames logical. If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.
 #'
 #' @return The function returns a data.frame with attributes. The attributes include
 #' \describe{
@@ -39,7 +40,8 @@
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        fileEncoding = NULL, convert.underscore = FALSE,
-                       missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE) {
+                       missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE,
+                       add.rownames = FALSE) {
   # Check if path is a url
   if(length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -203,6 +205,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       }
     }
   }
+
+  if (add.rownames)
+    rownames(data) <- data[[1]]; data[[1]] <- NULL
 
   return(data)
 }

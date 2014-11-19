@@ -5,7 +5,7 @@
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   fileEncoding = NULL, convert.underscore = FALSE, missing.type = FALSE,
-  convert.dates = TRUE, replace.strl = FALSE)
+  convert.dates = TRUE, replace.strl = FALSE, add.rownames = FALSE)
 }
 \arguments{
 \item{file}{string. Path to the dta file you want to import.}
@@ -25,6 +25,8 @@ Examples options are "utf8" or "latin1".}
 \item{convert.dates}{logical. If TRUE Stata dates are converted.}
 
 \item{replace.strl}{logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
+
+\item{add.rownames}{logical. If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes include

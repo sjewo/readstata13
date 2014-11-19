@@ -35,6 +35,9 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if(!is.data.frame(data))
     message("Object is not of class data.frame.")
 
+  if (add.rownames)
+    data <- data.frame(rownames=rownames(data),data, stringsAsFactors = F)
+
   filepath <- path.expand(file)
 
   # For now we handle numeric and integers
@@ -139,9 +142,6 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
   expfield <- attr(data, "expansion.fields")
   attr(data, "expansion.fields") <- rev(expfield)
-
-  if (add.rownames)
-    data <- data.frame(rownames=rownames(data),data, stringsAsFactors = F)
 
   stataWrite(filePath = filepath, dat = data)
 }

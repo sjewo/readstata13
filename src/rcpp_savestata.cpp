@@ -26,9 +26,9 @@ using namespace std;
 
 #define R_NA pow(-2,31) // do i really need this define?
 
-//' Reads the binary Stata file
+//' Writes the binary Stata file
 //'
-//' @param filePath The full systempath to the dta file you want to import.
+//' @param filePath The full systempath to the dta file you want to export.
 //' @param dat an R-Object of class data.frame.
 //' @export
 // [[Rcpp::export]]

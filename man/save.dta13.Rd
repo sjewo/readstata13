@@ -3,32 +3,32 @@
 \alias{save.dta13}
 \title{Write Stata 13 Binary Files}
 \usage{
-save.dta13(data, path = "path", data.label = NULL, time.stamp = TRUE,
+save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
   convert.factors = FALSE, convert.dates = TRUE)
 }
 \arguments{
-\item{data}{a data.frame Object.}
+\item{data}{data.frame. A data.frame Object.}
 
-\item{path}{string path to the dta file you want to exmport.}
+\item{data.label}{string. Name of the dta-file.}
 
-\item{data.label}{String Name of the dta-file.}
+\item{time.stamp}{logical. If TRUE add a time.stamp to the dta-file.}
 
-\item{time.stamp}{Whether or not a time.stamp should be added to the dta-file.}
+\item{path}{string. Path to the dta file you want to export.}
 }
 \value{
-The function returns a dta-file. It includes
+The function writes a dta-file to disk. The following features of the dta file format are supported:
 \describe{
-  \item{datalabel}{Dataset label}
-  \item{time.stamp}{Timestamp of file creation}
-  \item{formats}{Stata display formats. May be used with \code{\link{sprintf}}}
-  \item{type}{Stata data type (see Stata Corp 2014)}
-  \item{var.labels}{Variable labels}
-  \item{version}{dta file format version}
-  \item{strl}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
+  \item{datalabel:}{Dataset label}
+  \item{time.stamp:}{Timestamp of file creation}
+  \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
+  \item{type:}{Stata data type (see Stata Corp 2014)}
+  \item{var.labels:}{Variable labels}
+  \item{version:}{dta file format version}
+  \item{strl:}{List of character vectors for the new strL string variable type. The first element is the identifier and the second element the string.}
 }
 }
 \description{
-\code{write.dta13} writes a Stata 13 dta file bytewise and stores the data
+\code{save.dta13} writes a Stata 13 dta file bytewise and saves the data
 into a dta-file.
 }
 \author{

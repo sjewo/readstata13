@@ -207,7 +207,10 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
 
   if (add.rownames)
-    rownames(data) <- data[[1]]; data[[1]] <- NULL
+  {
+    rownames(data) <- data[[1]]
+    data[[1]] <- NULL
+  }
 
   return(data)
 }

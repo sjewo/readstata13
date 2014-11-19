@@ -141,7 +141,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   attr(data, "expansion.fields") <- rev(expfield)
 
   if (add.rownames)
-    data <- data.frame(rownames=rownames(data),data)
+    data <- data.frame(rownames=rownames(data),data, stringsAsFactors = F)
 
   stataWrite(filePath = filepath, dat = data)
 }

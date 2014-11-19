@@ -1,6 +1,6 @@
 #' Write Stata 13 Binary Files
 #'
-#' \code{write.dta13} writes a Stata 13 dta file bytewise and saves the data
+#' \code{save.dta13} writes a Stata 13 dta file bytewise and saves the data
 #' into a dta-file.
 #'
 #' @param path string. Path to the dta file you want to export.

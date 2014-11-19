@@ -7,6 +7,10 @@
 #' @param data data.frame. A data.frame Object.
 #' @param data.label string. Name of the dta-file.
 #' @param time.stamp logical. If TRUE add a time.stamp to the dta-file.
+#' @param convert.factors logical. If TRUE factors will be converted to Stata variables with labels.
+#' @param convert.dates logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()
+#' @param tz string. The name of the timezone convert.dates will use.
+#' @param add.rownames logical. If TRUE a new variable rownames will be added to the dta-file.
 #' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
@@ -25,7 +29,8 @@
 #' @useDynLib readstata13
 #' @export
 save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
-                       convert.factors=FALSE, convert.dates=TRUE){
+                       convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
+                       add.rownames=FALSE){
 
   if(!is.data.frame(data))
     message("Object is not of class data.frame.")
@@ -134,6 +139,9 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
   expfield <- attr(data, "expansion.fields")
   attr(data, "expansion.fields") <- rev(expfield)
+
+  if (add.rownames)
+    data <- data.frame(rownames=rownames(data),data)
 
   stataWrite(filePath = filepath, dat = data)
 }

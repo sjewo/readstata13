@@ -4,7 +4,8 @@
 \title{Write Stata 13 Binary Files}
 \usage{
 save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
-  convert.factors = FALSE, convert.dates = TRUE)
+  convert.factors = FALSE, convert.dates = TRUE, tz = "GMT",
+  add.rownames = FALSE)
 }
 \arguments{
 \item{data}{data.frame. A data.frame Object.}
@@ -12,6 +13,14 @@ save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
 \item{data.label}{string. Name of the dta-file.}
 
 \item{time.stamp}{logical. If TRUE add a time.stamp to the dta-file.}
+
+\item{convert.factors}{logical. If TRUE factors will be converted to Stata variables with labels.}
+
+\item{convert.dates}{logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()}
+
+\item{tz}{string. The name of the timezone convert.dates will use.}
+
+\item{add.rownames}{logical. If TRUE a new variable rownames will be added to the dta-file.}
 
 \item{path}{string. Path to the dta file you want to export.}
 }

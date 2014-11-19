@@ -5,6 +5,7 @@
 #'
 #' @param path  string. Path to the dta file you want to import.
 #' @param convert.factors logical. If TRUE factors from Stata value labels are created.
+#' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
 #' @param fileEncoding string. If not NULL, strings will be converted from fileEncoding to system encoding.
 #'  Examples options are "utf8" or "latin1".
 #' @param convert.underscore logical. changes variable name from "_" to "."
@@ -22,7 +23,7 @@
 #'   \item{val.labels:}{For each variable the name of the associated value labels in "label"}
 #'   \item{var.labels:}{Variable labels}
 #'   \item{version:}{dta file format version}
-#'   \item{lable.table:}{List of value labels.}
+#'   \item{label.table:}{List of value labels.}
 #'   \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
 #'   \item{expansion.fields:}{list providing variable name, characteristic name
 #'    and the contents of stata characteristic field.}
@@ -35,9 +36,9 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
 #' @useDynLib readstata13
 #' @export
-read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
-                       convert.underscore = FALSE, missing.type = FALSE,
-                       convert.dates = TRUE, replace.strl = FALSE) {
+read.dta13 <- function(path, convert.factors = TRUE, generate.factors=FALSE,
+                       fileEncoding = NULL, convert.underscore = FALSE, 
+                       missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE) {
   # Check if path is a url
   if(length(grep("^(http|ftp|https)://", path))) {
     tmp <- tempfile()
@@ -179,12 +180,24 @@ read.dta13 <- function(path, convert.factors = TRUE, fileEncoding = NULL,
       labname <- val.labels[i]
       vartype <- type[i]
       #don't convert columns of type double or float to factor
-      if(labname!="" & labname %in% names(label) & vartype>65527) {
+      if(labname %in% names(label) & vartype>65527) {
         if (all(unique(data[,i])%in%label[[labname]])) {
-        data[,i] <- factor(data[,i], levels=label[[labname]],
-                           labels=names(label[[labname]]))
+          data[,i] <- factor(data[,i], levels=label[[labname]],
+                             labels=names(label[[labname]]))
+        # generate labels from codes
+        } else if(generate.factors) {
+          gen.lab <- na.omit(unique(data[,i]))
+          names(gen.lab) <- as.character(gen.lab)
+          names(gen.lab)[gen.lab%in%label[[labname]]] <- names(label[[labname]][label[[labname]]%in%gen.lab[gen.lab%in%label[[labname]]]])
+
+          #add non observed levels
+          gen.lab <- sort(c(gen.lab, label[[labname]][!(label[[labname]]%in%gen.lab)]))
+
+          # build factor
+          data[,i] <- factor(data[,i], levels=gen.lab,
+                             labels=names(gen.lab))
         } else {
-        warning(paste("Missing factor labels for", vnames[i], "- no labels assigned."))
+          warning(paste("Missing factor labels for", vnames[i], "- no labels assigned."))
         }
       }
     }

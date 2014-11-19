@@ -3,14 +3,16 @@
 \alias{read.dta13}
 \title{Read Stata 13 Binary Files}
 \usage{
-read.dta13(path, convert.factors = TRUE, fileEncoding = NULL,
-  convert.underscore = FALSE, missing.type = FALSE, convert.dates = TRUE,
-  replace.strl = FALSE)
+read.dta13(path, convert.factors = TRUE, generate.factors = FALSE,
+  fileEncoding = NULL, convert.underscore = FALSE, missing.type = FALSE,
+  convert.dates = TRUE, replace.strl = FALSE)
 }
 \arguments{
 \item{path}{string. Path to the dta file you want to import.}
 
 \item{convert.factors}{logical. If TRUE factors from Stata value labels are created.}
+
+\item{generate.factors}{logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
 
 \item{fileEncoding}{string. If not NULL, strings will be converted from fileEncoding to system encoding.
 Examples options are "utf8" or "latin1".}
@@ -34,7 +36,7 @@ The function returns a data.frame with attributs. The attributes include
   \item{val.labels:}{For each variable the name of the associated value labels in "label"}
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
-  \item{lable.table:}{List of value labels.}
+  \item{label.table:}{List of value labels.}
   \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
   \item{expansion.fields:}{list providing variable name, characteristic name
    and the contents of stata characteristic field.}

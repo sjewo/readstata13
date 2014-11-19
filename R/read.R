@@ -3,18 +3,18 @@
 #' \code{read.dta13} reads a Stata 13 dta file bytewise and imports the data
 #' into a data.frame.
 #'
-#' @param path  string. Path to the dta file you want to import.
+#' @param file  string. Path to the dta file you want to import.
 #' @param convert.factors logical. If TRUE factors from Stata value labels are created.
 #' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
 #' @param fileEncoding string. If not NULL, strings will be converted from fileEncoding to system encoding.
 #'  Examples options are "utf8" or "latin1".
-#' @param convert.underscore logical. changes variable name from "_" to "."
-#' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
-#' ()$missing will be created.
-#' @param replace.strl logical. If TRUE replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
+#' @param convert.underscore logical. Changes variable name from "_" to "."
+#' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
+#' "missing" will be created.
+#' @param replace.strl logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
 #' @param convert.dates logical. If TRUE Stata dates are converted.
 #'
-#' @return The function returns a data.frame with attributs. The attributes include
+#' @return The function returns a data.frame with attributes. The attributes include
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
 #'   \item{time.stamp:}{Timestamp of file creation}
@@ -26,7 +26,8 @@
 #'   \item{label.table:}{List of value labels.}
 #'   \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
 #'   \item{expansion.fields:}{list providing variable name, characteristic name
-#'    and the contents of stata characteristic field.}
+#'    and the contents of Stata characteristic field.}
+#'   \item{missing:}{List of numeric vectors with Stata missing type for each variable.}
 #' }
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().
 #' @seealso \code{\link{read.dta}} and \code{memisc} for dta files from Stata
@@ -36,18 +37,18 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
 #' @useDynLib readstata13
 #' @export
-read.dta13 <- function(path, convert.factors = TRUE, generate.factors=FALSE,
+read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        fileEncoding = NULL, convert.underscore = FALSE, 
                        missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE) {
   # Check if path is a url
-  if(length(grep("^(http|ftp|https)://", path))) {
+  if(length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
-    download.file(path, tmp, quiet = TRUE, mode = "wb")
+    download.file(file, tmp, quiet = TRUE, mode = "wb")
     filepath <- tmp
     on.exit(unlink(filepath))
   } else {
     # construct filepath and read file
-    filepath <- get.filepath(path)
+    filepath <- get.filepath(file)
   }
   if(!file.exists(filepath))
     return(message("File not found."))

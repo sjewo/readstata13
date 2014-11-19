@@ -3,12 +3,12 @@
 \alias{read.dta13}
 \title{Read Stata 13 Binary Files}
 \usage{
-read.dta13(path, convert.factors = TRUE, generate.factors = FALSE,
+read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   fileEncoding = NULL, convert.underscore = FALSE, missing.type = FALSE,
   convert.dates = TRUE, replace.strl = FALSE)
 }
 \arguments{
-\item{path}{string. Path to the dta file you want to import.}
+\item{file}{string. Path to the dta file you want to import.}
 
 \item{convert.factors}{logical. If TRUE factors from Stata value labels are created.}
 
@@ -17,17 +17,17 @@ read.dta13(path, convert.factors = TRUE, generate.factors = FALSE,
 \item{fileEncoding}{string. If not NULL, strings will be converted from fileEncoding to system encoding.
 Examples options are "utf8" or "latin1".}
 
-\item{convert.underscore}{logical. changes variable name from "_" to "."}
+\item{convert.underscore}{logical. Changes variable name from "_" to "."}
 
-\item{missing.type}{logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attributes
-()$missing will be created.}
+\item{missing.type}{logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
+"missing" will be created.}
 
 \item{convert.dates}{logical. If TRUE Stata dates are converted.}
 
-\item{replace.strl}{logical. If TRUE replace the reference to a STRL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
+\item{replace.strl}{logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
 }
 \value{
-The function returns a data.frame with attributs. The attributes include
+The function returns a data.frame with attributes. The attributes include
 \describe{
   \item{datalabel:}{Dataset label}
   \item{time.stamp:}{Timestamp of file creation}
@@ -39,7 +39,8 @@ The function returns a data.frame with attributs. The attributes include
   \item{label.table:}{List of value labels.}
   \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
   \item{expansion.fields:}{list providing variable name, characteristic name
-   and the contents of stata characteristic field.}
+   and the contents of Stata characteristic field.}
+  \item{missing:}{List of numeric vectors with Stata missing type for each variable.}
 }
 }
 \description{

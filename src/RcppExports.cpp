@@ -21,3 +21,19 @@ BEGIN_RCPP
     return __sexp_result;
 END_RCPP
 }
+// stataWrite
+int stataWrite(const char * filePath, Rcpp::DataFrame dat);
+RcppExport SEXP readstata13_stataWrite(SEXP filePathSEXP, SEXP datSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP );
+        Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP );
+        int __result = stataWrite(filePath, dat);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}

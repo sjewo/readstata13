@@ -2,6 +2,8 @@
 
 export(get.filepath)
 export(read.dta13)
+export(save.dta13)
 export(stata)
+export(stataWrite)
 import(Rcpp)
 useDynLib(readstata13)

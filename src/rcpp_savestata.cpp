@@ -33,73 +33,73 @@ using namespace std;
 //' @export
 // [[Rcpp::export]]
 int stataWrite(const char * filePath, Rcpp::DataFrame dat)
-{  
+{
   uint16_t const k = dat.size();
   uint32_t const n = dat.nrows();
-  
+
   Rcpp::CharacterVector VarNames = dat.attr("names");
-  
+
   char version[4] = "117";
   char byteorder[4] = "LSF";
   uint8_t ntimestamp = 0;
-  
+
   string datalabel = dat.attr("datalabel");
   datalabel[datalabel.size()] = '\0';
   unsigned char ndlabel = 0;
-  
+
   const string head = "<stata_dta><header><release>";
   const string byteord = "</release><byteorder>";
   const string K = "</byteorder><K>";
   const string num = "</K><N>";
   const string lab = "</N><label>";
   const string timest = "</label><timestamp>";
-  
+
   const string timestamp = dat.attr("timestamp");
-  
+
   const string endheader = "</timestamp></header>";
-  
+
   const string startmap = "<map>";
   const string endmap = "</map>";
-  
+
   const string startvart = "<variable_types>";
   const string endvart = "</variable_types>";
-  
+
   const string startvarn = "<varnames>";
   const string endvarn = "</varnames>";
-  
+
   const string startsor = "<sortlist>";
   const string endsor = "</sortlist>";
-  
+
   const string startform = "<formats>";
   const string endform = "</formats>";
-  
+
   const string startvalLabel = "<value_label_names>";
   const string endvalLabel = "</value_label_names>";
-  
+
   const string startvarlabel= "<variable_labels>";
   const string endvarlabel= "</variable_labels>";
-  
+
   const string startcharacteristics = "<characteristics>";
   const string endcharacteristics = "</characteristics>";
-  
+
   const string startch = "<ch>";
   const string endch = "</ch>";
-  
+
   const string startdata = "<data>";
   const string enddata = "</data>";
-  
+
   const string startstrl = "<strls>";
   const string endstrl = "</strls>";
-  
+
   const string startvall = "<value_labels>";
   const string endvall = "</value_labels>";
-  
+
   const string startlbl = "<lbl>";
   const string endlbl = "</lbl>";
-  
+
   string end = "</stata_dta>";
   end[end.size()] = '\0';
-  
+
   //     ofstream dta (filePath);
   fstream dta (filePath, ios::out | ios::binary);
   if (dta.is_open())
@@ -111,27 +111,27 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     */
     IntegerVector map(14);
     map(0) = dta.tellg();
-    
+
     dta.write(head.c_str(),head.size());
     dta.write(version,3); // for now 117 (e.g. Stata 13)
     dta.write(byteord.c_str(),byteord.size());
     dta.write(byteorder,3); // LSF
-    dta.write(K.c_str(),K.size());      
+    dta.write(K.c_str(),K.size());
     dta.write((char*)&k,sizeof(k));
     dta.write(num.c_str(),num.size());
     dta.write((char*)&n,sizeof(n));
     dta.write(lab.c_str(),lab.size());
-    
+
     /* write a datalabel */
     if(!datalabel.empty())
     {
       ndlabel = datalabel.size();
       dta.write((char*)&ndlabel,sizeof(ndlabel));
-      dta.write(datalabel.c_str(),datalabel.size());   
+      dta.write(datalabel.c_str(),datalabel.size());
     } else {
       dta.write((char*)&ndlabel,sizeof(ndlabel));
     }
-    
+
     /* timestamp size is 0 (= no timestamp) or 17 */
     dta.write(timest.c_str(),timest.size());
     if (!timestamp.empty()) {
@@ -142,8 +142,8 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       dta.write((char*)&ntimestamp,sizeof(ntimestamp));
     }
     dta.write(endheader.c_str(),endheader.size());
-    
-    
+
+
     /* <map> ... </map> */
     map(1) = dta.tellg();
     dta.write(startmap.c_str(),startmap.size());
@@ -153,32 +153,32 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       dta.write((char*)&nmap,sizeof(nmap));
     }
     dta.write(endmap.c_str(),endmap.size());
-    
-    
+
+
     /* <variable_types> ... </variable_types> */
     map(2) = dta.tellg();
-    dta.write(startvart.c_str(),startvart.size());   
+    dta.write(startvart.c_str(),startvart.size());
     List vartypes = dat.attr("types");
     uint16_t nvartype;
     for (uint16_t i = 0; i < k; ++i)
-    { 
+    {
       nvartype = as<uint32_t>(vartypes[i]);
       dta.write((char*)&nvartype,sizeof(nvartype));
-    }      
-    dta.write(endvart.c_str(),endvart.size()); 
-    
-    
+    }
+    dta.write(endvart.c_str(),endvart.size());
+
+
     /* <varnames> ... </varnames> */
     map(3) = dta.tellg();
-    dta.write(startvarn.c_str(), startvarn.size());      
+    dta.write(startvarn.c_str(), startvarn.size());
     for (uint16_t i = 0; i < k; ++i )
     {
       const string VARnames = as<string>(VarNames[i]);
       dta.write(VARnames.c_str(),33);
-    } 
+    }
     dta.write(endvarn.c_str(), endvarn.size());
-    
-    
+
+
     /* <sortlist> ... </sortlist> */
     map(4) = dta.tellg();
     dta.write(startsor.c_str(),startsor.size());
@@ -188,8 +188,8 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       dta.write((char*)&nsortlist,sizeof(nsortlist));
     }
     dta.write(endsor.c_str(),endsor.size());
-    
-    
+
+
     /* <formats> ... </formats> */
     map(5) = dta.tellg();
     dta.write(startform.c_str(),startform.size());
@@ -198,10 +198,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     {
       const string Fmats = as<string>(formats[i]);
       dta.write(Fmats.c_str(),49);
-    } 
+    }
     dta.write(endform.c_str(),endform.size());
-    
-    
+
+
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
     dta.write(startvalLabel.c_str(),startvalLabel.size());
@@ -210,10 +210,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     {
       const string nvalLabels = as<string>(valLabels[i]);
       dta.write(nvalLabels.c_str(),33);
-    } 
+    }
     dta.write(endvalLabel.c_str(),endvalLabel.size());
-    
-    
+
+
     /* <variable_labels> ... </variable_labels> */
     map(7) = dta.tellg();
     List varLabels = dat.attr("var.labels");
@@ -224,56 +224,56 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         const string nvarLabels = as<std::string>(varLabels[i]);
         dta.write(nvarLabels.c_str(),81);
       } else {
-        const string nvarLabels = ""; 
+        const string nvarLabels = "";
         dta.write(nvarLabels.c_str(),81);
       }
     }
     dta.write(endvarlabel.c_str(),endvarlabel.size());
-    
-    
-    /* <characteristics> ... </characteristics> */  
+
+
+    /* <characteristics> ... </characteristics> */
     map(8) = dta.tellg();
     dta.write(startcharacteristics.c_str(),startcharacteristics.size());
     /* <ch> ... </ch> */
-    
+
     List expansiontable = dat.attr("expansion.fields");
-    
+
     if (expansiontable.size()>0){
       for (int32_t i = 0; i<expansiontable.size(); ++i){
-        
+
         dta.write(startch.c_str(),startch.size());
-        
+
         CharacterVector chs = as<CharacterVector>(expansiontable[i]);
-        
+
         string chs1 = as<string>(chs[0]);
         chs1[chs1.size()] = '\0';
         string chs2 = as<string>(chs[1]);
         chs2[chs2.size()] = '\0';
         string chs3 = as<string>(chs[2]);
         chs3[chs3.size()] = '\0';
-        
+
         uint32_t nocharacter = 33 + 33 + chs3.size() +1;
-        
+
         dta.write((char*)&nocharacter,sizeof(nocharacter));
         dta.write(chs1.c_str(),33);
         dta.write(chs2.c_str(),33);
         dta.write(chs3.c_str(),chs3.size()+1);
-        
+
         dta.write(endch.c_str(),endch.size());
       }
     }
-    
+
     dta.write(endcharacteristics.c_str(),endcharacteristics.size());
-    
-    
+
+
     /* <data> ... </data> */
     map(9) = dta.tellg();
     dta.write(startdata.c_str(),startdata.size());
-    
+
     IntegerVector V;
     IntegerVector O;
     CharacterVector strl;
-    
+
     for(uint32_t j = 0; j < n; ++j)
     {
       for (uint16_t i = 0; i < k; ++i)
@@ -283,41 +283,28 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         {
           // store numeric as Stata double (double)
         case 65526:
-        {            
-          double const na = (0x1.0000000000000p1023);          
+        {
+          double const na = (0x1.0000000000000p1023);
           double val_n = as<NumericVector>(dat[i])[j];
-          
+
           if ( (val_n == NA_REAL) | R_IsNA(val_n) )
             val_n = na;
-          
+
           dta.write((char*)&val_n,sizeof(val_n));
-          
+
           break;
         }
           // store integer as Stata long (int32_t)
         case 65528:
         {
-          int32_t const na = (0x7fffffe5);          
+          int32_t const na = (0x7fffffe5);
           int32_t val_i = as<IntegerVector>(dat[i])[j];
-          
+
           if (val_i == NA_INTEGER)
             val_i = na;
-          
+
           dta.write((char*)&val_i,sizeof(val_i));
-          
-          break;
-        }
-          // store logical as Stata byte (char)
-        case 65530:
-        {
-          char const na = +101;          
-          char val_l = as<NumericVector>(dat[i])[j];
-          
-          if ( (val_l == NA_INTEGER) | R_IsNA(val_l))
-            cout << "yo" << endl;
-          
-          dta.write((char*)&val_l,sizeof(val_l));
-          
+
           break;
         }
         case 2045:
@@ -335,7 +322,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           int32_t v = i+1;
           int32_t o = j+1;
           int64_t z = 0;
-          
+
           CharacterVector b = as<CharacterVector>(dat[i]);
           const string val_s = as<string>(b[j]);
           if (!val_s.empty())
@@ -346,30 +333,30 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
             V.push_back(v);
             O.push_back(o);
             strl.push_back(val_s);
-          } else {              
+          } else {
             dta.write((char*)&z,sizeof(z));
           }
-        } 
+        }
         }
       }
     }
     dta.write(enddata.c_str(),enddata.size());
-    
-    
-    /* <strls> ... </strls> */ 
+
+
+    /* <strls> ... </strls> */
     map(10) = dta.tellg();
     dta.write(startstrl.c_str(),startstrl.size());
-    
+
     int32_t strlsize = strl.length();
     for(int i =0; i < strlsize; ++i )
-    {        
+    {
       const string GSO = "GSO";
       int32_t v = V[i];
       int32_t o = O[i];
       uint8_t t = 129; //Stata binary type, no trailing zero.
       const string strL = as<string>(strl[i]);
       uint32_t len = strL.size();
-      
+
       dta.write(GSO.c_str(),GSO.size());
       dta.write((char*)&v,sizeof(v));
       dta.write((char*)&o,sizeof(o));
@@ -377,35 +364,35 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       dta.write((char*)&len,sizeof(len));
       dta.write(strL.c_str(),strL.size());
     }
-    
+
     dta.write(endstrl.c_str(),endstrl.size());
-    
-    
+
+
     /* <value_labels> ... </value_labels> */
     map(11) = dta.tellg();
     List labeltable = dat.attr("label.table");
     dta.write(startvall.c_str(),startvall.size());
     if (labeltable.size()>0)
     {
-      
+
       CharacterVector labnames = labeltable.attr("names");
       int8_t padding = 0;
       int32_t txtlen;
-      
+
       for (int32_t i=0; i < labnames.size(); ++i)
       {
-        txtlen = 0;        
-        
+        txtlen = 0;
+
         const string labname = as<string>(labnames[i]);
         IntegerVector labvalue = labeltable[labname];
         int32_t N = labvalue.size();
         CharacterVector labelText = labvalue.attr("names");
         IntegerVector off;
-        
+
         /*
         * Fill off with offset position and create txtlen
         */
-        
+
         for (int32_t i = 0; i < labelText.size(); ++i)
         {
           string label = as<string>(labelText[i]);
@@ -413,52 +400,52 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           txtlen += labellen;
           off.push_back ( txtlen-labellen );
         }
-        
+
         int32_t offI, labvalueI;
-        
+
         int32_t len = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
-        
+
         dta.write(startlbl.c_str(),startlbl.size());
         dta.write((char*)&len,sizeof(len));
         dta.write(labname.c_str(),33);
         dta.write((char*)&padding,3);
         dta.write((char*)&N,sizeof(N));
         dta.write((char*)&txtlen,sizeof(txtlen));
-        
+
         for (int32_t i = 0; i < N; ++i)
         {
           offI = off[i];
           dta.write((char*)&offI,sizeof(offI));
         }
-        
+
         for (int32_t i = 0; i < N; ++i)
         {
           labvalueI = labvalue[i];
-          dta.write((char*)&labvalueI,sizeof(labvalueI));            
+          dta.write((char*)&labvalueI,sizeof(labvalueI));
         }
-        
+
         for (int32_t i = 0; i < N; ++i)
         {
           string labtext = as<string>(labelText[i]);
           labtext[labtext.size()] = '\0';
           dta.write(labtext.c_str(),labtext.size()+1);
-        }              
+        }
         dta.write(endlbl.c_str(),endlbl.size());
       }
-      
-    }   
+
+    }
     dta.write(endvall.c_str(),endvall.size());
-    
-    
-    /* </stata_data> */      
+
+
+    /* </stata_data> */
     map(12) = dta.tellg();
     dta.write(end.c_str(),end.size());
-    
-    
+
+
     /* end-of-file */
-    map(13) = dta.tellg();    
-    
-    
+    map(13) = dta.tellg();
+
+
     /* seek up to <map> to rewrite it*/
     /* <map> ... </map> */
     dta.seekg(map[1]);
@@ -469,7 +456,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       dta.write((char*)&nmap,sizeof(nmap));
     }
     dta.write(endmap.c_str(),endmap.size());
-    
+
     dta.close();
     return 0;
   }

@@ -7,7 +7,7 @@
 #' @param data data.frame. A data.frame Object.
 #' @param data.label string. Name of the dta-file.
 #' @param time.stamp logical. If TRUE add a time.stamp to the dta-file.
-#' @return The function writes a dta-file to disk. The following features of the dta file format are supported: 
+#' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
 #'   \item{time.stamp:}{Timestamp of file creation}
@@ -35,6 +35,11 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   # For now we handle numeric and integers
   vartypen <- sapply(data, class)
 
+  # Convert logicals to integers
+  for (v in names(vartypen[vartypen=="logical"]))
+    data[[v]] <- as.integer(data[[v]])
+  vartypen <- sapply(data, class)
+
   if(convert.factors){
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
@@ -59,6 +64,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     }
     attr(data, "label.table") <- rev(label.table)
     attr(data, "vallabels") <- valLabel
+
   } else {
     attr(data, "label.table") <- NULL
     attr(data, "vallabels") <- rep("",length(data))
@@ -67,35 +73,36 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (convert.dates) {
     dates <- which(sapply(data,
                           function(x) inherits(x, "Date"))
-                   )
+    )
     for (v in dates)
       data[[v]] <- as.vector(
         julian(data[[v]],as.Date("1960-1-1", tz = "GMT"))
       )
     dates <- which(
       sapply(data, function(x) inherits(x,"POSIXt"))
-      )
+    )
     for (v in dates)
       data[[v]] <- as.vector(
         round(julian(data[[v]], ISOdate(1960, 1, 1, tz = tz)))
-        )
+      )
   }
+  vartypen <<- vartypen
 
   # FixMe: what about AsIs ?
-  vartypen[vartypen=="Date"] <- 65526
+  vartypen[vartypen=="Date"] <- -65526
   vartypen[vartypen=="factor"] <- 65528
-  vartypen[vartypen=="logical"] <- 65530
   vartypen[vartypen=="numeric"] <- 65526
   vartypen[vartypen=="integer"] <- 65528
 
   # str and strL are stored by maximum length of chars in a variable
   maxchar <- function(x){max(nchar(x))+1}
   str.length <- sapply(data[vartypen=="character"], FUN=maxchar)
-  vartypen[vartypen=="character"] <- str.length
+
+  for (v in names(vartypen[vartypen=="character"])) vartypen[[v]] <- str.length[[v]]
+  vartypen <- abs(as.integer(vartypen))
   # str longer than 2045 chars are in Stata type strL.
   vartypen[vartypen>2045 & vartypen <65526] <- 32768
 
-  vartypen <- as.integer(vartypen)
   attr(data, "types") <- vartypen
 
   #   # value_label_names must be < 33 chars
@@ -105,9 +112,9 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   # Stata format "%9,0g" means european format
   formats <- vartypen
   formats[formats==65526] <- "%9.0g"
+  formats[formats==-65526] <- "%td"
   formats[formats==65528] <- "%9.0g"
-  formats[formats==65530] <- "%9.0g" # oder %td, wenn Date!
-  formats[vartypen<2046] <- paste0("%-",formats[vartypen<2046],"s")
+  formats[vartypen>=0 & vartypen <2046] <- paste0("%-",formats[vartypen>=0 & vartypen<2046],"s")
 
   attr(data, "formats") <- formats
 

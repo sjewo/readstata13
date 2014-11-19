@@ -377,11 +377,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
       CharacterVector labnames = labeltable.attr("names");
       int8_t padding = 0;
-      int32_t txtlen;
 
       for (int32_t i=0; i < labnames.size(); ++i)
       {
-        txtlen = 0;
+        int32_t txtlen = 0;
 
         const string labname = as<string>(labnames[i]);
         IntegerVector labvalue = labeltable[labname];

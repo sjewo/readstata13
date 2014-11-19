@@ -38,7 +38,7 @@
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       fileEncoding = NULL, convert.underscore = FALSE, 
+                       fileEncoding = NULL, convert.underscore = FALSE,
                        missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE) {
   # Check if path is a url
   if(length(grep("^(http|ftp|https)://", file))) {
@@ -185,7 +185,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         if (all(unique(data[,i])%in%label[[labname]])) {
           data[,i] <- factor(data[,i], levels=label[[labname]],
                              labels=names(label[[labname]]))
-        # generate labels from codes
+          # generate labels from codes
         } else if(generate.factors) {
           gen.lab <- na.omit(unique(data[,i]))
           names(gen.lab) <- as.character(gen.lab)

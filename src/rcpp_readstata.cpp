@@ -231,9 +231,9 @@ List stata(const char * filePath, const bool missing)
     char nnocharacter[nocharacter-66];
 
     if(
-        (!fread(&chvarname, sizeof(chvarname), 1, file)) &
-          (!fread(&chcharact, sizeof(chcharact), 1, file)) &
-          (!fread(&nnocharacter, sizeof(nnocharacter), 1, file))
+      (!fread(&chvarname, sizeof(chvarname), 1, file)) &
+        (!fread(&chcharact, sizeof(chcharact), 1, file)) &
+        (!fread(&nnocharacter, sizeof(nnocharacter), 1, file))
     )
       perror ("Error reading characteristics");
 

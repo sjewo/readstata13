@@ -94,7 +94,6 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
         round(julian(data[[v]], ISOdate(1960, 1, 1, tz = tz)))
       )
   }
-  vartypen <<- vartypen
 
   # FixMe: what about AsIs ?
   vartypen[vartypen=="Date"] <- -65526

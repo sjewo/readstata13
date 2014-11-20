@@ -180,25 +180,24 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     for (i in seq_along(val.labels)) {
       labname <- val.labels[i]
       vartype <- type[i]
+      labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
       if(labname %in% names(label) & vartype>65527) {
-        if (all(unique(data[,i])%in%label[[labname]])) {
-          data[,i] <- factor(data[,i], levels=label[[labname]],
-                             labels=names(label[[labname]]))
-        # generate labels from codes
+        # get unique values / omit NA
+        varunique <- na.omit(unique(data[,i]))
+        # assign label if label set is complete 
+        if (all(varunique%in%labtable)) {
+          data[,i] <- factor(data[,i], levels=labtable,
+                             labels=names(labtable))
+        # else generate labels from codes
         } else if(generate.factors) {
-          gen.lab <- na.omit(unique(data[,i]))
-          names(gen.lab) <- as.character(gen.lab)
-          names(gen.lab)[gen.lab%in%label[[labname]]] <- names(label[[labname]][label[[labname]]%in%gen.lab[gen.lab%in%label[[labname]]]])
+          names(varunique) <- as.character(varunique)
+          gen.lab  <- sort(c(varunique[!varunique%in%labtable], labtable))
 
-          #add non observed levels
-          gen.lab <- sort(c(gen.lab, label[[labname]][!(label[[labname]]%in%gen.lab)]))
-
-          # build factor
           data[,i] <- factor(data[,i], levels=gen.lab,
                              labels=names(gen.lab))
         } else {
-          warning(paste("Missing factor labels for", vnames[i], "- no labels assigned."))
+          warning(paste(vnames[i], "Missing factor labels - no labels assigned. Set option generate.factors=T to generate labels."))
         }
       }
     }

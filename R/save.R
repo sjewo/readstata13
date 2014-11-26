@@ -11,6 +11,7 @@
 #' @param convert.dates logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()
 #' @param tz string. The name of the timezone convert.dates will use.
 #' @param add.rownames logical. If TRUE a new variable rownames will be added to the dta-file.
+#' @param compress logical. If TRUE the resulting dta-file will use all of Statas numeric-vartypes.
 #' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
@@ -30,7 +31,7 @@
 #' @export
 save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
-                       add.rownames=FALSE){
+                       add.rownames=FALSE, compress=FALSE){
 
   if(!is.data.frame(data))
     message("Object is not of class data.frame.")
@@ -72,7 +73,6 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     }
     attr(data, "label.table") <- rev(label.table)
     attr(data, "vallabels") <-  iconv(valLabel, to="CP1252", sub="byte")
-
   } else {
     attr(data, "label.table") <- NULL
     attr(data, "vallabels") <- rep("",length(data))
@@ -97,9 +97,46 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
   # FixMe: what about AsIs ?
   vartypen[vartypen=="Date"] <- -65526
-  vartypen[vartypen=="factor"] <- 65528
-  vartypen[vartypen=="numeric"] <- 65526
-  vartypen[vartypen=="integer"] <- 65528
+
+  ff <- sapply(data, is.numeric)
+  ii <- sapply(data, is.integer)
+  factors <- sapply(data, is.factor)
+  if (!compress)
+  {
+    vartypen[ff] <- 65526
+    vartypen[ii] <- 65528
+    vartypen[factors] <- 65528
+  } else {
+    varTmin <- sapply(data[ii|ff], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[ii|ff], function(x) max(x,na.rm=TRUE))
+
+    # check if numeric is float or double
+    fminmax <- 1.701e+38
+    for (k in seq(vartypen[ff]))
+    {
+      vartypen[ff & (varTmin[ff][k]<(-fminmax) | varTmax[ff][k]>fminmax)] <- 65526
+      vartypen[ff & (varTmin[ff][k]>(-fminmax) & varTmax[ff][k]<fminmax)] <- 65527
+    }
+
+    bmin <- 127; bmax <- 100
+    imin <- 32767; imax <- 32740
+    # check if integer is byte, int or long
+    for (k in seq(vartypen[ii]))
+    {
+      vartypen[ii & (varTmin[ii][k]<(-imin) | varTmax[ii][k]>imax)] <- 65528
+      vartypen[ii & (varTmin[ii][k]>(-imin) & varTmax[ii][k]<imax)] <- 65529
+      vartypen[ii & (varTmin[ii][k]>(-bmin) & varTmax[ii][k]<bmax)] <- 65530
+    }
+
+    # FixMe: Assume we have < 100 levels/factor
+    factorlength <- sapply(data[factors], nlevels)
+    for ( k in seq(vartypen[factors]))
+    {
+      vartypen[factors & factorlength[k] > 0x1.000000p127] <- 65528
+      vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529
+      vartypen[factors & factorlength[k] < 101] <- 65530
+    }
+  }
 
   # recode character variables
   for(v in (1:ncol(data))[vartypen == "character"]) {
@@ -123,9 +160,12 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
   # Stata format "%9,0g" means european format
   formats <- vartypen
-  formats[formats==65526] <- "%9.0g"
   formats[formats==-65526] <- "%td"
+  formats[formats==65526] <- "%9.0g"
+  formats[formats==65527] <- "%9.0g"
   formats[formats==65528] <- "%9.0g"
+  formats[formats==65529] <- "%9.0g"
+  formats[formats==65530] <- "%9.0g"
   formats[vartypen>=0 & vartypen <2046] <- paste0("%-",formats[vartypen>=0 & vartypen<2046],"s")
 
   attr(data, "formats") <- formats

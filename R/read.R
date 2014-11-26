@@ -109,6 +109,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     attr(data, "label.table") <- label
   }
 
+  # recode character variables
+  for(v in (1:ncol(data))[type <= 2045]) {
+    data[,v] <- iconv(data[,v], from="CP1252", sub="byte")
+  }
+
   # expansion.field
   efi <- attr(data, "expansion.fields")
   if (length(efi) > 0) {

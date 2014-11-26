@@ -5,3 +5,4 @@ readstata13.Rproj
 src/*.o
 src/*.so
 src/*.dll
+.directory

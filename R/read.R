@@ -6,8 +6,8 @@
 #' @param file  string. Path to the dta file you want to import.
 #' @param convert.factors logical. If TRUE factors from Stata value labels are created.
 #' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
-#' @param fileEncoding string. If not NULL, strings will be converted from fileEncoding to system encoding.
-#'  Examples options are "utf8" or "latin1".
+#' @param encoding string. By default strings will be converted from Windows-1252 to system encoding. 
+#'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
 #' @param convert.underscore logical. Changes variable name from "_" to "."
 #' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
 #' "missing" will be created.
@@ -38,7 +38,7 @@
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       fileEncoding = NULL, convert.underscore = FALSE, 
+                       encoding = "", convert.underscore = FALSE,
                        missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE) {
   # Check if path is a url
   if(length(grep("^(http|ftp|https)://", file))) {
@@ -84,51 +84,50 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
 
   val.labels <- attr(data, "val.labels")
+  var.labels <- attr(data, "var.labels")
   type <- attr(data, "type")
   label <- attr(data, "label.table")
 
-  if(!is.null(fileEncoding)) {
-    # varnames
-    Encoding(names(data)) <- fileEncoding
-    names(data) <- enc2native(names(data))
+  ## Encoding
+  # varnames
+  names(data) <- iconv(names(data), from="cp1252", to=encoding, sub="byte")
 
-    # val.lables
-    Encoding(val.labels) <- fileEncoding
-    names(val.labels) <- enc2native(val.labels)
+  # var.labels
+  attr(data, "var.labels") <- iconv(var.labels, from="cp1252", to=encoding, sub="byte")
 
-    # label
-    Encoding(names(label)) <- fileEncoding
-    names(label) <- enc2native(names(label))
+  # val.labels
+  names(val.labels) <- iconv(val.labels, from="cp1252", to=encoding, sub="byte")
+  attr(data, "val.labels") <- val.labels
 
-    if (length(label) > 0) {
-      for (i in 1:length(label))  {
-        Encoding(names(label[[i]])) <- fileEncoding
-        names(label[[i]]) <- enc2native(names(label[[i]]))
-      }
-      attr(data, "label.table") <- label
+  # label
+  names(label) <- iconv(names(label), from="cp1252", to=encoding, sub="byte")
+
+  if (length(label) > 0) {
+    for (i in 1:length(label))  {
+      names(label[[i]]) <- iconv(names(label[[i]]), from="cp1252", to=encoding, sub="byte")
     }
-
-    # expansion.field
-    efi <- attr(data, "expansion.fields")
-    if (length(efi) > 0) {
-      efiChar <- unlist(lapply(efi, is.character))
-      for (i in (1:length(efi))[efiChar])  {
-        Encoding(efi[[i]]) <- fileEncoding
-        efi[[i]] <- enc2native(efi[[i]])
-      }
-      attr(data, "expansion.fields") <- efi
-    }
-
-    #strl
-    strl <- attr(data, "strl")
-    if (length(strl) > 0) {
-      for (i in 1:length(strl))  {
-        Encoding(strl[[i]]) <- fileEncoding
-        strl[[i]] <- enc2native(strl[[i]])
-      }
-      attr(data, "strl") <- strl
-    }
+    attr(data, "label.table") <- label
   }
+
+  # expansion.field
+  efi <- attr(data, "expansion.fields")
+  if (length(efi) > 0) {
+    efiChar <- unlist(lapply(efi, is.character))
+    for (i in (1:length(efi))[efiChar])  {
+      efi[[i]] <- iconv(efi[[i]], from="cp1252", to=encoding, sub="byte")
+    }
+    attr(data, "expansion.fields") <- efi
+  }
+
+  #strl
+  strl <- attr(data, "strl")
+  if (length(strl) > 0) {
+    for (i in 1:length(strl))  {
+      strl[[i]] <- iconv(strl[[i]], from="cp1252", to=encoding, sub="byte")
+    }
+    attr(data, "strl") <- strl
+  }
+
 
   if(replace.strl) {
     strl <- do.call(rbind, attr(data,"strl"))
@@ -144,6 +143,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     attr(data, "strl") <- NULL
   }
 
+  ## convert dates
   convert_dt_c <- function(x)
     as.POSIXct((x+0.1)/1000, origin = "1960-01-01") # avoid rounding down
 

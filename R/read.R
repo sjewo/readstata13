@@ -117,7 +117,6 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     data[,v] <- iconv(data[,v], from="CP1252", sub="byte")
   }
 
-
   # expansion.field
   efi <- attr(data, "expansion.fields")
   if (length(efi) > 0) {

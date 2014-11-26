@@ -5,7 +5,7 @@
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = "", convert.underscore = FALSE, missing.type = FALSE,
-  convert.dates = TRUE, replace.strl = FALSE)
+  convert.dates = TRUE, replace.strl = FALSE, add.rownames = FALSE)
 }
 \arguments{
 \item{file}{string. Path to the dta file you want to import.}

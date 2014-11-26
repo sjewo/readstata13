@@ -7,7 +7,7 @@
 #' @param data data.frame. A data.frame Object.
 #' @param data.label string. Name of the dta-file.
 #' @param time.stamp logical. If TRUE add a time.stamp to the dta-file.
-#' @param convert.factors logical. If TRUE factors will be converted to Stata variables with labels.
+#' @param convert.factors logical. If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
 #' @param convert.dates logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()
 #' @param tz string. The name of the timezone convert.dates will use.
 #' @param add.rownames logical. If TRUE a new variable rownames will be added to the dta-file.
@@ -36,7 +36,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     message("Object is not of class data.frame.")
 
   if (add.rownames)
-    data <- data.frame(rownames=rownames(data),data, stringsAsFactors = F)
+    data <- data.frame(rownames= iconv(rownames(data), to="CP1252", sub="byte"),data, stringsAsFactors = F)
 
   filepath <- path.expand(file)
 
@@ -62,7 +62,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     i <- 0
     for (v in factors)  {
       i <- i+1
-      f.levels <-  levels(data[[v]])
+      f.levels <-  iconv(levels(data[[v]]), to="CP1252", sub="byte")
       f.labels <-  as.integer(labels(levels(data[[v]])))
       attr(f.labels, "names") <- f.levels
       f.labels <- f.labels[names(f.labels)!=".."]
@@ -71,7 +71,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
       valLabel[v] <- f.names[i]
     }
     attr(data, "label.table") <- rev(label.table)
-    attr(data, "vallabels") <- valLabel
+    attr(data, "vallabels") <-  iconv(valLabel, to="CP1252", sub="byte")
 
   } else {
     attr(data, "label.table") <- NULL
@@ -101,6 +101,11 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   vartypen[vartypen=="numeric"] <- 65526
   vartypen[vartypen=="integer"] <- 65528
 
+  # recode character variables
+  for(v in (1:ncol(data))[vartypen == "character"]) {
+    data[,v] <- iconv(data[,v], to="CP1252", sub="byte")
+  }
+
   # str and strL are stored by maximum length of chars in a variable
   maxchar <- function(x){max(nchar(x))+1}
   str.length <- sapply(data[vartypen=="character"], FUN=maxchar)
@@ -129,7 +134,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)){
     attr(data, "datalabel") <- "Written by R"
   } else {
-    attr(data, "datalabel") <- data.label
+    attr(data, "datalabel") <- iconv(data.label, to="CP1252", sub="byte")
   }
 
   # Create the 17 char long timestamp. It may contain 17 char long strings
@@ -140,6 +145,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   expfield <- attr(data, "expansion.fields")
+  expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
   attr(data, "expansion.fields") <- rev(expfield)
 
   stataWrite(filePath = filepath, dat = data)

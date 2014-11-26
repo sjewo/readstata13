@@ -14,7 +14,7 @@ save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
 
 \item{time.stamp}{logical. If TRUE add a time.stamp to the dta-file.}
 
-\item{convert.factors}{logical. If TRUE factors will be converted to Stata variables with labels.}
+\item{convert.factors}{logical. If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.}
 
 \item{convert.dates}{logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()}
 

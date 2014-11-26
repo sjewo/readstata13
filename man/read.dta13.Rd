@@ -4,7 +4,7 @@
 \title{Read Stata 13 Binary Files}
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
-  fileEncoding = NULL, convert.underscore = FALSE, missing.type = FALSE,
+  encoding = "", convert.underscore = FALSE, missing.type = FALSE,
   convert.dates = TRUE, replace.strl = FALSE)
 }
 \arguments{
@@ -14,8 +14,8 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 
 \item{generate.factors}{logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
 
-\item{fileEncoding}{string. If not NULL, strings will be converted from fileEncoding to system encoding.
-Examples options are "utf8" or "latin1".}
+\item{encoding}{string. By default strings will be converted from Windows-1252 to system encoding.
+Options are "latin1" or "utf-8" to specify target encoding explicitly.}
 
 \item{convert.underscore}{logical. Changes variable name from "_" to "."}
 

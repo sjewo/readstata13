@@ -5,7 +5,7 @@
 \usage{
 save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
   convert.factors = FALSE, convert.dates = TRUE, tz = "GMT",
-  add.rownames = FALSE)
+  add.rownames = FALSE, compress = FALSE)
 }
 \arguments{
 \item{data}{data.frame. A data.frame Object.}
@@ -21,6 +21,8 @@ save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
 \item{tz}{string. The name of the timezone convert.dates will use.}
 
 \item{add.rownames}{logical. If TRUE a new variable rownames will be added to the dta-file.}
+
+\item{compress}{logical. If TRUE the resulting dta-file will use all of Statas numeric-vartypes.}
 
 \item{path}{string. Path to the dta file you want to export.}
 }

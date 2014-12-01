@@ -268,7 +268,7 @@ List stata(const char * filePath, const bool missing)
         double erg;
         double const dmin = -0x1.fffffffffffffp1023;
         double const dmax = 0x1.fffffffffffffp1022;
-        if (fread (&erg, sizeof(double), 1, file) == 0)
+        if (fread (&erg, sizeof(erg), 1, file) == 0)
           perror ("Error reading data");
         if ((missing == FALSE) & ((erg<dmin) | (erg>dmax)) )
           as<NumericVector>(df[i])[j] = NA_REAL;
@@ -281,7 +281,7 @@ List stata(const char * filePath, const bool missing)
       {
         float erg;
         float const minmax = 0x1.fffffp126;
-        if (fread (&erg, sizeof(float), 1, file) == 0)
+        if (fread (&erg, sizeof(erg), 1, file) == 0)
           perror ("Error reading data");
         if ((missing == FALSE) & ((erg<(-minmax)) | (erg>minmax)) )
           as<NumericVector>(df[i])[j] = NA_REAL;
@@ -293,7 +293,7 @@ List stata(const char * filePath, const bool missing)
       case 65528:
       {
         int32_t erg;
-        if (fread (&erg, sizeof(signed int), 1, file) == 0)
+        if (fread (&erg, sizeof(erg), 1, file) == 0)
           perror ("Error reading data");
         if ((missing == FALSE) & ((erg<(-2147483647)) | (erg>2147483620)) )
           as<IntegerVector>(df[i])[j] = NA_REAL;
@@ -305,7 +305,7 @@ List stata(const char * filePath, const bool missing)
       case 65529:
       {
         int16_t erg;
-        if (fread (&erg, sizeof(short int), 1, file) == 0)
+        if (fread (&erg, sizeof(erg), 1, file) == 0)
           perror ("Error reading data");
         if ((missing == FALSE) & ((erg<(-32767)) | (erg>32740)) )
           as<IntegerVector>(df[i])[j] = NA_REAL;
@@ -317,7 +317,7 @@ List stata(const char * filePath, const bool missing)
       case 65530:
       {
         char erg;
-        if (fread (&erg, sizeof(char), 1, file) == 0)
+        if (fread (&erg, sizeof(erg), 1, file) == 0)
           perror ("Error reading data");
         if ((missing == FALSE) & ( (erg<(-127)) | (erg>100)) )
           as<IntegerVector>(df[i])[j] = NA_REAL;

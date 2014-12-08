@@ -98,6 +98,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   # FixMe: what about AsIs ?
   vartypen[vartypen=="Date"] <- -65526
 
+  # is.numeric is TRUE for integers
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
@@ -107,30 +108,31 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     vartypen[ii] <- 65528
     vartypen[factors] <- 65528
   } else {
-    varTmin <- sapply(data[ii|ff], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[ii|ff], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[ff], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[ff], function(x) max(x,na.rm=TRUE))
+
+    print(varTmin)
+    print(varTmax)
 
     # check if numeric is float or double
     fminmax <- 1.701e+38
-    for (k in seq(vartypen[ff]))
+    for (k in names(which(ff)))
     {
-      vartypen[ff & (varTmin[ff][k]<(-fminmax) | varTmax[ff][k]>fminmax)] <- 65526
-      vartypen[ff & (varTmin[ff][k]>(-fminmax) & varTmax[ff][k]<fminmax)] <- 65527
+      vartypen[k][varTmin[k]<(-fminmax) | varTmax[k]>fminmax] <- 65526
+      vartypen[k][varTmin[k]>(-fminmax) & varTmax[k]<fminmax] <- 65527
     }
 
-    bmin <- 127; bmax <- 100
-    imin <- 32767; imax <- 32740
+    bmin <- -127; bmax <- 100
+    imin <- -32767; imax <- 32740
     # check if integer is byte, int or long
-    for (k in seq(vartypen[ii]))
-    {
-      vartypen[ii & (varTmin[ii][k]<(-imin) | varTmax[ii][k]>imax)] <- 65528
-      vartypen[ii & (varTmin[ii][k]>(-imin) & varTmax[ii][k]<imax)] <- 65529
-      vartypen[ii & (varTmin[ii][k]>(-bmin) & varTmax[ii][k]<bmax)] <- 65530
+    for (k in names(which(ii))){
+      vartypen[k][varTmin[k]<imin | varTmax[k]>imax] <- 65528
+      vartypen[k][varTmin[k]>imin & varTmax[k]<imax] <- 65529
+      vartypen[k][varTmin[k]>bmin & varTmax[k]<bmax] <- 65530
     }
 
-    # FixMe: Assume we have < 100 levels/factor
     factorlength <- sapply(data[factors], nlevels)
-    for ( k in seq(vartypen[factors]))
+    for ( k in names(which(factors)))
     {
       vartypen[factors & factorlength[k] > 0x1.000000p127] <- 65528
       vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529

@@ -38,7 +38,7 @@
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = "", convert.underscore = FALSE,
+                       encoding = NULL, convert.underscore = FALSE,
                        missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE) {
   # Check if path is a url
   if(length(grep("^(http|ftp|https)://", file))) {
@@ -89,50 +89,52 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   label <- attr(data, "label.table")
 
   ## Encoding
-  # varnames
-  names(data) <- iconv(names(data), from="cp1252", to=encoding, sub="byte")
+  if(!is.null(encoding))
+  {
+    # varnames
+    names(data) <- iconv(names(data), from="cp1252", to=encoding, sub="byte")
 
-  # var.labels
-  attr(data, "var.labels") <- iconv(var.labels, from="cp1252", to=encoding, sub="byte")
+    # var.labels
+    attr(data, "var.labels") <- iconv(var.labels, from="cp1252", to=encoding, sub="byte")
 
-  # val.labels
-  names(val.labels) <- iconv(val.labels, from="cp1252", to=encoding, sub="byte")
-  attr(data, "val.labels") <- val.labels
+    # val.labels
+    names(val.labels) <- iconv(val.labels, from="cp1252", to=encoding, sub="byte")
+    attr(data, "val.labels") <- val.labels
 
-  # label
-  names(label) <- iconv(names(label), from="cp1252", to=encoding, sub="byte")
+    # label
+    names(label) <- iconv(names(label), from="cp1252", to=encoding, sub="byte")
 
-  if (length(label) > 0) {
-    for (i in 1:length(label))  {
-      names(label[[i]]) <- iconv(names(label[[i]]), from="cp1252", to=encoding, sub="byte")
+    if (length(label) > 0) {
+      for (i in 1:length(label))  {
+        names(label[[i]]) <- iconv(names(label[[i]]), from="cp1252", to=encoding, sub="byte")
+      }
+      attr(data, "label.table") <- label
     }
-    attr(data, "label.table") <- label
-  }
 
-  # recode character variables
-  for(v in (1:ncol(data))[type <= 2045]) {
-    data[,v] <- iconv(data[,v], from="CP1252", sub="byte")
-  }
-
-  # expansion.field
-  efi <- attr(data, "expansion.fields")
-  if (length(efi) > 0) {
-    efiChar <- unlist(lapply(efi, is.character))
-    for (i in (1:length(efi))[efiChar])  {
-      efi[[i]] <- iconv(efi[[i]], from="cp1252", to=encoding, sub="byte")
+    # recode character variables
+    for(v in (1:ncol(data))[type <= 2045]) {
+      data[,v] <- iconv(data[,v], from="CP1252", sub="byte")
     }
-    attr(data, "expansion.fields") <- efi
-  }
 
-  #strl
-  strl <- attr(data, "strl")
-  if (length(strl) > 0) {
-    for (i in 1:length(strl))  {
-      strl[[i]] <- iconv(strl[[i]], from="cp1252", to=encoding, sub="byte")
+    # expansion.field
+    efi <- attr(data, "expansion.fields")
+    if (length(efi) > 0) {
+      efiChar <- unlist(lapply(efi, is.character))
+      for (i in (1:length(efi))[efiChar])  {
+        efi[[i]] <- iconv(efi[[i]], from="cp1252", to=encoding, sub="byte")
+      }
+      attr(data, "expansion.fields") <- efi
     }
-    attr(data, "strl") <- strl
-  }
 
+    #strl
+    strl <- attr(data, "strl")
+    if (length(strl) > 0) {
+      for (i in 1:length(strl))  {
+        strl[[i]] <- iconv(strl[[i]], from="cp1252", to=encoding, sub="byte")
+      }
+      attr(data, "strl") <- strl
+    }
+  }
 
   if(replace.strl) {
     strl <- do.call(rbind, attr(data,"strl"))
@@ -144,6 +146,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           data[data[,j]==ref,j]<-strl[strl[,1]==ref,2]
         }
       }
+    }
+
+    # recode strL 0 to void
+    for (v in (1:ncol(data))[type == 32768])
+    {
+      data[[v]] <- gsub("00000000000000000000","", data[[v]] )
     }
     attr(data, "strl") <- NULL
   }
@@ -194,7 +202,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         if (all(varunique%in%labtable)) {
           data[,i] <- factor(data[,i], levels=labtable,
                              labels=names(labtable))
-        # else generate labels from codes
+          # else generate labels from codes
         } else if(generate.factors) {
           names(varunique) <- as.character(varunique)
           gen.lab  <- sort(c(varunique[!varunique%in%labtable], labtable))

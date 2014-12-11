@@ -6,7 +6,7 @@
 #' @param file  string. Path to the dta file you want to import.
 #' @param convert.factors logical. If TRUE factors from Stata value labels are created.
 #' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
-#' @param encoding string. By default strings will be converted from Windows-1252 to system encoding.
+#' @param encoding string. If wanted strings can be converted from Windows-1252 to system encoding.
 #'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
 #' @param convert.underscore logical. Changes variable name from "_" to "."
 #' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute

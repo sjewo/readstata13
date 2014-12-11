@@ -3,7 +3,7 @@
 #' \code{save.dta13} writes a Stata 13 dta file bytewise and saves the data
 #' into a dta-file.
 #'
-#' @param path string. Path to the dta file you want to export.
+#' @param file string. Path to the dta file you want to export.
 #' @param data data.frame. A data.frame Object.
 #' @param data.label string. Name of the dta-file.
 #' @param time.stamp logical. If TRUE add a time.stamp to the dta-file.
@@ -43,6 +43,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
   # For now we handle numeric and integers
   vartypen <- sapply(data, class)
+  names(vartypen) <- names(data)
 
   # Convert logicals to integers
   for (v in names(vartypen[vartypen=="logical"]))

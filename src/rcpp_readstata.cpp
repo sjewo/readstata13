@@ -74,8 +74,11 @@ List stata(const char * filePath, const bool missing)
 {
   FILE *file = NULL;    // File pointer
 
-  // Open the file in binary mode using the "rb" format string
-  // This also checks if the file exists and/or can be opened for reading correctly
+  /*
+  * Open the file in binary mode using the "rb" format string
+  * This also checks if the file exists and/or can be opened for reading correctly
+  */
+
   if ((file = fopen(filePath, "rb")) == NULL)
     throw std::range_error("Could not open specified file.");
 
@@ -92,7 +95,10 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 18, SEEK_CUR);// stata_dta><header>
   test("<release>", file);
 
-  // release
+  /*
+  * release is a 4 byte character e.g. "117"
+  */
+
   char gversion[4] = "117";
   gversion[3] = '\0';
 
@@ -108,7 +114,10 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 10, SEEK_CUR); // </release>
   test("<byteorder>", file);
 
-  // LSF or MSF
+  /*
+  * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
+  */
+
   char byteorder [4];
   readstr(byteorder,file, sizeof(byteorder));
 
@@ -117,19 +126,31 @@ List stata(const char * filePath, const bool missing)
 
   bool swapit = strcmp(byteorder, lsf);
 
-  // Number of Variables
+  /*
+  * Number of Variables
+  */
+
   uint16_t k = readbin(k, file, swapit);
 
   fseek(file, 4, SEEK_CUR); //</K>
   test("<N>", file);
 
-  // Number of Observations
+  /*
+  * Number of Observations
+  */
+
   uint32_t n = readbin(n, file, swapit);
 
   fseek(file, 4, SEEK_CUR); //</N>
   test("<label>", file);
 
-  // char length dataset label
+  /*
+  * A dataset may have a label e.g. "Written by R".
+  * First we read its length (ndlabel), later the actual label (datalabel).
+  * ndlabel:   length of datalabel (excl. binary 0)
+  * datalabel: string max length 80
+  */
+
   uint8_t ndlabel = readbin(ndlabel, file, swapit);
 
   char datalabel [ndlabel];
@@ -144,7 +165,13 @@ List stata(const char * filePath, const bool missing)
   test("<timestamp>", file);
 
 
-  // timestamp
+  /*
+  * A dataset may have a timestamp. If it has a timestamp the length of the
+  * timestamp (ntimestamp) is 17. Else it is zero.
+  * ntimestamp: 0 or 17
+  * timestamp: empty or 17 byte string
+  */
+
   uint8_t ntimestamp = readbin(ntimestamp, file, swapit);
 
   char timestamp [ntimestamp];
@@ -158,7 +185,25 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
 
-  // map
+  /*
+  * Stata stores the byteposition of certain areas of the file here. Currently
+  * this is of no use to us.
+  * 1.  <stata_data>
+  * 2.  <map>
+  * 3.  <variable_types>
+  * 4.  <varnames>
+  * 5.  <sortlist>
+  * 6.  <formats>
+  * 7.  <value_label_names>
+  * 8.  <variable_labels>
+  * 9.  <characteristics>
+  * 10. <data>
+  * 11. <strls>
+  * 12. <value_labels>
+  * 13. </stata_data>
+  * 14. end-of-file
+  */
+
   IntegerVector map(14);
   for (int i=0; i <14; ++i)
   {
@@ -169,7 +214,17 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 6, SEEK_CUR); //</map>
   test("<variable_types>", file);
 
-  //vartypes
+  /*
+  * vartypes.
+  * 0-2045: strf (String: Max length 2045)
+  * 32768:  strL (long String: Max length 2 billion)
+  * 65526:  double
+  * 65527:  float
+  * 65528:  long
+  * 65529:  int
+  * 65530:  byte
+  */
+
   IntegerVector vartype(k);
   for (unsigned int i=0; i<k; ++i)
   {
@@ -180,7 +235,10 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 17, SEEK_CUR); //</variable_types>
   test("<varnames>", file);
 
-  //varnames
+  /*
+  * varnames. Max length 33.
+  */
+
   CharacterVector varnames(k);
   for (unsigned int i=0; i<k; ++i)
   {
@@ -192,7 +250,13 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 11, SEEK_CUR); //</varnames>
   test("<sortlist>", file);
 
-  // sortlist
+  /*
+  * sortlist. Stata stores the information which variable of a dataset was
+  * sorted. Depending on byteorder sortlist is written different. Currently we
+  * do not use this information.
+  * Vector size is k+1.
+  */
+
   IntegerVector sortlist(k+1);
   for (unsigned int i=0; i<k+1; ++i)
   {
@@ -203,7 +267,11 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 11, SEEK_CUR); //</sortlist>
   test("<formats>", file);
 
-  //formats
+  /*
+  * formats handle how Stata prints a variable. Currently we do not use this
+  * information.
+  */
+
   CharacterVector formats(k);
   for (unsigned int i=0; i<k; ++i)
   {
@@ -215,7 +283,13 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 10, SEEK_CUR); //</formats>
   test("<value_label_names>",file);
 
-  //value_label_names
+
+  /*
+  * value_label_names. Stata stores variable labels by names.
+  * nvalLabels: length of the value_label_name
+  * valLabels:  Char of max length 33
+  */
+
   CharacterVector valLabels(k);
   for (unsigned int i=0; i<k; ++i)
   {
@@ -227,7 +301,11 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 20, SEEK_CUR); //</value_label_names>
   test("<variable_labels>", file);
 
-  // variabel_labels
+
+  /*
+  * variabel_labels
+  */
+
   CharacterVector varLabels(k);
   for (unsigned int i=0; i<k; ++i)
   {
@@ -239,7 +317,17 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 18, SEEK_CUR); //</variable_labels>
   test("<characteristics>", file);
 
-  // characteristics
+  /*
+  * characteristics. Stata can store additional information this way. It may
+  * contain notes (for the dataset or a variable) or about label language sets.
+  * Characteristics are not documented. We export them as attribute:
+  * expansion.fields. Characteristics are seperated by <ch> tags. Each <ch> has:
+  * nocharacter:  length of the characteristics
+  * chvarname:    varname (binary 0 terminated)
+  * chcharact:    characteristicsname (binary 0 terminated)
+  * nnocharacter: contes (binary 0 terminated)
+  */
+
   char chtag[5] = "<ch>";
   chtag[4] = '\0';
 
@@ -282,7 +370,14 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 14, SEEK_CUR); //[</ch]aracteristics>
   test("<data>", file);
 
-  // build list and add vector of right type for each variable
+  /*
+  * data. First a list is created with vectors. The vector type is defined by
+  * vartype. Stata stores data columnwise so we loop over it and store the
+  * data in the list of the first step. Third variable- and row-names are
+  * attatched and the list type is changed to data.frame.
+  */
+
+  // 1. create the list
   List df(k);
   for (unsigned int i=0; i<k; ++i)
   {
@@ -305,9 +400,7 @@ List stata(const char * filePath, const bool missing)
       break;
     }
   }
-
-  // fill with data
-
+  // 2. fill it with data
   for(unsigned int j=0; j<n; ++j)
   {
     for (unsigned int i=0; i<k; ++i)
@@ -398,7 +491,7 @@ List stata(const char * filePath, const bool missing)
     }
   }
 
-  // attach varnames
+  // 3. Create a data.frame
   IntegerVector row_names = no_init(n);
   for (int32_t i = 0; i < row_names.length(); ++i) {
     row_names[i] = i+1;
@@ -410,7 +503,15 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 7, SEEK_CUR); //</data>
   test("<strls>", file);
 
-  //strL
+  /*
+  * strL. Stata 13 introduced long strings up to 2 billon characters. strLs are
+  * sperated by "GSO".
+  * (v,o): Position in the data.frame.
+  * t:     129/130 defines whether or not the strL is stored with a binary 0.
+  * len:   length of the strL.
+  * strl:  long string.
+  */
+
   List strlstable = List(); //put strLs into this list
 
   char tags[4];
@@ -462,6 +563,16 @@ List stata(const char * filePath, const bool missing)
   // after strls
   fseek(file, 5, SEEK_CUR); //[</s]trls>
   test("<value_labels>", file);
+
+  /*
+  * labels are seperated by <lbl>-tags. Labels may appear in any order e.g.
+  * 2 "female" 1 "male 9 "missing". They are stored as tables.
+  * nlen:     length of label.
+  * nlabname: label name.
+  * labn:     number of labels in this set (e.g. "male" "female" = 2)
+  * txtlen:   length of the label text.
+  * off:      offset defines where to read a new label in txtlen.
+  */
 
   // Value Labels
   List labelList = List(); //put labels into this list
@@ -551,12 +662,20 @@ List stata(const char * filePath, const bool missing)
     readstr(tag, file, sizeof(tag));
   }
 
+  /*
+  * Final test if we reached the end of the file
+  * close the file
+  */
+
   fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
   test("</stata_dta>", file);
 
   fclose(file);
 
-  // define R character vector for meta data
+  /*
+  * define R character vectors for meta data
+  */
+
   CharacterVector datalabelCV(1);
   datalabelCV[0] = datalabel;
 
@@ -566,7 +685,10 @@ List stata(const char * filePath, const bool missing)
   CharacterVector version(1);
   version[0] = relver;
 
-  // assign attributes
+  /*
+  * assign attributes to the resulting data.frame
+  */
+
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;

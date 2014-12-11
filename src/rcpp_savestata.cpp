@@ -19,12 +19,32 @@
 #include <string>
 #include <fstream>
 #include <stdint.h>
+#include "swap_endian.h"
 // #include <cstdint> //C++11
 
 using namespace Rcpp;
 using namespace std;
 
-#define R_NA pow(-2,31) // do i really need this define?
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define lsf "LSF"
+#define byteorder "LSF"
+#else
+#define lsf "MSF"
+#define byteorder "MSF"
+#endif
+
+bool swapit = strcmp(byteorder, lsf);
+
+template <typename T>
+static void writebin(T t, fstream& dta, bool swapit)
+{
+  if (swapit==1){
+    T t_s = swap_endian(t);
+    dta.write((char*)&t_s, sizeof(t_s));
+  } else {
+    dta.write((char*)&t, sizeof(t));
+  }
+}
 
 //' Writes the binary Stata file
 //'
@@ -37,15 +57,14 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
   uint16_t const k = dat.size();
   uint32_t const n = dat.nrows();
 
-  Rcpp::CharacterVector VarNames = dat.attr("names");
+  CharacterVector VarNames = dat.attr("names");
 
   char version[4] = "117";
-  char byteorder[4] = "LSF";
   uint8_t ntimestamp = 0;
 
   string datalabel = dat.attr("datalabel");
   datalabel[datalabel.size()] = '\0';
-  unsigned char ndlabel = 0;
+  uint8_t ndlabel = 0;
 
   const string head = "<stata_dta><header><release>";
   const string byteord = "</release><byteorder>";
@@ -117,16 +136,16 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(byteord.c_str(),byteord.size());
     dta.write(byteorder,3); // LSF
     dta.write(K.c_str(),K.size());
-    dta.write((char*)&k,sizeof(k));
+    writebin(k, dta, swapit);
     dta.write(num.c_str(),num.size());
-    dta.write((char*)&n,sizeof(n));
+    writebin(n, dta, swapit);
     dta.write(lab.c_str(),lab.size());
 
     /* write a datalabel */
     if(!datalabel.empty())
     {
       ndlabel = datalabel.size();
-      dta.write((char*)&ndlabel,sizeof(ndlabel));
+      writebin(ndlabel, dta, swapit);
       dta.write(datalabel.c_str(),datalabel.size());
     } else {
       dta.write((char*)&ndlabel,sizeof(ndlabel));
@@ -136,10 +155,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(timest.c_str(),timest.size());
     if (!timestamp.empty()) {
       ntimestamp = 17;
-      dta.write((char*)&ntimestamp,sizeof(ntimestamp));
+      writebin(ntimestamp, dta, swapit);
       dta.write(timestamp.c_str(),timestamp.size());
     }else{
-      dta.write((char*)&ntimestamp,sizeof(ntimestamp));
+      writebin(ntimestamp, dta, swapit);
     }
     dta.write(endheader.c_str(),endheader.size());
 
@@ -150,7 +169,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     for (int32_t i = 0; i <14; ++i)
     {
       uint64_t nmap = 0;
-      dta.write((char*)&nmap,sizeof(nmap));
+      writebin(nmap, dta, swapit);
     }
     dta.write(endmap.c_str(),endmap.size());
 
@@ -162,8 +181,9 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     uint16_t nvartype;
     for (uint16_t i = 0; i < k; ++i)
     {
-      nvartype = as<uint32_t>(vartypes[i]);
-      dta.write((char*)&nvartype,sizeof(nvartype));
+      nvartype = as<uint16_t>(vartypes[i]);
+
+      writebin(nvartype, dta, swapit);
     }
     dta.write(endvart.c_str(),endvart.size());
 
@@ -182,10 +202,11 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* <sortlist> ... </sortlist> */
     map(4) = dta.tellg();
     dta.write(startsor.c_str(),startsor.size());
+
     for (uint16_t i = 0; i < k+1; ++i)
     {
       uint16_t nsortlist = 0;
-      dta.write((char*)&nsortlist,sizeof(nsortlist));
+      writebin(nsortlist, dta, swapit);
     }
     dta.write(endsor.c_str(),endsor.size());
 
@@ -253,8 +274,8 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         chs3[chs3.size()] = '\0';
 
         uint32_t nocharacter = 33 + 33 + chs3.size() +1;
+        writebin(nocharacter, dta, swapit);
 
-        dta.write((char*)&nocharacter,sizeof(nocharacter));
         dta.write(chs1.c_str(),33);
         dta.write(chs2.c_str(),33);
         dta.write(chs3.c_str(),chs3.size()+1);
@@ -285,12 +306,25 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         case 65526:
         {
           double const na = (0x1.0000000000000p1023);
-          double val_n = as<NumericVector>(dat[i])[j];
+          double val_d = as<NumericVector>(dat[i])[j];
 
-          if ( (val_n == NA_REAL) | R_IsNA(val_n) )
-            val_n = na;
+          if ( (val_d == NA_REAL) | R_IsNA(val_d) )
+            val_d = na;
 
-          dta.write((char*)&val_n,sizeof(val_n));
+          writebin(val_d, dta, swapit);
+
+          break;
+        }
+          // float
+        case 65527:
+        {
+          float const na = (0x1.000000p127);
+          float val_f = as<NumericVector>(dat[i])[j];
+
+          if ( (val_f == NA_REAL) | R_IsNA(val_f) )
+            val_f = na;
+
+          writebin(val_f, dta, swapit);
 
           break;
         }
@@ -303,7 +337,33 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           if (val_i == NA_INTEGER)
             val_i = na;
 
-          dta.write((char*)&val_i,sizeof(val_i));
+          writebin(val_i, dta, swapit);
+
+          break;
+        }
+          // int
+        case 65529:
+        {
+          int16_t  const na = (0x7fe5); // 32741
+          int16_t val_i = as<IntegerVector>(dat[i])[j];
+
+          if (val_i == NA_INTEGER)
+            val_i = na;
+
+          writebin(val_i, dta, swapit);
+
+          break;
+        }
+          // byte
+        case 65530:
+        {
+          char const na = (0x65); // 101
+          char val_i = as<IntegerVector>(dat[i])[j];
+
+          if (val_i == NA_INTEGER)
+            val_i = na;
+
+          writebin(val_i, dta, swapit);
 
           break;
         }
@@ -327,8 +387,8 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           const string val_s = as<string>(b[j]);
           if (!val_s.empty())
           {
-            dta.write((char*)&v,sizeof(v));
-            dta.write((char*)&o,sizeof(o));
+            writebin(v, dta, swapit);
+            writebin(o, dta, swapit);
             // push back every v, o and val_s
             V.push_back(v);
             O.push_back(o);
@@ -358,10 +418,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       uint32_t len = strL.size();
 
       dta.write(GSO.c_str(),GSO.size());
-      dta.write((char*)&v,sizeof(v));
-      dta.write((char*)&o,sizeof(o));
-      dta.write((char*)&t,sizeof(t));
-      dta.write((char*)&len,sizeof(len));
+      writebin(v, dta, swapit);
+      writebin(o, dta, swapit);
+      writebin(t, dta, swapit);
+      writebin(len, dta, swapit);
       dta.write(strL.c_str(),strL.size());
     }
 
@@ -404,23 +464,24 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
         int32_t len = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
 
+
         dta.write(startlbl.c_str(),startlbl.size());
-        dta.write((char*)&len,sizeof(len));
+        writebin(len, dta, swapit);
         dta.write(labname.c_str(),33);
         dta.write((char*)&padding,3);
-        dta.write((char*)&N,sizeof(N));
-        dta.write((char*)&txtlen,sizeof(txtlen));
+        writebin(N, dta, swapit);
+        writebin(txtlen, dta, swapit);
 
         for (int32_t i = 0; i < N; ++i)
         {
           offI = off[i];
-          dta.write((char*)&offI,sizeof(offI));
+          writebin(offI, dta, swapit);
         }
 
         for (int32_t i = 0; i < N; ++i)
         {
           labvalueI = labvalue[i];
-          dta.write((char*)&labvalueI,sizeof(labvalueI));
+          writebin(labvalueI, dta, swapit);
         }
 
         for (int32_t i = 0; i < N; ++i)
@@ -452,7 +513,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     for (int i=0; i <14; ++i)
     {
       uint64_t nmap = map[i];
-      dta.write((char*)&nmap,sizeof(nmap));
+      writebin(nmap, dta, swapit);
     }
     dta.write(endmap.c_str(),endmap.size());
 

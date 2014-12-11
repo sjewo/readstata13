@@ -4,7 +4,7 @@
 \title{Read Stata 13 Binary Files}
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
-  encoding = "", convert.underscore = FALSE, missing.type = FALSE,
+  encoding = NULL, convert.underscore = FALSE, missing.type = FALSE,
   convert.dates = TRUE, replace.strl = FALSE, add.rownames = FALSE)
 }
 \arguments{
@@ -14,7 +14,7 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 
 \item{generate.factors}{logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
 
-\item{encoding}{string. By default strings will be converted from Windows-1252 to system encoding.
+\item{encoding}{string. If wanted strings can be converted from Windows-1252 to system encoding.
 Options are "latin1" or "utf-8" to specify target encoding explicitly.}
 
 \item{convert.underscore}{logical. Changes variable name from "_" to "."}
@@ -34,7 +34,7 @@ The function returns a data.frame with attributes. The attributes include
   \item{datalabel:}{Dataset label}
   \item{time.stamp:}{Timestamp of file creation}
   \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
-  \item{type:}{Stata data type (see Stata Corp 2014)}
+  \item{types:}{Stata data type (see Stata Corp 2014)}
   \item{val.labels:}{For each variable the name of the associated value labels in "label"}
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}

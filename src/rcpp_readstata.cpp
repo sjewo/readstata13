@@ -6,6 +6,50 @@
 using namespace Rcpp;
 using namespace std;
 
+/* Test for a little-endian machine */
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+#define lsf "LSF"
+#else
+#define lsf "MSF"
+#endif
+
+// http://stackoverflow.com/a/4956493
+template <typename T>
+T swap_endian(T u)
+{
+  union
+{
+  T u;
+  unsigned char u8[sizeof(T)];
+} source, dest;
+
+  source.u = u;
+
+  for (size_t k = 0; k < sizeof(T); ++k)
+    dest.u8[k] = source.u8[sizeof(T) - k - 1];
+
+  return dest.u;
+}
+
+template <typename T>
+T readbin( T t , FILE * file, bool swapit)
+{
+  if (fread(&t, sizeof(t), 1, file) != 1)
+    perror("a binary read error occurred");
+  if (swapit==0)
+    return(t);
+  else
+    return(swap_endian(t));
+}
+
+static void readstr(char *var, FILE * fp, int nchar)
+{
+  nchar = nchar-1;
+  if (!fread(var, nchar, 1, fp))
+    perror("a binary read error occurred");
+  var[nchar] = '\0';
+}
+
 //' Reads the binary Stata file
 //'
 //' @param filePath The full systempath to the dta file you want to import.
@@ -24,64 +68,56 @@ List stata(const char * filePath, const bool missing)
 
   // check the first byte. continue if "<"
   char one[2];
-  if (!fread(one, sizeof(one),1, file))
-    perror ("Error reading bytorder");
-  one[1] = '\0';
-  string onestr(one);
+  readstr(one, file, sizeof(one));
 
-  string const two = "<";
-  if (onestr != two)
-    throw std::range_error("Not a version 13 dta-file.");
+  char two[2] = "<";
+  two[1] = '\0';
+
+  if (strcmp(one,two)!=0)
+    throw std::range_error("First byte: Not a version 13 dta-file.");
 
   fseek(file, 26, SEEK_CUR);
 
   // release
-  string const gversion("117");
+  char gversion[4] = "117";
+  gversion[3] = '\0';
+
   char release [4];
-  if (!fread(release, sizeof(release), 1, file))
-    perror ("Error reading release");
-  release[3] = '\0';
+  readstr(release,file, sizeof(release));
+
   string const relver(release);
 
   // check the release version. continue if "117"
-  if (relver != gversion)
-    throw std::range_error("Not a version 13 dta-file.");
+  if (strcmp(release, gversion)!=0)
+    throw std::range_error("Version: Not a version 13 dta-file.");
 
   fseek(file, 20, SEEK_CUR);
 
   // LSF or MSF
   char byteorder [4];
-  if (!fread(&byteorder, sizeof(byteorder), 1, file))
-    perror ("Error reading bytorder");
-  byteorder[3] = '\0';
+  readstr(byteorder,file, sizeof(byteorder));
 
   fseek(file, 14, SEEK_CUR);
 
+  bool swapit = strcmp(byteorder, lsf);
+
   // Number of Variables
-  uint16_t k;
-  if (!fread (&k, sizeof(k) , 1, file))
-    perror ("Error reading number of variables");
+  uint16_t k = readbin(k, file, swapit);
 
   fseek(file, 7, SEEK_CUR); //</K><N>
 
   // Number of Observations
-  uint32_t n;
-  if (!fread (&n, sizeof(n), 1, file))
-    perror ("Error reading number of cases");
+  uint32_t n = readbin(n, file, swapit);
 
   fseek(file, 11, SEEK_CUR); //</N><label>
 
   // char length dataset label
-  unsigned char ndlabel;
-  if (!fread (&ndlabel, sizeof(ndlabel), 1, file))
-    perror ("Error reading length of dataset label");
+  uint8_t ndlabel = readbin(ndlabel, file, swapit);
 
   char datalabel [ndlabel];
   if (ndlabel>0)
   {
-    if (!fread(datalabel, ndlabel, 1, file))
-      perror ("Error reading dataset label");
-    datalabel[ndlabel] = '\0';
+    readstr(datalabel, file, ndlabel+1);
   } else {
     datalabel[0] = '\0';
   };
@@ -90,16 +126,12 @@ List stata(const char * filePath, const bool missing)
 
 
   // timestamp
-  uint8_t ntimestamp;
-  if (!fread (&ntimestamp, sizeof(ntimestamp), 1, file))
-    perror ("Error reading length of timestamp");
+  uint8_t ntimestamp = readbin(ntimestamp, file, swapit);
 
   char timestamp [ntimestamp];
   if (ntimestamp == 17) // ntimestap is 0 or 17
   {
-    if (!fread(timestamp, ntimestamp, 1, file))
-      perror ("Error reading timestamp");
-    timestamp[ntimestamp] = '\0';
+    readstr(timestamp, file, ntimestamp+1);
   } else {
     timestamp[0] = '\0';
   };
@@ -110,9 +142,7 @@ List stata(const char * filePath, const bool missing)
   IntegerVector map(14);
   for (int i=0; i <14; ++i)
   {
-    uint64_t nmap;
-    if (!fread (&nmap, sizeof(nmap) , 1, file))
-      perror ("Error reading mapping");
+    uint64_t nmap = readbin(nmap, file, swapit);
     map[i] = nmap;
   }
 
@@ -122,9 +152,7 @@ List stata(const char * filePath, const bool missing)
   IntegerVector vartype(k);
   for (unsigned int i=0; i<k; ++i)
   {
-    uint16_t nvartype;
-    if (!fread (&nvartype, sizeof(nvartype), 1, file))
-      perror ("Error reading vartypes");
+    uint16_t nvartype = readbin(nvartype, file, swapit);
     vartype[i] = nvartype;
   }
 
@@ -135,27 +163,18 @@ List stata(const char * filePath, const bool missing)
   for (unsigned int i=0; i<k; ++i)
   {
     char nvarnames [33];
-    if (fread (nvarnames, sizeof(nvarnames) ,1 , file))
-      varnames[i] = nvarnames;
+    readstr(nvarnames, file, sizeof(nvarnames)+1);
+    varnames[i] = nvarnames;
   }
 
   fseek(file, 21, SEEK_CUR); //</varnames><sortlist>
 
-  // byte order
-  string const s = "LSF";
-  // byteorder == "LSF"
-  if (byteorder == s)
+  // sortlist
+  IntegerVector sortlist(k+1);
+  for (unsigned int i=0; i<k+1; ++i)
   {
-    NumericVector sortlist(k+1);
-    for (unsigned int i=0; i<k+1; ++i)
-    {
-      uint16_t nsortlist;
-      if (!fread (&nsortlist, sizeof(nsortlist), 1, file))
-        perror ("Error reading sortlist");
-      sortlist[i] = nsortlist;
-    }
-  } else {
-    throw std::range_error("MSF File found, please mail authors.");
+    uint16_t nsortlist = readbin(nsortlist, file, swapit);
+    sortlist[i] = nsortlist;
   }
 
   fseek(file, 20, SEEK_CUR); //</sortlist><formats>
@@ -165,8 +184,8 @@ List stata(const char * filePath, const bool missing)
   for (unsigned int i=0; i<k; ++i)
   {
     char nformats[49];
-    if (fread(nformats, sizeof(nformats), 1 , file))
-      formats[i] = nformats;
+    readstr(nformats, file, sizeof(nformats)+1);
+    formats[i] = nformats;
   }
 
   fseek(file, 29, SEEK_CUR); //</formats><value_label_names>
@@ -176,8 +195,8 @@ List stata(const char * filePath, const bool missing)
   for (unsigned int i=0; i<k; ++i)
   {
     char nvalLabels[33];
-    if (fread(nvalLabels, sizeof(nvalLabels), 1 , file))
-      valLabels[i] = nvalLabels;
+    readstr(nvalLabels, file, sizeof(nvalLabels)+1);
+    valLabels[i] = nvalLabels;
   }
   fseek(file, 37, SEEK_CUR); //</value_label_names><variable_labels>
 
@@ -186,37 +205,34 @@ List stata(const char * filePath, const bool missing)
   for (unsigned int i=0; i<k; ++i)
   {
     char nvarLabels[81];
-    if (fread(nvarLabels, sizeof(nvarLabels), 1, file))
-      varLabels[i] = nvarLabels;
+    readstr(nvarLabels, file, sizeof(nvarLabels)+1);
+    varLabels[i] = nvarLabels;
   }
 
   fseek(file, 35, SEEK_CUR); //</variable_labels><characteristics>
 
   // characteristics
-  string const c = "<ch>";
+  char chtag[5] = "<ch>";
+  chtag[4] = '\0';
 
   List ch = List();
   CharacterVector chs(3);
 
   char tago[5];
-  if (!fread (tago, sizeof(tago)-1,1, file))
-    perror ("Error reading characteristics");
-  tago[4] = '\0';
+  readstr(tago, file, sizeof(tago));
 
-  while (tago == c)
+  while (strcmp(tago,chtag)==0)
   {
-    uint32_t nocharacter;
-    if (!fread (&nocharacter, sizeof(nocharacter), 1, file))
-      perror ("Error reading length of characteristics");
+    uint32_t nocharacter = readbin(nocharacter, file, swapit);
 
     char chvarname[33];
     char chcharact[33];
     char nnocharacter[nocharacter-66];
 
     if(
-        (!fread(&chvarname, sizeof(chvarname), 1, file)) &
-          (!fread(&chcharact, sizeof(chcharact), 1, file)) &
-          (!fread(&nnocharacter, sizeof(nnocharacter), 1, file))
+      (!fread(&chvarname, sizeof(chvarname), 1, file)) &
+        (!fread(&chcharact, sizeof(chcharact), 1, file)) &
+        (!fread(&nnocharacter, sizeof(nnocharacter), 1, file))
     )
       perror ("Error reading characteristics");
 
@@ -232,9 +248,7 @@ List stata(const char * filePath, const bool missing)
     fseek(file, 5, SEEK_CUR); // </ch>
 
     // read next tag
-    if (!fread (tago, sizeof(tago)-1,1, file))
-      perror ("Error reading characteristics");
-    tago[4] = '\0';
+    readstr(tago, file, sizeof(tago));
   }
 
   fseek(file, 20, SEEK_CUR); //aracteristics><data>
@@ -264,6 +278,7 @@ List stata(const char * filePath, const bool missing)
   }
 
   // fill with data
+
   for(unsigned int j=0; j<n; ++j)
   {
     for (unsigned int i=0; i<k; ++i)
@@ -274,64 +289,59 @@ List stata(const char * filePath, const bool missing)
         // double
       case 65526:
       {
-        double erg;
+        double erg = readbin(erg, file, swapit);
         double const dmin = -0x1.fffffffffffffp1023;
         double const dmax = 0x1.fffffffffffffp1022;
-        if (fread (&erg, sizeof(erg), 1, file) == 0)
-          perror ("Error reading data");
+
         if ((missing == FALSE) & ((erg<dmin) | (erg>dmax)) )
-          as<NumericVector>(df[i])[j] = NA_REAL;
+          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
-          as<NumericVector>(df[i])[j] = erg;
+          REAL(VECTOR_ELT(df,i))[j] = erg;
         break;
       }
         // float
       case 65527:
       {
-        float erg;
+        float erg = readbin(erg, file, swapit);
         float const minmax = 0x1.fffffp126;
-        if (fread (&erg, sizeof(erg), 1, file) == 0)
-          perror ("Error reading data");
+
         if ((missing == FALSE) & ((erg<(-minmax)) | (erg>minmax)) )
-          as<NumericVector>(df[i])[j] = NA_REAL;
+          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
-          as<NumericVector>(df[i])[j] = erg;
+          REAL(VECTOR_ELT(df,i))[j] = erg;
         break;
       }
         //long
       case 65528:
       {
-        int32_t erg;
-        if (fread (&erg, sizeof(erg), 1, file) == 0)
-          perror ("Error reading data");
+        int32_t erg = readbin(erg, file, swapit);
+
         if ((missing == FALSE) & ((erg<(-2147483647)) | (erg>2147483620)) )
-          as<IntegerVector>(df[i])[j] = NA_REAL;
+          INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
         else
-          as<IntegerVector>(df[i])[j] = erg;
+          INTEGER(VECTOR_ELT(df,i))[j] = erg;
         break;
       }
         // int
       case 65529:
       {
-        int16_t erg;
-        if (fread (&erg, sizeof(erg), 1, file) == 0)
-          perror ("Error reading data");
+        int16_t erg = readbin(erg, file, swapit);
+
         if ((missing == FALSE) & ((erg<(-32767)) | (erg>32740)) )
-          as<IntegerVector>(df[i])[j] = NA_REAL;
+          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
-          as<IntegerVector>(df[i])[j] = erg;
+          INTEGER(VECTOR_ELT(df,i))[j] = erg;
         break;
       }
         // byte
       case 65530:
       {
-        char erg;
-        if (fread (&erg, sizeof(erg), 1, file) == 0)
-          perror ("Error reading data");
+        int8_t erg = readbin(erg, file, swapit);
+
         if ((missing == FALSE) & ( (erg<(-127)) | (erg>100)) )
-          as<IntegerVector>(df[i])[j] = NA_REAL;
+          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
-          as<IntegerVector>(df[i])[j] = erg;
+          INTEGER(VECTOR_ELT(df,i))[j] = erg;
         break;
       }
         // strings with 2045 or fewer characters
@@ -348,12 +358,8 @@ List stata(const char * filePath, const bool missing)
         // string of any length
       case 32768:
       {// strL 2 4bit
-        int32_t v;
-        if (fread (&v, sizeof(v), 1, file) == 0)
-          perror ("Error reading strl");
-        int32_t o;
-        if (fread (&o, sizeof(o), 1, file) == 0)
-          perror ("Error reading strl");
+        int32_t v = readbin(v, file, swapit);
+        int32_t o = readbin(o, file, swapit);
         char erg[22];
         sprintf(erg, "%010d%010d", v, o);
         as<CharacterVector>(df[i])[j] = erg;
@@ -377,61 +383,50 @@ List stata(const char * filePath, const bool missing)
   List strlstable = List(); //put strLs into this list
 
   char tags[4];
-  if (!fread(tags, sizeof(tags)-1, 1, file))
-    perror ("Error reading tags");
-  tags[3] = '\0';
-  string const gso = "GSO";
-  if (tags == gso)
+  readstr(tags, file, sizeof(tags));
+
+  char gso[4] = "GSO";
+  gso[3] = '\0';
+
+  while(strcmp(gso,tags)==0)
   {
-    while(tags == gso)
+    CharacterVector strls(2);
+
+    // 2x4 bit (strl[vo1,vo2])
+    int32_t v = readbin(v, file, swapit);
+    int32_t o = readbin(o, file, swapit);
+    char erg[22];
+    sprintf(erg, "%010d%010d", v, o);
+
+    strls(0) = erg;
+
+    // (129 = binary) | (130 = ascii)
+    uint8_t t = readbin(t, file, swapit);
+
+    uint32_t len = readbin(len, file, swapit);
+
+    if (t==129)
     {
-
-      CharacterVector strls(2);
-      int32_t v, o;
-
-      // 2x4 bit (strl[vo1,vo2])
-      if (fread(&v, sizeof(v), 1, file) == 0)
-        perror ("Error reading strL v");
-      if (fread(&o, sizeof(o), 1, file) == 0)
-        perror ("Error reading strL o");
-      char erg[22];
-      sprintf(erg, "%010d%010d", v, o);
-
-      strls(0) = erg;
-
-      uint8_t t;
-      // (129 = binary) | (130 = ascii)
-      if (fread(&t, sizeof(t), 1, file) == 0)
-        perror ("Error reading StrL type");
-
-      uint32_t len;
-      if (fread(&len, sizeof(len), 1, file) == 0)
-        perror ("Error reading StrL length");
-
-      if (t==129)
+      char strl [len];
+      if (!fread (strl, len, 1, file))
+        perror ("Error reading StrL");
+      strls(1) = strl;
+    } else
+    {
+      if (t==130)
       {
-        char strl [len];
-        if (!fread (strl, len-1, 1, file))
+        char strl [len+1];
+        if (!fread (strl, len+1-1, 1, file))
           perror ("Error reading StrL");
+        strl[len] = '\0';
         strls(1) = strl;
-      } else
-      {
-        if (t==130)
-        {
-          char strl [len+1];
-          if (!fread (strl, len+1-1, 1, file))
-            perror ("Error reading StrL");
-          strls(1) = strl;
-        }
       }
-      strlstable.push_back( strls );
-
-      if (!fread(tags, sizeof(tags)-1, 1, file))
-        perror ("Error reading tags");
-      tags[3] = '\0';
     }
-  }
 
+    strlstable.push_back( strls );
+
+    readstr(tags, file, sizeof(tags));
+  }
 
   // after strls
   fseek(file, 19, SEEK_CUR); //trls><value_labels>
@@ -439,103 +434,92 @@ List stata(const char * filePath, const bool missing)
   // Value Labels
   List labelList = List(); //put labels into this list
   char tag[6];
-  if (!fread(tag, sizeof(tag)-1, 1, file))
-    perror ("Error reading label tag");
-  tag[5] = '\0';
-  string const lbltag = "<lbl>" ;
-  if (tag == lbltag) {
-    while(tag == lbltag) {
+  readstr(tag, file, sizeof(tag));
 
-      // length of value_label_table
-      int32_t nlen;
-      if (fread (&nlen, sizeof(nlen), 1, file) == 0)
-        perror ("Error reading  length of value_label_table");
+  char lbltag[6] = "<lbl>";
+  lbltag[5] = '\0';
 
-      // name of this label set
-      char nlabname[33];
-      if (!fread(nlabname, sizeof(nlabname), 1, file))
-        perror ("Error reading labelname");
+  while(strcmp(lbltag,tag)==0) {
 
-      //padding
-      fseek(file, 3, SEEK_CUR);
+    // length of value_label_table
+    int32_t nlen = readbin(nlen, file, swapit);
 
-      // value_label_table for actual label set
-      int32_t labn;
-      if (fread(&labn, sizeof(labn), 1, file) == 0)
-        perror ("Error reading length of label set entry");
+    // name of this label set
+    char nlabname[33];
+    if (!fread(nlabname, sizeof(nlabname), 1, file))
+      perror ("Error reading labelname");
 
-      int32_t txtlen;
-      if (fread(&txtlen, sizeof(txtlen), 1, file) == 0)
-        perror ("Error reading length of label text");
+    //padding
+    fseek(file, 3, SEEK_CUR);
 
-      // offset for each label
-      // off0 : label 0 starts at off0
-      // off1 : label 1 starts at off1 ...
-      IntegerVector off(labn);
-      for (int i=0; i < labn; ++i) {
-        int32_t noff;
-        if (fread(&noff, sizeof(noff), 1, file) == 0)
-          perror ("Error reading label offset");
-        off[i] = noff;
-      }
+    // value_label_table for actual label set
+    int32_t labn = readbin(labn, file, swapit);
 
-      // needed for match
-      IntegerVector laborder = clone(off);
-      //laborder.erase(labn+1);
-      IntegerVector labordersort = clone(off);
-      //labordersort.erase(labn+1);
-      std::sort(labordersort.begin(), labordersort.end());
+    int32_t txtlen = readbin(txtlen, file, swapit);
 
-      // needs txtlen for loop
-      off.push_back(txtlen);
-
-      // sort offsets so we can read labels sequentially
-      std::sort(off.begin(), off.end());
-
-      // create an index to sort lables along the code values
-      // this is done while factor creation
-      IntegerVector indx(labn);
-      indx = match(laborder,labordersort);
-
-      // code for each label
-      IntegerVector code(labn);
-      for (int i=0; i < labn; ++i) {
-        int32_t val;
-        if (fread(&val, sizeof(val), 1, file) == 0)
-          perror ("Error reading label code");
-        code[i] = val;
-      }
-
-      // label text
-      CharacterVector label(labn);
-      for (int i=0; i < labn; ++i) {
-        int const lablen = off[i+1]-off[i];
-        char lab[lablen];
-        if (!fread(lab, lablen,1, file))
-          perror ("Error reading label");
-        label[i] = lab;
-      }
-
-      // sort labels according to indx
-      CharacterVector labelo(labn);
-      for (int i=0; i < labn; ++i) {
-        labelo[i] = label[indx[i]-1];
-      }
-
-      // create table for actual label set
-      string const labset = nlabname;
-      code.attr("names") = labelo;
-
-      // add this set to output list
-      labelList.push_front( code, labset);
-
-      fseek(file, 6, SEEK_CUR); //</lbl>
-
-      if (!fread(tag, sizeof(tag)-1, 1, file))
-        perror ("Error reading label tag2"); // next <lbl>?
-      tag[5] = '\0';
+    // offset for each label
+    // off0 : label 0 starts at off0
+    // off1 : label 1 starts at off1 ...
+    IntegerVector off(labn);
+    for (int i=0; i < labn; ++i) {
+      int32_t noff = readbin(noff, file, swapit);
+      off[i] = noff;
     }
+
+    // needed for match
+    IntegerVector laborder = clone(off);
+    //laborder.erase(labn+1);
+    IntegerVector labordersort = clone(off);
+    //labordersort.erase(labn+1);
+    std::sort(labordersort.begin(), labordersort.end());
+
+    // needs txtlen for loop
+    off.push_back(txtlen);
+
+    // sort offsets so we can read labels sequentially
+    std::sort(off.begin(), off.end());
+
+    // create an index to sort lables along the code values
+    // this is done while factor creation
+    IntegerVector indx(labn);
+    indx = match(laborder,labordersort);
+
+    // code for each label
+    IntegerVector code(labn);
+    for (int i=0; i < labn; ++i) {
+      int32_t val = readbin(val, file, swapit);
+      code[i] = val;
+    }
+
+    // label text
+    CharacterVector label(labn);
+    for (int i=0; i < labn; ++i) {
+      int const lablen = off[i+1]-off[i];
+      char lab[lablen];
+      if (!fread(lab, lablen,1, file))
+        perror ("Error reading label");
+      label[i] = lab;
+    }
+
+    // sort labels according to indx
+    CharacterVector labelo(labn);
+    for (int i=0; i < labn; ++i) {
+      labelo[i] = label[indx[i]-1];
+    }
+
+    // create table for actual label set
+    string const labset = nlabname;
+    code.attr("names") = labelo;
+
+    // add this set to output list
+    labelList.push_front( code, labset);
+
+    fseek(file, 6, SEEK_CUR); //</lbl>
+
+    readstr(tag, file, sizeof(tag));
   }
+
+  fclose(file);
 
   // define R character vector for meta data
   CharacterVector datalabelCV(1);
@@ -559,6 +543,5 @@ List stata(const char * filePath, const bool missing)
   df.attr("expansion.fields") = ch;
   df.attr("strl") = strlstable;
 
-  fclose(file);
   return ddf;
 }

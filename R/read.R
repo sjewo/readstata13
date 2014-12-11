@@ -6,7 +6,7 @@
 #' @param file  string. Path to the dta file you want to import.
 #' @param convert.factors logical. If TRUE factors from Stata value labels are created.
 #' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
-#' @param encoding string. By default strings will be converted from Windows-1252 to system encoding. 
+#' @param encoding string. By default strings will be converted from Windows-1252 to system encoding.
 #'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
 #' @param convert.underscore logical. Changes variable name from "_" to "."
 #' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
@@ -70,7 +70,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       missings <- vector("list", length(data))
       names(missings) <- names(data)
       for(v in which(types > 65525L)) {
-        this.type <- abs(types[v] - 65530L)+1
+        this.type <- 65531L-types[v]
         nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
         natype <- (data[[v]][nas] - stata.na$min[this.type])/stata.na$inc[this.type]
         natype[is.na(natype)] <- 0L
@@ -190,7 +190,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if(labname %in% names(label) & vartype>65527) {
         # get unique values / omit NA
         varunique <- na.omit(unique(data[,i]))
-        # assign label if label set is complete 
+        # assign label if label set is complete
         if (all(varunique%in%labtable)) {
           data[,i] <- factor(data[,i], levels=labtable,
                              labels=names(labtable))

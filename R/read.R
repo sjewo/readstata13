@@ -19,7 +19,7 @@
 #'   \item{datalabel:}{Dataset label}
 #'   \item{time.stamp:}{Timestamp of file creation}
 #'   \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
-#'   \item{type:}{Stata data type (see Stata Corp 2014)}
+#'   \item{types:}{Stata data type (see Stata Corp 2014)}
 #'   \item{val.labels:}{For each variable the name of the associated value labels in "label"}
 #'   \item{var.labels:}{Variable labels}
 #'   \item{version:}{dta file format version}
@@ -59,14 +59,15 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     names(data) <- gsub("_", ".", names(data))
 
   types <- attr(data, "types")
-  stata.na <- data.frame(type = 65526L:65530L,
-                         min = c(101, 32741, 2147483621, 2^127, 2^1023),
-                         inc = c(1,1,1,2^115,2^1011)
-  )
 
   if(missing.type)
   {
-    if (as.numeric(attr(data, "version")) >= 117L) {
+    stata.na <- data.frame(type = 65526L:65530L,
+                           min = c(101, 32741, 2147483621, 2^127, 2^1023),
+                           inc = c(1,1,1,2^115,2^1011)
+    )
+
+    if (attr(data, "version") >= 117L) {
       missings <- vector("list", length(data))
       names(missings) <- names(data)
       for(v in which(types > 65525L)) {
@@ -85,7 +86,6 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   val.labels <- attr(data, "val.labels")
   var.labels <- attr(data, "var.labels")
-  type <- attr(data, "type")
   label <- attr(data, "label.table")
 
   ## Encoding
@@ -112,7 +112,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     }
 
     # recode character variables
-    for(v in (1:ncol(data))[type <= 2045]) {
+    for(v in (1:ncol(data))[types <= 2045]) {
       data[,v] <- iconv(data[,v], from="CP1252", sub="byte")
     }
 
@@ -149,25 +149,26 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     }
 
     # recode strL 0 to void
-    for (v in (1:ncol(data))[type == 32768])
+    for (v in (1:ncol(data))[types == 32768])
     {
       data[[v]] <- gsub("00000000000000000000","", data[[v]] )
     }
+
+    # if strls are in data.frame remove attribute strl
     attr(data, "strl") <- NULL
   }
 
-  ## convert dates
-  convert_dt_c <- function(x)
-    as.POSIXct((x+0.1)/1000, origin = "1960-01-01") # avoid rounding down
-
-  convert_dt_C <- function(x) {
-    ls <- .leap.seconds + seq_along(.leap.seconds)
-    z <- (x+0.1)/1000 # avoid rounding down
-    z <- z - rowSums(outer(z, ls, ">="))
-    as.POSIXct(z, origin = "1960-01-01")
-  }
-
   if (convert.dates) {
+    convert_dt_c <- function(x)
+      as.POSIXct((x+0.1)/1000, origin = "1960-01-01") # avoid rounding down
+
+    convert_dt_C <- function(x) {
+      ls <- .leap.seconds + seq_along(.leap.seconds)
+      z <- (x+0.1)/1000 # avoid rounding down
+      z <- z - rowSums(outer(z, ls, ">="))
+      as.POSIXct(z, origin = "1960-01-01")
+    }
+
     ff <- attr(data, "formats")
     ## dates <- grep("%-*d", ff)
     ## Stata 12 introduced 'business dates'
@@ -192,7 +193,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     vnames <- names(data)
     for (i in seq_along(val.labels)) {
       labname <- val.labels[i]
-      vartype <- type[i]
+      vartype <- types[i]
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
       if(labname %in% names(label) & vartype>65527) {

@@ -241,17 +241,26 @@ List stata(const char * filePath, const bool missing)
 
   // build list and add vector of right type for each variable
   List df(k);
-  for (unsigned int i=0;i<k;++i)
+  for (unsigned int i=0; i<k; ++i)
   {
-    if (vartype[i] > 32768)
+    int const type = vartype[i];
+    switch(type)
     {
-      if (vartype[i] > 65527)
-        df[i] = IntegerVector(n);
-      else
-        df[i] = NumericVector(n);
+    case 65526:
+    case 65527:
+      SET_VECTOR_ELT(df, i, NumericVector(no_init(n)));
+      break;
+
+    case 65528:
+    case 65529:
+    case 65530:
+      SET_VECTOR_ELT(df, i, IntegerVector(no_init(n)));
+      break;
+
+      default:
+        SET_VECTOR_ELT(df, i, CharacterVector(no_init(n)));
+      break;
     }
-    else
-      df[i] = CharacterVector(n);
   }
 
   // fill with data
@@ -355,7 +364,13 @@ List stata(const char * filePath, const bool missing)
   }
 
   // attach varnames
+  IntegerVector row_names = no_init(n);
+  for (int32_t i = 0; i < row_names.length(); ++i) {
+    row_names[i] = i+1;
+  }
+  df.attr("row.names") = row_names;
   df.attr("names") = varnames;
+  df.attr("class") = "data.frame";
   fseek(file, 14, SEEK_CUR); //</data><strls>
 
   //strL
@@ -532,19 +547,17 @@ List stata(const char * filePath, const bool missing)
   CharacterVector version(1);
   version[0] = relver;
 
-  // convert list to data.frame
-  DataFrame ddf = DataFrame::create(df,  _["stringsAsFactors"] = false );
   // assign attributes
-  ddf.attr("datalabel") = datalabelCV;
-  ddf.attr("time.stamp") = timestampCV;
-  ddf.attr("formats") = formats;
-  ddf.attr("types") = vartype;
-  ddf.attr("val.labels") = valLabels;
-  ddf.attr("var.labels") = varLabels;
-  ddf.attr("version") = version;
-  ddf.attr("label.table") = labelList;
-  ddf.attr("expansion.fields") = ch;
-  ddf.attr("strl") = strlstable;
+  df.attr("datalabel") = datalabelCV;
+  df.attr("time.stamp") = timestampCV;
+  df.attr("formats") = formats;
+  df.attr("types") = vartype;
+  df.attr("val.labels") = valLabels;
+  df.attr("var.labels") = varLabels;
+  df.attr("version") = version;
+  df.attr("label.table") = labelList;
+  df.attr("expansion.fields") = ch;
+  df.attr("strl") = strlstable;
 
   fclose(file);
   return ddf;

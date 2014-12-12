@@ -15,7 +15,7 @@ Assign Stata labels to a variable
 }
 \examples{
 dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",
-                   convert.factors=F)
+                   convert.factors = FALSE)
 
 # compare vectors
 set.label(dat, "foreign")

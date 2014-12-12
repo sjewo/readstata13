@@ -6,10 +6,10 @@ get.filepath <- function(path=""){
         filepath <- path.expand(path)
       else
           filepath <- path
-      
+
       if(!file.exists(filepath))
         return("File does not exist.")
-      
+
       return(filepath)
     }
 
@@ -60,8 +60,8 @@ get.label.table <- function(x, label.name) {
 #' @param var.name character. Name of the variable in the data.frame
 #' @export
 #' @examples
-#' dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta", 
-#'                    convert.factors=F)
+#' dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",
+#'                    convert.factors = FALSE)
 #'
 #' # compare vectors
 #' set.label(dat, "foreign")

@@ -4,8 +4,8 @@
 \title{Read Stata 13 Binary Files}
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
-  encoding = "", convert.underscore = FALSE, missing.type = FALSE,
-  convert.dates = TRUE, replace.strl = FALSE)
+  encoding = NULL, convert.underscore = FALSE, missing.type = FALSE,
+  convert.dates = TRUE, replace.strl = FALSE, add.rownames = FALSE)
 }
 \arguments{
 \item{file}{string. Path to the dta file you want to import.}
@@ -14,7 +14,7 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 
 \item{generate.factors}{logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
 
-\item{encoding}{string. By default strings will be converted from Windows-1252 to system encoding.
+\item{encoding}{string. If wanted strings can be converted from Windows-1252 to system encoding.
 Options are "latin1" or "utf-8" to specify target encoding explicitly.}
 
 \item{convert.underscore}{logical. Changes variable name from "_" to "."}
@@ -25,6 +25,8 @@ Options are "latin1" or "utf-8" to specify target encoding explicitly.}
 \item{convert.dates}{logical. If TRUE Stata dates are converted.}
 
 \item{replace.strl}{logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
+
+\item{add.rownames}{logical. If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes include
@@ -32,12 +34,13 @@ The function returns a data.frame with attributes. The attributes include
   \item{datalabel:}{Dataset label}
   \item{time.stamp:}{Timestamp of file creation}
   \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
-  \item{type:}{Stata data type (see Stata Corp 2014)}
+  \item{types:}{Stata data type (see Stata Corp 2014)}
   \item{val.labels:}{For each variable the name of the associated value labels in "label"}
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
   \item{label.table:}{List of value labels.}
-  \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and the second element the string.}
+  \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and
+   the second element the string.}
   \item{expansion.fields:}{list providing variable name, characteristic name
    and the contents of Stata characteristic field.}
   \item{missing:}{List of numeric vectors with Stata missing type for each variable.}
@@ -46,6 +49,30 @@ The function returns a data.frame with attributes. The attributes include
 \description{
 \code{read.dta13} reads a Stata 13 dta file bytewise and imports the data
 into a data.frame.
+}
+\details{
+If the filename is a url, the file will be downloaded as a temporary file and read afterwards.
+
+Stata files are encoded in ansinew. Depending on your systems default encoding certain characters may appear wrong.
+Using a correct encoding may fix these.
+
+Variable names stored inside the dta-file will form the variables of the resulting data.frame. Stata types char, byte,
+and int will become integer; float and double will become numerics. Respective missing values are handled, though R only
+knows a single missing type, while Stata knows 27 hence all Stata missings will become NA in R. If you need to keep track
+of Statas original missing types, you may use \code{missing.type=TRUE}.
+
+Stata dates are converted to R's Date class the same way foreign handles dates.
+
+Stata 13 introduced a new character type called strL. strLs are able to store strings of any size up to 2 billion
+characters. While R is able to store strings of this size in a character, certain data.frames may appear messed, if long
+strings are inserted default is \code{FALSE}.
+
+In R you may use rownames to store characters (see for instance \code{data(swiss)}). In Stata this is not possible and
+rownames have to be stored as a variable. If this is the case for your file and you want to use rownames,
+\code{add.rownames=TRUE} will convert the first variable of the dta-file into rownames of the resulting data.frame.
+
+Beginning with Stata 13 (format 117) a new dta-format was introduced, therefore reading dta-files from earlier Stata
+versions is not implemented.
 }
 \note{
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().

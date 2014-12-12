@@ -34,6 +34,19 @@ static void readstr(char *var, FILE * fp, int nchar)
   var[nchar] = '\0';
 }
 
+int test(std::string testme, FILE * file)
+{
+  const char *testMe = testme.c_str();
+  char test[1+testme.size()];
+  readstr(test,file, sizeof(test));
+  if (strcmp(testMe,test)!=0)
+  {
+    printf("When attempting to read %s:", testme.c_str());
+
+    throw std::range_error("Something went wrong!");
+  }
+}
+
 //' Reads the binary Stata file
 //'
 //' @param filePath The full systempath to the dta file you want to import.

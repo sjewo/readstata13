@@ -683,6 +683,7 @@ List stata(const char * filePath, const bool missing)
   df.attr("label.table") = labelList;
   df.attr("expansion.fields") = ch;
   df.attr("strl") = strlstable;
+  df.attr("byteorder") = byteorder;
 
   return df;
 }

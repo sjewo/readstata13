@@ -60,7 +60,8 @@ List stata(const char * filePath, const bool missing)
   if (strcmp(one,two)!=0)
     throw std::range_error("Not a version 13 dta-file.");
 
-  fseek(file, 26, SEEK_CUR);
+  fseek(file, 18, SEEK_CUR);// stata_dta><header>
+  test("<release>", file);
 
   // release
 
@@ -76,25 +77,29 @@ List stata(const char * filePath, const bool missing)
   if (strcmp(release, gversion)!=0)
     throw std::range_error("Not a version 13 dta-file.");
 
-  fseek(file, 20, SEEK_CUR);
+  fseek(file, 10, SEEK_CUR); // </release>
+  test("<byteorder>", file);
 
   // LSF or MSF
   char byteorder [4];
   readstr(byteorder,file, sizeof(byteorder));
 
-  fseek(file, 14, SEEK_CUR);
+  fseek(file, 12, SEEK_CUR); // </byteorder>
+  test("<K>", file);
 
   bool swapit = strcmp(byteorder, lsf);
 
   // Number of Variables
   uint16_t k = readbin(k, file, swapit);
 
-  fseek(file, 7, SEEK_CUR); //</K><N>
+  fseek(file, 4, SEEK_CUR); //</K>
+  test("<N>", file);
 
   // Number of Observations
   uint32_t n = readbin(n, file, swapit);
 
-  fseek(file, 11, SEEK_CUR); //</N><label>
+  fseek(file, 4, SEEK_CUR); //</N>
+  test("<label>", file);
 
   // char length dataset label
   uint8_t ndlabel = readbin(ndlabel, file, swapit);
@@ -107,7 +112,8 @@ List stata(const char * filePath, const bool missing)
     datalabel[0] = '\0';
   };
 
-  fseek(file, 19, SEEK_CUR); //</label><timestamp>
+  fseek(file, 8, SEEK_CUR); //</label>
+  test("<timestamp>", file);
 
 
   // timestamp
@@ -121,7 +127,8 @@ List stata(const char * filePath, const bool missing)
     timestamp[0] = '\0';
   };
 
-  fseek(file, 26, SEEK_CUR); //</timestamp></header><map>
+  fseek(file, 21, SEEK_CUR); //</timestamp></header>
+  test("<map>", file);
 
   // map
   IntegerVector map(14);
@@ -131,7 +138,8 @@ List stata(const char * filePath, const bool missing)
     map[i] = nmap;
   }
 
-  fseek(file, 22, SEEK_CUR); //</map><variable_types>
+  fseek(file, 6, SEEK_CUR); //</map>
+  test("<variable_types>", file);
 
   //vartypes
   IntegerVector vartype(k);
@@ -141,7 +149,8 @@ List stata(const char * filePath, const bool missing)
     vartype[i] = nvartype;
   }
 
-  fseek(file, 27, SEEK_CUR); //</variable_types><varnames>
+  fseek(file, 17, SEEK_CUR); //</variable_types>
+  test("<varnames>", file);
 
   //varnames
   CharacterVector varnames(k);
@@ -152,7 +161,8 @@ List stata(const char * filePath, const bool missing)
     varnames[i] = nvarnames;
   }
 
-  fseek(file, 21, SEEK_CUR); //</varnames><sortlist>
+  fseek(file, 11, SEEK_CUR); //</varnames>
+  test("<sortlist>", file);
 
   // sortlist
   IntegerVector sortlist(k+1);
@@ -162,7 +172,8 @@ List stata(const char * filePath, const bool missing)
     sortlist[i] = nsortlist;
   }
 
-  fseek(file, 20, SEEK_CUR); //</sortlist><formats>
+  fseek(file, 11, SEEK_CUR); //</sortlist>
+  test("<formats>", file);
 
   //formats
   CharacterVector formats(k);
@@ -173,7 +184,8 @@ List stata(const char * filePath, const bool missing)
     formats[i] = nformats;
   }
 
-  fseek(file, 29, SEEK_CUR); //</formats><value_label_names>
+  fseek(file, 10, SEEK_CUR); //</formats>
+  test("<value_label_names>",file);
 
   //value_label_names
   CharacterVector valLabels(k);
@@ -183,7 +195,9 @@ List stata(const char * filePath, const bool missing)
     readstr(nvalLabels, file, sizeof(nvalLabels)+1);
     valLabels[i] = nvalLabels;
   }
-  fseek(file, 37, SEEK_CUR); //</value_label_names><variable_labels>
+
+  fseek(file, 20, SEEK_CUR); //</value_label_names>
+  test("<variable_labels>", file);
 
   // variabel_labels
   CharacterVector varLabels(k);
@@ -194,7 +208,8 @@ List stata(const char * filePath, const bool missing)
     varLabels[i] = nvarLabels;
   }
 
-  fseek(file, 35, SEEK_CUR); //</variable_labels><characteristics>
+  fseek(file, 18, SEEK_CUR); //</variable_labels>
+  test("<characteristics>", file);
 
   // characteristics
   char chtag[5] = "<ch>";
@@ -236,7 +251,8 @@ List stata(const char * filePath, const bool missing)
     readstr(tago, file, sizeof(tago));
   }
 
-  fseek(file, 20, SEEK_CUR); //aracteristics><data>
+  fseek(file, 14, SEEK_CUR); //[</ch]aracteristics>
+  test("<data>", file);
 
   // build list and add vector of right type for each variable
   List df(k);
@@ -361,7 +377,9 @@ List stata(const char * filePath, const bool missing)
   df.attr("row.names") = row_names;
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
-  fseek(file, 14, SEEK_CUR); //</data><strls>
+
+  fseek(file, 7, SEEK_CUR); //</data>
+  test("<strls>", file);
 
   //strL
   List strlstable = List(); //put strLs into this list
@@ -413,7 +431,8 @@ List stata(const char * filePath, const bool missing)
   }
 
   // after strls
-  fseek(file, 19, SEEK_CUR); //trls><value_labels>
+  fseek(file, 5, SEEK_CUR); //[</s]trls>
+  test("<value_labels>", file);
 
   // Value Labels
   List labelList = List(); //put labels into this list
@@ -504,6 +523,11 @@ List stata(const char * filePath, const bool missing)
     readstr(tag, file, sizeof(tag));
   }
 
+  fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
+  test("</stata_dta>", file);
+
+  fclose(file);
+
   // define R character vector for meta data
   CharacterVector datalabelCV(1);
   datalabelCV[0] = datalabel;
@@ -526,6 +550,5 @@ List stata(const char * filePath, const bool missing)
   df.attr("expansion.fields") = ch;
   df.attr("strl") = strlstable;
 
-  fclose(file);
   return df;
 }

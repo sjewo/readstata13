@@ -2,6 +2,7 @@
 #define SWAP_ENDIAN
 
 #include <stdint.h>
+#include <byteswap.h>
 
 template <typename T>
 T swap_endian(T t) {

@@ -1,3 +1,20 @@
+/*
+ * Copyright (C) 2014 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ *
+ * This program is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the
+ * Free Software Foundation; either version 2 of the License, or (at your
+ * option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for
+ * more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 #include <Rcpp.h>
 #include "string"
 #include <stdint.h>
@@ -13,7 +30,6 @@ using namespace std;
 #else
 #define lsf "MSF"
 #endif
-
 
 template <typename T>
 T readbin( T t , FILE * file, bool swapit)
@@ -171,7 +187,6 @@ List stata(const char * filePath, const bool missing)
 
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
-
 
   /*
   * Stata stores the byteposition of certain areas of the file here. Currently
@@ -636,7 +651,6 @@ List stata(const char * filePath, const bool missing)
     for (int i=0; i < labn; ++i) {
       labelo[i] = label[indx[i]-1];
     }
-
     // create table for actual label set
     string const labset = nlabname;
     code.attr("names") = labelo;
@@ -672,7 +686,10 @@ List stata(const char * filePath, const bool missing)
   CharacterVector version(1);
   version[0] = relver;
 
-  // assign attributes
+  /*
+  * assign attributes to the resulting data.frame
+  */
+
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;

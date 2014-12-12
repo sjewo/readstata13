@@ -1,6 +1,6 @@
 #readstata13
 
-Package to read the new Stata 13 file format (dta version 117) into a R data.frame. 
+Package to read and write the new Stata 13 file format (dta version 117) into a R data.frame. 
 
 The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rccp.
 
@@ -25,10 +25,17 @@ To install the current development version from github:
 devtools::install_github("sjewo/readstata13", ref="testing")
 ```
 
+To install the branch "write" with beta code for saving dta files from github:
+
+```R
+devtools::install_github("sjewo/readstata13", ref="write")
+```
+
 ## Usage
 ```R
 library(readstata13)
 dat <- read.dta13("path to file.dta")
+save.dta13(dat, file="newfile.dta")
 ```
 
 ## Current Status
@@ -38,6 +45,7 @@ dat <- read.dta13("path to file.dta")
 ### Working features
 
 * reading data files from disk or url and create a data.frame
+* saving dta files to disk - most features of the dta file format are supported
 * assign variable names
 * read the new strL strings and save them as attribute
 * convert stata label to factors and save them as attribute
@@ -48,8 +56,7 @@ dat <- read.dta13("path to file.dta")
 
 ### Todo
 
-* handle some more dates
-* write stata 13 dta files
+* handle some more date formats
 * cleanup of Rccp code
 
 ### Test

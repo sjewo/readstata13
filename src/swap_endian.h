@@ -32,11 +32,13 @@ T swap_endian(T t) {
   if (typeid(T)  == typeid(uint64_t))
     return __builtin_bswap64(t);
 
+  union v {
+    double       d;
+    float       f;
+    uint64_t    i;
+  } val;
+
   if (typeid(T) == typeid(float)){
-    union v {
-      float       f;
-      uint32_t    i;
-    } val;
 
     val.f = t;
     val.i = __builtin_bswap32(val.i);
@@ -44,10 +46,6 @@ T swap_endian(T t) {
   }
 
   if (typeid(T) == typeid(double)){
-    union v {
-      double       d;
-      uint64_t    i;
-    } val;
 
     val.d = t;
     val.i = __builtin_bswap64(val.i);

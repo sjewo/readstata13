@@ -334,7 +334,9 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           int32_t const na = (0x7fffffe5);
           int32_t val_i = as<IntegerVector>(dat[i])[j];
 
-          if (val_i == NA_INTEGER)
+          // cout << val_i << endl;
+
+          if (val_i == NA_INTEGER | R_IsNA(val_i) )
             val_i = na;
 
           writebin(val_i, dta, swapit);
@@ -344,10 +346,17 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // int
         case 65529:
         {
-          int16_t  const na = (0x7fe5); // 32741
-          int16_t val_i = as<IntegerVector>(dat[i])[j];
+          int16_t const na = (32741);
+          union v {
+            int32_t   f;
+            int16_t    i;
+          } val;
 
-          if (val_i == NA_INTEGER)
+          val.f = as<IntegerVector>(dat[i])[j];
+
+          int16_t val_i = val.i;
+
+          if (val.f == -2147483648)
             val_i = na;
 
           writebin(val_i, dta, swapit);
@@ -357,10 +366,17 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // byte
         case 65530:
         {
-          char const na = (0x65); // 101
-          char val_i = as<IntegerVector>(dat[i])[j];
+          int8_t const na = (101);
+          union v {
+            int32_t   f;
+            int8_t    i;
+          } val;
 
-          if (val_i == NA_INTEGER)
+          val.f = as<IntegerVector>(dat[i])[j];
+
+          int8_t val_i = val.i;
+
+          if (val.f == -2147483648)
             val_i = na;
 
           writebin(val_i, dta, swapit);

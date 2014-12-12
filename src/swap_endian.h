@@ -7,8 +7,8 @@
   + __GNUC_MINOR__ * 100              \
   + __GNUC_PATCHLEVEL__)
 
-/* Test for GCC > 4.8.0 */
-#if GCC_VERSION > 40800
+/* Test for GCC < 4.8.0 */
+#if GCC_VERSION < 40800
 static inline unsigned short __builtin_bswap16(unsigned short a)
 {
   return (a<<8)|(a>>8);

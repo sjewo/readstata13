@@ -112,9 +112,6 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     varTmin <- sapply(data[ff], function(x) min(x,na.rm=TRUE))
     varTmax <- sapply(data[ff], function(x) max(x,na.rm=TRUE))
 
-    print(varTmin)
-    print(varTmax)
-
     # check if numeric is float or double
     fminmax <- 1.701e+38
     for (k in names(which(ff)))

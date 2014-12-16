@@ -188,5 +188,5 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
   attr(data, "expansion.fields") <- rev(expfield)
 
-  stataWrite(filePath = filepath, dat = data)
+  invisible( stataWrite(filePath = filepath, dat = data) )
 }

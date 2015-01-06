@@ -52,6 +52,7 @@ save.dta13(dat, file="newfile.dta")
 * read some meta data (timestamp, dataset label, formats,...)
 * convert strings to system encoding
 * handle different NA values
+* handle multiple label languages
 * convert dates
 
 ### Todo

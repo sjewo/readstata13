@@ -2,6 +2,7 @@ testing
 - write dta-files
 - read/write LSF and MSF files
 - source testing and cleaning
+- support for multiple label languages (see http://www.stata.com/manuals13/dlabellanguage.pdf)
 
 0.4
 - convert.dates from foreign::read.dta()

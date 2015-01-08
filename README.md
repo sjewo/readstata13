@@ -25,12 +25,6 @@ To install the current development version from github:
 devtools::install_github("sjewo/readstata13", ref="testing")
 ```
 
-To install the branch "write" with beta code for saving dta files from github:
-
-```R
-devtools::install_github("sjewo/readstata13", ref="write")
-```
-
 ## Usage
 ```R
 library(readstata13)

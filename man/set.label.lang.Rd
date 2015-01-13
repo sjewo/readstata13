@@ -10,6 +10,8 @@ set.label.lang(dat, lang = NA, generate.factors = FALSE)
 \item{dat}{data.frame. Imported data.frame}
 
 \item{lang}{string. Label language. Default language defined by get.lang() is used if NA}
+
+\item{generate.factors}{logical. If TRUE generates factors.}
 }
 \value{
 Returns a data.frame with value labels in language "lang".

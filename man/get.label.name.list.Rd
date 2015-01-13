@@ -10,8 +10,6 @@ get.label.name.list(dat, lang = NA)
 \item{dat}{data.frame. Imported data.frame}
 
 \item{lang}{string. Label language. Default language defined by get.lang() is used if NA}
-
-\item{var.name}{character. Variable name}
 }
 \value{
 Returns an named vector of variable labels

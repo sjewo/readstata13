@@ -10,7 +10,7 @@ get.lang(dat)
 \item{dat}{data.frame. Imported data.frame}
 }
 \value{
-Returns a language label
+If a language label was set, it will be returned otherwise NA.
 }
 \description{
 Show default label language

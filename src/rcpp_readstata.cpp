@@ -126,7 +126,8 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 12, SEEK_CUR); // </byteorder>
   test("<K>", file);
 
-  bool swapit = strcmp(byteorder, lsf);
+  bool swapit;
+  swapit = strcmp(byteorder, lsf);
 
   /*
   * Number of Variables

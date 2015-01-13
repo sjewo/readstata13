@@ -39,18 +39,17 @@ T swap_endian(T t) {
   } val;
 
   if (typeid(T) == typeid(float)){
-
     val.f = t;
     val.i = __builtin_bswap32(val.i);
     return val.f;
   }
 
   if (typeid(T) == typeid(double)){
-
     val.d = t;
     val.i = __builtin_bswap64(val.i);
     return val.d;
   }
+
   else
     return t;
 };

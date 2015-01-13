@@ -265,8 +265,10 @@ List stata(const char * filePath, const bool missing)
   * Vector size is k+1.
   */
 
-  IntegerVector sortlist(k+1);
-  for (uint16_t i=0; i<k+1; ++i)
+  uint32_t big_k = k+1;
+
+  IntegerVector sortlist(big_k);
+  for (uint32_t i=0; i<big_k; ++i)
   {
     uint16_t nsortlist = 0;
     nsortlist = readbin(nsortlist, file, swapit);

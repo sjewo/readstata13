@@ -126,14 +126,14 @@ List stata(const char * filePath, const bool missing)
   fseek(file, 12, SEEK_CUR); // </byteorder>
   test("<K>", file);
 
-  bool swapit;
-  swapit = strcmp(byteorder, lsf);
+  bool swapit = 1;
+//  swapit = strcmp(byteorder, lsf);
 
   /*
   * Number of Variables
   */
 
-  uint16_t k;
+  uint16_t k = 0;
   k = readbin(k, file, swapit);
 
   fseek(file, 4, SEEK_CUR); //</K>
@@ -143,7 +143,7 @@ List stata(const char * filePath, const bool missing)
   * Number of Observations
   */
 
-  uint32_t n;
+  uint32_t n = 0;
   n = readbin(n, file, swapit);
 
   fseek(file, 4, SEEK_CUR); //</N>
@@ -156,7 +156,7 @@ List stata(const char * filePath, const bool missing)
   * datalabel: string max length 80
   */
 
-  uint8_t ndlabel;
+  uint8_t ndlabel = 0;
   ndlabel = readbin(ndlabel, file, swapit);
 
   char datalabel [ndlabel];
@@ -177,7 +177,7 @@ List stata(const char * filePath, const bool missing)
   * timestamp: empty or 17 byte string
   */
 
-  uint8_t ntimestamp;
+  uint8_t ntimestamp = 0;
   ntimestamp = readbin(ntimestamp, file, swapit);
 
   char timestamp [ntimestamp];
@@ -213,7 +213,7 @@ List stata(const char * filePath, const bool missing)
   IntegerVector map(14);
   for (int i=0; i <14; ++i)
   {
-    uint64_t nmap;
+    uint64_t nmap = 0;
     nmap = readbin(nmap, file, swapit);
     map[i] = nmap;
   }
@@ -235,7 +235,7 @@ List stata(const char * filePath, const bool missing)
   IntegerVector vartype(k);
   for (unsigned int i=0; i<k; ++i)
   {
-    uint16_t nvartype;
+    uint16_t nvartype = 0;
     nvartype = readbin(nvartype, file, swapit);
     vartype[i] = nvartype;
   }
@@ -266,9 +266,9 @@ List stata(const char * filePath, const bool missing)
   */
 
   IntegerVector sortlist(k+1);
-  for (unsigned int i=0; i<k+1; ++i)
+  for (uint16_t i=0; i<k+1; ++i)
   {
-    uint16_t nsortlist;
+    uint16_t nsortlist = 0;
     nsortlist = readbin(nsortlist, file, swapit);
     sortlist[i] = nsortlist;
   }
@@ -346,7 +346,7 @@ List stata(const char * filePath, const bool missing)
 
   while (strcmp(tago,chtag)==0)
   {
-    uint32_t nocharacter;
+    uint32_t nocharacter = 0;
     nocharacter = readbin(nocharacter, file, swapit);
 
     char chvarname[33];
@@ -407,9 +407,9 @@ List stata(const char * filePath, const bool missing)
   }
 
   // 2. fill it with data
-  for(unsigned int j=0; j<n; ++j)
+  for(uint32_t j=0; j<n; ++j)
   {
-    for (unsigned int i=0; i<k; ++i)
+    for (uint16_t i=0; i<k; ++i)
     {
       int const type = vartype[i];
       switch(type < 2046 ? 2045 : type)
@@ -417,7 +417,7 @@ List stata(const char * filePath, const bool missing)
         // double
       case 65526:
       {
-        double erg;
+        double erg = 0;
         erg = readbin(erg, file, swapit);
         double const dmin = -0x1.fffffffffffffp1023;
         double const dmax = 0x1.fffffffffffffp1022;
@@ -431,7 +431,7 @@ List stata(const char * filePath, const bool missing)
         // float
       case 65527:
       {
-        float erg;
+        float erg = 0;
         erg = readbin(erg, file, swapit);
         float const minmax = 0x1.fffffp126;
 
@@ -444,7 +444,7 @@ List stata(const char * filePath, const bool missing)
         //long
       case 65528:
       {
-        int32_t erg;
+        int32_t erg = 0;
         erg = readbin(erg, file, swapit);
 
         if ((missing == FALSE) & ((erg<(-2147483647)) | (erg>2147483620)) )
@@ -456,7 +456,7 @@ List stata(const char * filePath, const bool missing)
         // int
       case 65529:
       {
-        int16_t erg;
+        int16_t erg = 0;
         erg = readbin(erg, file, swapit);
 
         if ((missing == FALSE) & ((erg<(-32767)) | (erg>32740)) )
@@ -468,7 +468,7 @@ List stata(const char * filePath, const bool missing)
         // byte
       case 65530:
       {
-        int8_t erg;
+        int8_t erg = 0;
         erg = readbin(erg, file, swapit);
 
         if ((missing == FALSE) & ( (erg<(-127)) | (erg>100)) )
@@ -480,7 +480,7 @@ List stata(const char * filePath, const bool missing)
         // strings with 2045 or fewer characters
       case 2045:
       {
-        int32_t gre;
+        int32_t gre = 0;
         gre = vartype[i];
 
         char erg[gre];
@@ -491,7 +491,7 @@ List stata(const char * filePath, const bool missing)
         // string of any length
       case 32768:
       {// strL 2 4bit
-        int32_t v, o;
+        int32_t v = 0, o = 0;
         v = readbin(v, file, swapit);
         o = readbin(o, file, swapit);
 
@@ -538,7 +538,7 @@ List stata(const char * filePath, const bool missing)
     CharacterVector strls(2);
 
     // 2x4 bit (strl[vo1,vo2])
-    int32_t v, o;
+    int32_t v = 0, o = 0;
     v = readbin(v, file, swapit);
     o = readbin(o, file, swapit);
     char erg[22];
@@ -547,9 +547,11 @@ List stata(const char * filePath, const bool missing)
     strls(0) = erg;
 
     // (129 = binary) | (130 = ascii)
-    uint8_t t = readbin(t, file, swapit);
+    uint8_t t = 0;
+    t = readbin(t, file, swapit);
 
-    uint32_t len = readbin(len, file, swapit);
+    uint32_t len = 0;
+    len = readbin(len, file, swapit);
 
     if (t==129)
     {
@@ -594,7 +596,7 @@ List stata(const char * filePath, const bool missing)
 
   while(strcmp(lbltag,tag)==0)
   {
-    int32_t nlen, labn, txtlen, noff, val;
+    int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
 
     // length of value_label_table
     nlen = readbin(nlen, file, swapit);

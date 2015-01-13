@@ -336,7 +336,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
           // cout << val_i << endl;
 
-          if (val_i == NA_INTEGER | R_IsNA(val_i) )
+          if ( (val_i == NA_INTEGER) | (R_IsNA(val_i)) )
             val_i = na;
 
           writebin(val_i, dta, swapit);

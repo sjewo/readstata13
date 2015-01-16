@@ -57,21 +57,21 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
   uint16_t const k = dat.size();
   uint32_t const n = dat.nrows();
 
-  CharacterVector nvarnames = dat.attr("names");
-  CharacterVector valLabels = dat.attr("vallabels");
-
-  List formats = dat.attr("formats");
-  List vartypes = dat.attr("types");
-  List varLabels = dat.attr("var.labels");
-  List chs = dat.attr("expansion.fields");
-  List labeltable = dat.attr("label.table");
-
-  char version[4] = "117";
-  uint8_t ntimestamp = 0;
-
+  const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
   datalabel[datalabel.size()] = '\0';
-  uint8_t ndlabel = 0;
+
+  CharacterVector valLabels = dat.attr("vallabels");
+  CharacterVector nvarnames = dat.attr("names");
+
+  List chs = dat.attr("expansion.fields");
+  List formats = dat.attr("formats");
+  List labeltable = dat.attr("label.table");
+  List varLabels = dat.attr("var.labels");
+  List vartypes = dat.attr("types");
+
+  char version[4] = "117";
+  uint8_t ntimestamp = 0, ndlabel = 0;
 
   const string head = "<stata_dta><header><release>";
   const string byteord = "</release><byteorder>";
@@ -79,9 +79,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
   const string num = "</K><N>";
   const string lab = "</N><label>";
   const string timest = "</label><timestamp>";
-
-  const string timestamp = dat.attr("timestamp");
-
   const string endheader = "</timestamp></header>";
 
   const string startmap = "<map>";
@@ -126,7 +123,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
   string end = "</stata_dta>";
   end[end.size()] = '\0';
 
-  //     ofstream dta (filePath);
   fstream dta (filePath, ios::out | ios::binary);
   if (dta.is_open())
   {
@@ -148,6 +144,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     writebin(n, dta, swapit);
     dta.write(lab.c_str(),lab.size());
 
+
     /* write a datalabel */
     if(!datalabel.empty())
     {
@@ -157,6 +154,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     } else {
       dta.write((char*)&ndlabel,sizeof(ndlabel));
     }
+
 
     /* timestamp size is 0 (= no timestamp) or 17 */
     dta.write(timest.c_str(),timest.size());
@@ -294,8 +292,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     map(9) = dta.tellg();
     dta.write(startdata.c_str(),startdata.size());
 
-    IntegerVector V;
-    IntegerVector O;
+    IntegerVector V, O;
     CharacterVector STRL;
 
     for(uint32_t j = 0; j < n; ++j)
@@ -396,8 +393,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         case 32768:
         {
           /* Stata uses +1 */
-          int32_t v = i+1;
-          int32_t o = j+1;
+          int32_t v = i+1, o = j+1;
           int64_t z = 0;
 
           CharacterVector b = as<CharacterVector>(dat[i]);
@@ -429,8 +425,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     for(int i =0; i < strlsize; ++i )
     {
       const string gso = "GSO";
-      int32_t v = V[i];
-      int32_t o = O[i];
+      int32_t v = V[i], o = O[i];
       uint8_t t = 129; //Stata binary type, no trailing zero.
       const string strL = as<string>(STRL[i]);
       uint32_t len = strL.size();
@@ -480,7 +475,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         int32_t offI, labvalueI;
 
         int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
-
 
         dta.write(startlbl.c_str(),startlbl.size());
         writebin(nlen, dta, swapit);

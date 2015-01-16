@@ -101,14 +101,16 @@ List stata(const char * filePath, const bool missing)
   * version is a 4 byte character e.g. "117"
   */
 
-  char gversion[4] = "117"; //g = good
-  gversion[3] = '\0';
+  int8_t gversion = 117L; //g = good
 
   char version [4];
   readstr(version, file, sizeof(version));
 
+  IntegerVector versionIV(1);
+  versionIV(0) = atoi(version);
+
   // check the release version. continue if "117"
-  if (strcmp(version, gversion)!=0)
+  if (gversion!=atoi(version))
     throw std::range_error("Version: Not a version 13 dta-file.");
 
   fseek(file, 10, SEEK_CUR); // </release>
@@ -164,6 +166,9 @@ List stata(const char * filePath, const bool missing)
   } else {
     datalabel[0] = '\0';
   }
+
+  CharacterVector datalabelCV(1);
+  datalabelCV(0) = datalabel;
 
   fseek(file, 8, SEEK_CUR); //</label>
   test("<timestamp>", file);
@@ -508,14 +513,14 @@ List stata(const char * filePath, const bool missing)
   }
 
   // 3. Create a data.frame
-//   IntegerVector row_names = no_init(n);
-//   for (int32_t i = 0; i < row_names.length(); ++i) {
-//     row_names[i] = i+1;
-//   }
-//   df.attr("row.names") = row_names;
+  IntegerVector row_names = no_init(n);
+  for (int32_t i = 0; i < row_names.length(); ++i) {
+    row_names[i] = i+1;
+  }
+  df.attr("row.names") = row_names;
 
-  R_xlen_t nrows = Rf_length(df[0]);
-  df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
+//   R_xlen_t nrows = Rf_length(df[0]);
+//   df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
 
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
@@ -693,13 +698,13 @@ List stata(const char * filePath, const bool missing)
    * assign attributes to the resulting data.frame
    */
 
-  df.attr("datalabel") = wrap(datalabel);
+  df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;
   df.attr("types") = vartype;
   df.attr("val.labels") = valLabels;
   df.attr("var.labels") = varLabels;
-  df.attr("version") = wrap(atoi(version));
+  df.attr("version") = versionIV;
   df.attr("label.table") = labelList;
   df.attr("expansion.fields") = ch;
   df.attr("strl") = strlstable;

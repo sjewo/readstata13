@@ -85,32 +85,30 @@ List stata(const char * filePath, const bool missing)
   * check the first byte. continue if "<"
   */
 
-  char one[2];
-  readstr(one, file, sizeof(one));
+  char fbit[2];
+  readstr(fbit, file, sizeof(fbit));
 
-  char two[2] = "<";
-  two[1] = '\0';
+  char expfbit[2] = "<";
+  expfbit[1] = '\0';
 
-  if (strcmp(one,two)!=0)
+  if (strcmp(fbit,expfbit)!=0)
     throw std::range_error("First byte: Not a version 13 dta-file.");
 
   fseek(file, 18, SEEK_CUR);// stata_dta><header>
   test("<release>", file);
 
   /*
-  * release is a 4 byte character e.g. "117"
+  * version is a 4 byte character e.g. "117"
   */
 
-  char gversion[4] = "117";
+  char gversion[4] = "117"; //g = good
   gversion[3] = '\0';
 
-  char release [4];
-  readstr(release, file, sizeof(release));
-
-  string const relver(release);
+  char version [4];
+  readstr(version, file, sizeof(version));
 
   // check the release version. continue if "117"
-  if (strcmp(release, gversion)!=0)
+  if (strcmp(version, gversion)!=0)
     throw std::range_error("Version: Not a version 13 dta-file.");
 
   fseek(file, 10, SEEK_CUR); // </release>
@@ -165,7 +163,7 @@ List stata(const char * filePath, const bool missing)
     readstr(datalabel, file, ndlabel+1);
   } else {
     datalabel[0] = '\0';
-  };
+  }
 
   fseek(file, 8, SEEK_CUR); //</label>
   test("<timestamp>", file);
@@ -186,7 +184,10 @@ List stata(const char * filePath, const bool missing)
     readstr(timestamp, file, ntimestamp+1);
   } else {
     timestamp[0] = '\0';
-  };
+  }
+
+  CharacterVector timestampCV(1);
+  timestampCV(0) = timestamp;
 
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
@@ -419,75 +420,75 @@ List stata(const char * filePath, const bool missing)
         // double
       case 65526:
       {
-        double erg = 0;
-        erg = readbin(erg, file, swapit);
+        double val_d = 0;
+        val_d = readbin(val_d, file, swapit);
         double const dmin = -0x1.fffffffffffffp1023;
         double const dmax = 0x1.fffffffffffffp1022;
 
-        if ((missing == FALSE) & ((erg<dmin) | (erg>dmax)) )
+        if ((missing == FALSE) & ((val_d<dmin) | (val_d>dmax)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
-          REAL(VECTOR_ELT(df,i))[j] = erg;
+          REAL(VECTOR_ELT(df,i))[j] = val_d;
         break;
       }
         // float
       case 65527:
       {
-        float erg = 0;
-        erg = readbin(erg, file, swapit);
+        float val_f = 0;
+        val_f = readbin(val_f, file, swapit);
         float const minmax = 0x1.fffffp126;
 
-        if ((missing == FALSE) & ((erg<(-minmax)) | (erg>minmax)) )
+        if ((missing == FALSE) & ((val_f<(-minmax)) | (val_f>minmax)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
-          REAL(VECTOR_ELT(df,i))[j] = erg;
+          REAL(VECTOR_ELT(df,i))[j] = val_f;
         break;
       }
         //long
       case 65528:
       {
-        int32_t erg = 0;
-        erg = readbin(erg, file, swapit);
+        int32_t val_l = 0;
+        val_l = readbin(val_l, file, swapit);
 
-        if ((missing == FALSE) & ((erg<(-2147483647)) | (erg>2147483620)) )
+        if ((missing == FALSE) & ((val_l<(-2147483647)) | (val_l>2147483620)) )
           INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
         else
-          INTEGER(VECTOR_ELT(df,i))[j] = erg;
+          INTEGER(VECTOR_ELT(df,i))[j] = val_l;
         break;
       }
         // int
       case 65529:
       {
-        int16_t erg = 0;
-        erg = readbin(erg, file, swapit);
+        int16_t val_i = 0;
+        val_i = readbin(val_i, file, swapit);
 
-        if ((missing == FALSE) & ((erg<(-32767)) | (erg>32740)) )
+        if ((missing == FALSE) & ((val_i<(-32767)) | (val_i>32740)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
-          INTEGER(VECTOR_ELT(df,i))[j] = erg;
+          INTEGER(VECTOR_ELT(df,i))[j] = val_i;
         break;
       }
         // byte
       case 65530:
       {
-        int8_t erg = 0;
-        erg = readbin(erg, file, swapit);
+        int8_t val_b = 0;
+        val_b = readbin(val_b, file, swapit);
 
-        if ((missing == FALSE) & ( (erg<(-127)) | (erg>100)) )
+        if ((missing == FALSE) & ( (val_b<(-127)) | (val_b>100)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
-          INTEGER(VECTOR_ELT(df,i))[j] = erg;
+          INTEGER(VECTOR_ELT(df,i))[j] = val_b;
         break;
       }
         // strings with 2045 or fewer characters
       case 2045:
       {
-        int32_t gre = 0;
-        gre = vartype[i];
+        int32_t len = 0;
+        len = vartype[i];
 
-        char erg[gre];
-        readstr(erg, file, sizeof(erg)+1);
-        as<CharacterVector>(df[i])[j] = erg;
+        char val_s[len];
+        readstr(val_s, file, sizeof(val_s)+1);
+        as<CharacterVector>(df[i])[j] = val_s;
         break;
       }
         // string of any length
@@ -497,9 +498,9 @@ List stata(const char * filePath, const bool missing)
         v = readbin(v, file, swapit);
         o = readbin(o, file, swapit);
 
-        char erg[22];
-        sprintf(erg, "%010d%010d", v, o);
-        as<CharacterVector>(df[i])[j] = erg;
+        char val_strl[22];
+        sprintf(val_strl, "%010d%010d", v, o);
+        as<CharacterVector>(df[i])[j] = val_strl;
         break;
       }
       }
@@ -507,11 +508,15 @@ List stata(const char * filePath, const bool missing)
   }
 
   // 3. Create a data.frame
-  IntegerVector row_names = no_init(n);
-  for (int32_t i = 0; i < row_names.length(); ++i) {
-    row_names[i] = i+1;
-  }
-  df.attr("row.names") = row_names;
+//   IntegerVector row_names = no_init(n);
+//   for (int32_t i = 0; i < row_names.length(); ++i) {
+//     row_names[i] = i+1;
+//   }
+//   df.attr("row.names") = row_names;
+
+  R_xlen_t nrows = Rf_length(df[0]);
+  df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
+
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
 
@@ -685,33 +690,20 @@ List stata(const char * filePath, const bool missing)
   fclose(file);
 
   /*
-   * define R character vectors for meta data
-   */
-
-  CharacterVector datalabelCV(1);
-  datalabelCV[0] = datalabel;
-
-  CharacterVector timestampCV(1);
-  timestampCV[0] = timestamp;
-
-  CharacterVector version(1);
-  version[0] = relver;
-
-  /*
    * assign attributes to the resulting data.frame
    */
 
-  df.attr("datalabel") = datalabelCV;
+  df.attr("datalabel") = wrap(datalabel);
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;
   df.attr("types") = vartype;
   df.attr("val.labels") = valLabels;
   df.attr("var.labels") = varLabels;
-  df.attr("version") = version;
+  df.attr("version") = wrap(atoi(version));
   df.attr("label.table") = labelList;
   df.attr("expansion.fields") = ch;
   df.attr("strl") = strlstable;
-  df.attr("byteorder") = byteorder;
+  df.attr("byteorder") = wrap(byteorder);
 
   return df;
 }

@@ -57,7 +57,14 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
   uint16_t const k = dat.size();
   uint32_t const n = dat.nrows();
 
-  CharacterVector VarNames = dat.attr("names");
+  CharacterVector nvarnames = dat.attr("names");
+  CharacterVector valLabels = dat.attr("vallabels");
+
+  List formats = dat.attr("formats");
+  List vartypes = dat.attr("types");
+  List varLabels = dat.attr("var.labels");
+  List chs = dat.attr("expansion.fields");
+  List labeltable = dat.attr("label.table");
 
   char version[4] = "117";
   uint8_t ntimestamp = 0;
@@ -177,7 +184,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* <variable_types> ... </variable_types> */
     map(2) = dta.tellg();
     dta.write(startvart.c_str(),startvart.size());
-    List vartypes = dat.attr("types");
     uint16_t nvartype;
     for (uint16_t i = 0; i < k; ++i)
     {
@@ -193,8 +199,8 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(startvarn.c_str(), startvarn.size());
     for (uint16_t i = 0; i < k; ++i )
     {
-      const string VARnames = as<string>(VarNames[i]);
-      dta.write(VARnames.c_str(),33);
+      const string nvarname = as<string>(nvarnames[i]);
+      dta.write(nvarname.c_str(),33);
     }
     dta.write(endvarn.c_str(), endvarn.size());
 
@@ -203,7 +209,9 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     map(4) = dta.tellg();
     dta.write(startsor.c_str(),startsor.size());
 
-    for (uint16_t i = 0; i < k+1; ++i)
+    uint32_t big_k = k+1;
+
+    for (uint32_t i = 0; i < big_k; ++i)
     {
       uint16_t nsortlist = 0;
       writebin(nsortlist, dta, swapit);
@@ -214,11 +222,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* <formats> ... </formats> */
     map(5) = dta.tellg();
     dta.write(startform.c_str(),startform.size());
-    List formats = dat.attr("formats");
     for (uint16_t i = 0; i < k; ++i )
     {
-      const string Fmats = as<string>(formats[i]);
-      dta.write(Fmats.c_str(),49);
+      const string nformats = as<string>(formats[i]);
+      dta.write(nformats.c_str(),49);
     }
     dta.write(endform.c_str(),endform.size());
 
@@ -226,7 +233,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
     dta.write(startvalLabel.c_str(),startvalLabel.size());
-    CharacterVector valLabels = dat.attr("vallabels");
     for (uint16_t i = 0; i < k; ++i )
     {
       const string nvalLabels = as<string>(valLabels[i]);
@@ -237,7 +243,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
     /* <variable_labels> ... </variable_labels> */
     map(7) = dta.tellg();
-    List varLabels = dat.attr("var.labels");
     dta.write(startvarlabel.c_str(),startvarlabel.size());
     for (uint16_t i = 0; i < k; ++i)
     {
@@ -257,28 +262,26 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(startcharacteristics.c_str(),startcharacteristics.size());
     /* <ch> ... </ch> */
 
-    List expansiontable = dat.attr("expansion.fields");
-
-    if (expansiontable.size()>0){
-      for (int32_t i = 0; i<expansiontable.size(); ++i){
+    if (chs.size()>0){
+      for (int32_t i = 0; i<chs.size(); ++i){
 
         dta.write(startch.c_str(),startch.size());
 
-        CharacterVector chs = as<CharacterVector>(expansiontable[i]);
+        CharacterVector ch = as<CharacterVector>(chs[i]);
 
-        string chs1 = as<string>(chs[0]);
-        chs1[chs1.size()] = '\0';
-        string chs2 = as<string>(chs[1]);
-        chs2[chs2.size()] = '\0';
-        string chs3 = as<string>(chs[2]);
-        chs3[chs3.size()] = '\0';
+        string ch1 = as<string>(ch[0]);
+        ch1[ch1.size()] = '\0';
+        string ch2 = as<string>(ch[1]);
+        ch2[ch2.size()] = '\0';
+        string ch3 = as<string>(ch[2]);
+        ch3[ch3.size()] = '\0';
 
-        uint32_t nocharacter = 33 + 33 + chs3.size() +1;
-        writebin(nocharacter, dta, swapit);
+        uint32_t nnocharacter = 33 + 33 + ch3.size() +1;
+        writebin(nnocharacter, dta, swapit);
 
-        dta.write(chs1.c_str(),33);
-        dta.write(chs2.c_str(),33);
-        dta.write(chs3.c_str(),chs3.size()+1);
+        dta.write(ch1.c_str(),33);
+        dta.write(ch2.c_str(),33);
+        dta.write(ch3.c_str(),ch3.size()+1);
 
         dta.write(endch.c_str(),endch.size());
       }
@@ -293,7 +296,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
     IntegerVector V;
     IntegerVector O;
-    CharacterVector strl;
+    CharacterVector STRL;
 
     for(uint32_t j = 0; j < n; ++j)
     {
@@ -332,14 +335,12 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         case 65528:
         {
           int32_t const na = (0x7fffffe5);
-          int32_t val_i = as<IntegerVector>(dat[i])[j];
+          int32_t val_l = as<IntegerVector>(dat[i])[j];
 
-          // cout << val_i << endl;
+          if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) )
+            val_l = na;
 
-          if ( (val_i == NA_INTEGER) | (R_IsNA(val_i)) )
-            val_i = na;
-
-          writebin(val_i, dta, swapit);
+          writebin(val_l, dta, swapit);
 
           break;
         }
@@ -348,15 +349,15 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         {
           int16_t const na = (32741);
           union v {
-            int32_t   f;
-            int16_t    i;
+            int32_t   l;
+            int16_t   i;
           } val;
 
-          val.f = as<IntegerVector>(dat[i])[j];
+          val.l = as<IntegerVector>(dat[i])[j];
 
           int16_t val_i = val.i;
 
-          if (val.f == NA_INTEGER)
+          if (val.l == NA_INTEGER)
             val_i = na;
 
           writebin(val_i, dta, swapit);
@@ -368,18 +369,18 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         {
           int8_t const na = (101);
           union v {
-            int32_t   f;
-            int8_t    i;
+            int32_t   l;
+            int8_t    b;
           } val;
 
-          val.f = as<IntegerVector>(dat[i])[j];
+          val.l = as<IntegerVector>(dat[i])[j];
 
-          int8_t val_i = val.i;
+          int8_t val_b = val.b;
 
-          if (val.f == NA_INTEGER)
-            val_i = na;
+          if (val.l == NA_INTEGER)
+            val_b = na;
 
-          writebin(val_i, dta, swapit);
+          writebin(val_b, dta, swapit);
 
           break;
         }
@@ -400,18 +401,19 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           int64_t z = 0;
 
           CharacterVector b = as<CharacterVector>(dat[i]);
-          const string val_s = as<string>(b[j]);
-          if (!val_s.empty())
+          const string val_strl = as<string>(b[j]);
+          if (!val_strl.empty())
           {
             writebin(v, dta, swapit);
             writebin(o, dta, swapit);
-            // push back every v, o and val_s
+            // push back every v, o and val_strl
             V.push_back(v);
             O.push_back(o);
-            strl.push_back(val_s);
+            STRL.push_back(val_strl);
           } else {
             dta.write((char*)&z,sizeof(z));
           }
+          break;
         }
         }
       }
@@ -423,17 +425,17 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     map(10) = dta.tellg();
     dta.write(startstrl.c_str(),startstrl.size());
 
-    int32_t strlsize = strl.length();
+    int32_t strlsize = STRL.length();
     for(int i =0; i < strlsize; ++i )
     {
-      const string GSO = "GSO";
+      const string gso = "GSO";
       int32_t v = V[i];
       int32_t o = O[i];
       uint8_t t = 129; //Stata binary type, no trailing zero.
-      const string strL = as<string>(strl[i]);
+      const string strL = as<string>(STRL[i]);
       uint32_t len = strL.size();
 
-      dta.write(GSO.c_str(),GSO.size());
+      dta.write(gso.c_str(),gso.size());
       writebin(v, dta, swapit);
       writebin(o, dta, swapit);
       writebin(t, dta, swapit);
@@ -446,7 +448,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
     /* <value_labels> ... </value_labels> */
     map(11) = dta.tellg();
-    List labeltable = dat.attr("label.table");
     dta.write(startvall.c_str(),startvall.size());
     if (labeltable.size()>0)
     {
@@ -478,11 +479,11 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
         int32_t offI, labvalueI;
 
-        int32_t len = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
+        int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
 
 
         dta.write(startlbl.c_str(),startlbl.size());
-        writebin(len, dta, swapit);
+        writebin(nlen, dta, swapit);
         dta.write(labname.c_str(),33);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);

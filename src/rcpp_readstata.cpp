@@ -513,15 +513,8 @@ List stata(const char * filePath, const bool missing)
   }
 
   // 3. Create a data.frame
-  IntegerVector row_names = no_init(n);
-  for (int32_t i = 0; i < row_names.length(); ++i) {
-    row_names[i] = i+1;
-  }
-  df.attr("row.names") = row_names;
-
-//   R_xlen_t nrows = Rf_length(df[0]);
-//   df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
-
+  R_xlen_t nrows = Rf_length(df[0]);
+  df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
 
@@ -685,9 +678,9 @@ List stata(const char * filePath, const bool missing)
   }
 
   /*
-  * Final test if we reached the end of the file
-  * close the file
-  */
+   * Final test if we reached the end of the file
+   * close the file
+   */
 
   fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
   test("</stata_dta>", file);

@@ -14,17 +14,35 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+#' Wrapper around iconv calls for code readability
+#'
+#' @param x element to be converted
+#' @param encoding encoding to be used.
+read.encoding <- function(x, encoding) {
+  iconv(x,
+        from="cp1252",
+        to=encoding ,
+        sub="byte")
+}
+save.encoding <- function(x) {
+  iconv(x,
+        to="CP1252",
+        sub="byte")
+}
+
+
 #' Construct File Path
 #'
 #' @param path path to dta file
 get.filepath <- function(path=""){
-  if(substring(path, 1, 1)=="~")
+  if(substring(path, 1, 1) == "~") {
     filepath <- path.expand(path)
-  else
+  } else {
     filepath <- path
-
-  if(!file.exists(filepath))
+  }
+  if(!file.exists(filepath)) {
     return("File does not exist.")
+  }
 
   return(filepath)
 }
@@ -36,10 +54,11 @@ get.filepath <- function(path=""){
 #' @export
 get.lang <- function(dat) {
   ex <- attr(dat, "expansion.fields")
-  if(any(grepl("_lang_c", ex)))
+  if(any(grepl("_lang_c", ex))) {
     res <- ex[[grep("_lang_c", ex)]][3]
-  else
+  } else {
     res <- NA
+  }
   return(res)
 }
 
@@ -51,11 +70,11 @@ get.lang <- function(dat) {
 #' @return Returns the variable name as string
 #' @export
 get.label.name <- function(dat, var.name, lang=NA) {
-  if (is.na(lang) | lang==get.lang(dat)) {
-    return(attr(dat, "val.lab")[grep(var.name,names(dat))])
+  if (is.na(lang) | lang == get.lang(dat)) {
+    return(attr(dat, "val.lab")[grep(var.name, names(dat))])
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
-    varlabel <- ex[grep(paste0("_lang_v_",lang), ex)]
+    varlabel <- ex[grep(paste0("_lang_v_", lang), ex)]
     return(varlabel[[grep(var.name, varlabel)]][3])
   }
 }
@@ -73,7 +92,7 @@ get.label.name <- function(dat, var.name, lang=NA) {
 #' get.origin.codes(dat$foreign, labtab)
 #' as.integer(dat$foreign)
 #' @export
-get.origin.codes <- function(x,label.table) {
+get.origin.codes <- function(x, label.table) {
   if(is.factor(x)) {
     fac <- as.character(x)
     return(as.integer(label.table[fac]))
@@ -135,14 +154,14 @@ get.lang.list <- function(dat) {
 #' @return Returns an named vector of variable labels
 #' @export
 get.label.name.list <- function(dat, lang=NA) {
-  if (is.na(lang) | lang==get.lang(dat)) {
+  if (is.na(lang) | lang == get.lang(dat)) {
     ex <- attr(dat, "var.lab")
     names(ex) <- names(dat)
     return(ex)
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
-    varname <- sapply(ex[grep(paste0("_lang_v_",lang), ex)], function(x) x[1])
-    varlabel <- sapply(ex[grep(paste0("_lang_v_",lang), ex)], function(x) x[3])
+    varname <- sapply(ex[grep(paste0("_lang_v_", lang), ex)], function(x) x[1])
+    varlabel <- sapply(ex[grep(paste0("_lang_v_", lang), ex)], function(x) x[3])
     names(varlabel) <- varname
 
     # order by data.frame columns and return
@@ -157,14 +176,16 @@ get.label.name.list <- function(dat, lang=NA) {
 #' @return Returns an named vector of variable labels
 #' @export
 get.labelsets.list  <- function(dat, lang=NA) {
-  if (is.na(lang) | lang==get.lang(dat)) {
+  if (is.na(lang) | lang == get.lang(dat)) {
     ex <- attr(dat, "val.lab")
     names(ex) <- names(dat)
     return(ex)
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
-    varname <- sapply(ex[grep(paste0("_lang_l_",lang), ex)], function(x) x[1])
-    labelsets <- sapply(ex[grep(paste0("_lang_l_",lang), ex)], function(x) x[3])
+    varname <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
+                      function(x) x[1])
+    labelsets <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
+                        function(x) x[3])
     names(labelsets) <- varname
     return(labelsets[names(dat)])
   }
@@ -178,7 +199,7 @@ get.labelsets.list  <- function(dat, lang=NA) {
 #' @return Returns a data.frame with value labels in language "lang".
 #' @export
 set.label.lang <- function(dat, lang=NA, generate.factors=FALSE) {
-  if (is.na(lang) | lang==get.lang(dat)) {
+  if (is.na(lang) | lang == get.lang(dat)) {
     return(dat)
   } else if (is.character(lang)) {
     vnames <- names(dat)
@@ -206,9 +227,9 @@ set.label.lang <- function(dat, lang=NA, generate.factors=FALSE) {
         varunique <- na.omit(unique(dat[,i]))
       }
 
-      if(labname %in% names(label) & vartype>65527 & is.factor(dat[,i])) {
+      if(labname %in% names(label) & vartype > 65527 & is.factor(dat[,i])) {
         # assign label if label set is complete
-        if (all(varunique%in%labtable)) {
+        if (all(varunique %in% labtable)) {
 
           dat[,i] <- factor(codes, levels=labtable,
                             labels=names(labtable))
@@ -216,19 +237,21 @@ set.label.lang <- function(dat, lang=NA, generate.factors=FALSE) {
         # else generate labels from codes
       } else if(generate.factors) {
         names(varunique) <- as.character(varunique)
-        gen.lab  <- sort(c(varunique[!varunique%in%labtable], labtable))
+        gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
         dat[,i] <- factor(dat[,i], levels=gen.lab,
                           labels=names(gen.lab))
       } else {
-        warning(paste(vnames[i], "Missing factor labels - no labels assigned. Set option generate.factors=T to generate labels."))
+        warning(paste(vnames[i], "Missing factor labels - no labels assigned.
+                      Set option generate.factors=T to generate labels."))
       }
 
       setTxtProgressBar(pb, i)
     }
     close(pb)
 
-    # Save old default labels to expansion.fields. This is necessary to save original labels for further use.
+    # Save old default labels to expansion.fields. This is necessary to save
+    # original labels for further use.
     vnames <- names(oldval.labels)
     names(oldval.labels) <- NULL
     tmp <- list()
@@ -240,7 +263,10 @@ set.label.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     # set new default lang and store string as default attributes
     names(val.labels) <- NULL
     attr(dat, "val.lab") <- val.labels
-    attr(dat, "expansion.fields")[[grep("_lang_c", attr(dat, "expansion.fields"))]][3] <- lang
+    attr(dat, "expansion.fields")[[
+      grep("_lang_c", attr(dat, "expansion.fields"))
+      ]][3] <- lang
+
     return(dat)
   }
 }

@@ -54,8 +54,8 @@ static void writebin(T t, fstream& dta, bool swapit)
 // [[Rcpp::export]]
 int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 {
-  uint16_t const k = dat.size();
-  uint32_t const n = dat.nrows();
+  uint16_t k = dat.size();
+  uint32_t n = dat.nrows();
 
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
@@ -167,7 +167,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     }
     dta.write(endheader.c_str(),endheader.size());
 
-
     /* <map> ... </map> */
     map(1) = dta.tellg();
     dta.write(startmap.c_str(),startmap.size());
@@ -177,7 +176,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
       writebin(nmap, dta, swapit);
     }
     dta.write(endmap.c_str(),endmap.size());
-
 
     /* <variable_types> ... </variable_types> */
     map(2) = dta.tellg();

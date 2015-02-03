@@ -81,10 +81,10 @@
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        encoding = NULL, convert.underscore = FALSE,
-                       missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE,
-                       add.rownames = FALSE) {
+                       missing.type = FALSE, convert.dates = TRUE,
+                       replace.strl = FALSE, add.rownames = FALSE) {
   # Check if path is a url
-  if(length(grep("^(http|ftp|https)://", file))) {
+  if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
     download.file(file, tmp, quiet = TRUE, mode = "wb")
     filepath <- tmp
@@ -93,70 +93,70 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # construct filepath and read file
     filepath <- get.filepath(file)
   }
-  if(!file.exists(filepath))
+  if (!file.exists(filepath))
     return(message("File not found."))
 
   data <- stata(filepath,missing.type)
 
-  if(convert.underscore)
+  if (convert.underscore)
     names(data) <- gsub("_", ".", names(data))
 
   types <- attr(data, "types")
+  val.labels <- attr(data, "val.labels")
+  label <- attr(data, "label.table")
 
-  if(missing.type)
-  {
+  if (missing.type) {
     stata.na <- data.frame(type = 65526L:65530L,
-                           min = c(101, 32741, 2147483621, 2^127, 2^1023),
-                           inc = c(1,1,1,2^115,2^1011)
+                           min = c(101, 32741, 2147483621, 2 ^ 127, 2 ^ 1023),
+                           inc = c(1, 1, 1, 2 ^ 115, 2 ^ 1011)
     )
 
     if (attr(data, "version") >= 117L) {
       missings <- vector("list", length(data))
       names(missings) <- names(data)
-      for(v in which(types > 65525L)) {
-        this.type <- 65531L-types[v]
+      for (v in which(types > 65525L)) {
+        this.type <- 65531L - types[v]
         nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
-        natype <- (data[[v]][nas] - stata.na$min[this.type])/stata.na$inc[this.type]
+        natype <- (data[[v]][nas] - stata.na$min[this.type]) /
+          stata.na$inc[this.type]
         natype[is.na(natype)] <- 0L
         missings[[v]] <- rep(NA, NROW(data))
         missings[[v]][nas] <- natype
         data[[v]][nas] <- NA
       }
-      attr(data,"missing") <- missings
+      attr(data, "missing") <- missings
     } else
       warning("'missing.type' only applicable to version >= 13 files")
   }
 
-  val.labels <- attr(data, "val.labels")
   var.labels <- attr(data, "var.labels")
-  label <- attr(data, "label.table")
 
   ## Encoding
-  if(!is.null(encoding))
-  {
+  if (!is.null(encoding)) {
+
     # varnames
-    names(data) <- iconv(names(data), from="cp1252", to=encoding, sub="byte")
+    names(data) <- read.encoding(names(data), encoding)
 
     # var.labels
-    attr(data, "var.labels") <- iconv(var.labels, from="cp1252", to=encoding, sub="byte")
+    attr(data, "var.labels") <- read.encoding(var.labels, encoding)
 
     # val.labels
-    names(val.labels) <- iconv(val.labels, from="cp1252", to=encoding, sub="byte")
+    names(val.labels) <- read.encoding(val.labels, encoding)
     attr(data, "val.labels") <- val.labels
 
     # label
-    names(label) <- iconv(names(label), from="cp1252", to=encoding, sub="byte")
+    names(label) <- read.encoding(names(label), encoding)
 
     if (length(label) > 0) {
       for (i in 1:length(label))  {
-        names(label[[i]]) <- iconv(names(label[[i]]), from="cp1252", to=encoding, sub="byte")
+        names(label[[i]]) <- read.encoding(names(label[[i]]), encoding)
       }
       attr(data, "label.table") <- label
     }
 
     # recode character variables
-    for(v in (1:ncol(data))[types <= 2045]) {
-      data[,v] <- iconv(data[,v], from="CP1252", sub="byte")
+    for (v in (1:ncol(data))[types <= 2045]) {
+      data[, v] <- iconv(data[, v], from="CP1252", sub="byte") # to=encoding?
     }
 
     # expansion.field
@@ -164,7 +164,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     if (length(efi) > 0) {
       efiChar <- unlist(lapply(efi, is.character))
       for (i in (1:length(efi))[efiChar])  {
-        efi[[i]] <- iconv(efi[[i]], from="cp1252", to=encoding, sub="byte")
+        efi[[i]] <- read.encoding(efi[[i]], encoding)
       }
       attr(data, "expansion.fields") <- efi
     }
@@ -173,27 +173,25 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     strl <- attr(data, "strl")
     if (length(strl) > 0) {
       for (i in 1:length(strl))  {
-        strl[[i]] <- iconv(strl[[i]], from="cp1252", to=encoding, sub="byte")
+        strl[[i]] <- read.encoding(strl[[i]], encoding)
       }
       attr(data, "strl") <- strl
     }
   }
 
-  if(replace.strl) {
+  if (replace.strl) {
     strl <- do.call(rbind, attr(data,"strl"))
-    for(j in seq(ncol(data))[types==32768] )
-    {
-      refs <- unique(data[,j])
-      for(ref in refs) {
-        if(length(strl[strl[,1]==ref,2])!=0){
-          data[data[,j]==ref,j]<-strl[strl[,1]==ref,2]
+    for (j in seq(ncol(data))[types == 32768] ) {
+      refs <- unique(data[, j])
+      for (ref in refs) {
+        if (length(strl[strl[,1] == ref,2]) != 0){
+          data[data[, j] == ref, j] <- strl[strl[, 1] == ref, 2]
         }
       }
     }
 
     # recode strL 0 to void
-    for (v in (1:ncol(data))[types == 32768])
-    {
+    for (v in (1:ncol(data))[types == 32768]) {
       data[[v]] <- gsub("00000000000000000000","", data[[v]] )
     }
 
@@ -201,13 +199,14 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     attr(data, "strl") <- NULL
   }
 
+
   if (convert.dates) {
     convert_dt_c <- function(x)
-      as.POSIXct((x+0.1)/1000, origin = "1960-01-01") # avoid rounding down
+      as.POSIXct((x + 0.1) / 1000, origin = "1960-01-01") # avoid rounding down
 
     convert_dt_C <- function(x) {
       ls <- .leap.seconds + seq_along(.leap.seconds)
-      z <- (x+0.1)/1000 # avoid rounding down
+      z <- (x + 0.1) / 1000 # avoid rounding down
       z <- z - rowSums(outer(z, ls, ">="))
       as.POSIXct(z, origin = "1960-01-01")
     }
@@ -222,46 +221,46 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     ##  still have them. Format *%d*... is equivalent to modern
     ##  format *%td*... and *%-d*... is equivalent to *%-td*...'
 
-    dates <- if (attr(data, "version") == 117L) grep('^%(-|)(d|td)', ff)
+    dates <- if (attr(data, "version") == 117L) grep("^%(-|)(d|td)", ff)
     else grep("%-*d", ff)
     ## avoid as.Date in case strptime is messed up
     base <- structure(-3653L, class = "Date") # Stata dates are integer vars
-    for(v in dates) data[[v]] <- structure(base + data[[v]], class = "Date")
+    for (v in dates) data[[v]] <- structure(base + data[[v]], class = "Date")
 
-    for(v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]])
-    for(v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]])
+    for (v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]])
+    for (v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]])
   }
 
-  if(convert.factors==T) {
+  if (convert.factors) {
     vnames <- names(data)
     for (i in seq_along(val.labels)) {
       labname <- val.labels[i]
       vartype <- types[i]
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
-      if(labname %in% names(label) & vartype>65527) {
+      if (labname %in% names(label) & vartype >= 65527) {
         # get unique values / omit NA
-        varunique <- na.omit(unique(data[,i]))
+        varunique <- na.omit(unique(data[, i]))
         # assign label if label set is complete
-        if (all(varunique%in%labtable)) {
-          data[,i] <- factor(data[,i], levels=labtable,
-                             labels=names(labtable))
+        if (all(varunique %in% labtable)) {
+          data[, i] <- factor(data[, i], levels=labtable,
+                              labels=names(labtable))
           # else generate labels from codes
-        } else if(generate.factors) {
+        } else if (generate.factors) {
           names(varunique) <- as.character(varunique)
-          gen.lab  <- sort(c(varunique[!varunique%in%labtable], labtable))
+          gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-          data[,i] <- factor(data[,i], levels=gen.lab,
-                             labels=names(gen.lab))
+          data[, i] <- factor(data[, i], levels=gen.lab,
+                              labels=names(gen.lab))
         } else {
-          warning(paste(vnames[i], "Missing factor labels - no labels assigned. Set option generate.factors=T to generate labels."))
+          warning(paste(vnames[i], "Missing factor labels - no labels assigned.
+                        Set option generate.factors=T to generate labels."))
         }
       }
     }
   }
 
-  if (add.rownames)
-  {
+  if (add.rownames) {
     rownames(data) <- data[[1]]
     data[[1]] <- NULL
   }

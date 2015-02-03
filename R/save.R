@@ -49,11 +49,12 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
                        add.rownames=FALSE, compress=FALSE){
 
-  if(!is.data.frame(data))
+  if (!is.data.frame(data))
     message("Object is not of class data.frame.")
 
   if (add.rownames)
-    data <- data.frame(rownames= iconv(rownames(data), to="CP1252", sub="byte"),data, stringsAsFactors = F)
+    data <- data.frame(rownames= save.encoding(rownames(data)),
+                       data, stringsAsFactors = F)
 
   filepath <- path.expand(file)
 
@@ -62,34 +63,34 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   names(vartypen) <- names(data)
 
   # Convert logicals to integers
-  for (v in names(vartypen[vartypen=="logical"]))
+  for (v in names(vartypen[vartypen == "logical"]))
     data[[v]] <- as.integer(data[[v]])
   vartypen <- sapply(data, class)
 
-  if(convert.factors){
+  if (convert.factors){
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
     f.names <- attr(factors,"names")
 
-    label.table <- vector("list",length(f.names))
+    label.table <- vector("list", length(f.names))
     names(label.table) <- f.names
 
     valLabel <- sapply(data, class)
-    valLabel[valLabel!="factor"] <- ""
+    valLabel[valLabel != "factor"] <- ""
 
     i <- 0
     for (v in factors)  {
-      i <- i+1
-      f.levels <-  iconv(levels(data[[v]]), to="CP1252", sub="byte")
+      i <- i + 1
+      f.levels <-  save.encoding(levels(data[[v]]))
       f.labels <-  as.integer(labels(levels(data[[v]])))
       attr(f.labels, "names") <- f.levels
-      f.labels <- f.labels[names(f.labels)!=".."]
-      label.table[[(f.names[i])]] <- f.labels
+      f.labels <- f.labels[names(f.labels) != ".."]
+      label.table[[ (f.names[i]) ]] <- f.labels
 
       valLabel[v] <- f.names[i]
     }
     attr(data, "label.table") <- rev(label.table)
-    attr(data, "vallabels") <-  iconv(valLabel, to="CP1252", sub="byte")
+    attr(data, "vallabels") <-  save.encoding(valLabel)
   } else {
     attr(data, "label.table") <- NULL
     attr(data, "vallabels") <- rep("",length(data))
@@ -113,14 +114,13 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   # FixMe: what about AsIs ?
-  vartypen[vartypen=="Date"] <- -65526
+  vartypen[vartypen == "Date"] <- -65526
 
   # is.numeric is TRUE for integers
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
-  if (!compress)
-  {
+  if (!compress) {
     vartypen[ff] <- 65526
     vartypen[ii] <- 65528
     vartypen[factors] <- 65528
@@ -130,24 +130,22 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
     # check if numeric is float or double
     fminmax <- 1.701e+38
-    for (k in names(which(ff)))
-    {
-      vartypen[k][varTmin[k]<(-fminmax) | varTmax[k]>fminmax] <- 65526
-      vartypen[k][varTmin[k]>(-fminmax) & varTmax[k]<fminmax] <- 65527
+    for (k in names(which(ff))) {
+      vartypen[k][varTmin[k] < (-fminmax) | varTmax[k] > fminmax] <- 65526
+      vartypen[k][varTmin[k] > (-fminmax) & varTmax[k] < fminmax] <- 65527
     }
 
     bmin <- -127; bmax <- 100
     imin <- -32767; imax <- 32740
     # check if integer is byte, int or long
-    for (k in names(which(ii))){
-      vartypen[k][varTmin[k]<imin | varTmax[k]>imax] <- 65528
-      vartypen[k][varTmin[k]>imin & varTmax[k]<imax] <- 65529
-      vartypen[k][varTmin[k]>bmin & varTmax[k]<bmax] <- 65530
+    for (k in names(which(ii))) {
+      vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- 65528
+      vartypen[k][varTmin[k] > imin & varTmax[k] < imax] <- 65529
+      vartypen[k][varTmin[k] > bmin & varTmax[k] < bmax] <- 65530
     }
 
     factorlength <- sapply(data[factors], nlevels)
-    for ( k in names(which(factors)))
-    {
+    for (k in names(which(factors))) {
       vartypen[factors & factorlength[k] > 0x1.000000p127] <- 65528
       vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529
       vartypen[factors & factorlength[k] < 101] <- 65530
@@ -156,45 +154,50 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
 
   # recode character variables
   for(v in (1:ncol(data))[vartypen == "character"]) {
-    data[,v] <- iconv(data[,v], to="CP1252", sub="byte")
+    data[, v] <- save.encoding(data[, v])
   }
 
   # str and strL are stored by maximum length of chars in a variable
-  maxchar <- function(x){max(nchar(x))+1}
-  str.length <- sapply(data[vartypen=="character"], FUN=maxchar)
+  maxchar <- function(x) {
+    max(nchar(x)) + 1
+  }
+  str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
 
-  for (v in names(vartypen[vartypen=="character"])) vartypen[[v]] <- str.length[[v]]
+  for (v in names(vartypen[vartypen == "character"])) vartypen[[v]] <-
+      str.length[[v]]
   vartypen <- abs(as.integer(vartypen))
   # str longer than 2045 chars are in Stata type strL.
-  vartypen[vartypen>2045 & vartypen <65526] <- 32768
+  vartypen[vartypen > 2045 & vartypen < 65526] <- 32768
 
   attr(data, "types") <- vartypen
 
+  # ToDo: Add propper check.
   #   # value_label_names must be < 33 chars
   #   if (sapply(valLabel,FUN=maxchar) >= 33)
   #     message ("at least one variable name is to long.")
 
   # Stata format "%9,0g" means european format
   formats <- vartypen
-  formats[formats==-65526] <- "%td"
-  formats[formats==65526] <- "%9.0g"
-  formats[formats==65527] <- "%9.0g"
-  formats[formats==65528] <- "%9.0g"
-  formats[formats==65529] <- "%9.0g"
-  formats[formats==65530] <- "%9.0g"
-  formats[vartypen>=0 & vartypen <2046] <- paste0("%-",formats[vartypen>=0 & vartypen<2046],"s")
+  formats[formats == -65526] <- "%td"
+  formats[formats == 65526] <- "%9.0g"
+  formats[formats == 65527] <- "%9.0g"
+  formats[formats == 65528] <- "%9.0g"
+  formats[formats == 65529] <- "%9.0g"
+  formats[formats == 65530] <- "%9.0g"
+  formats[vartypen >= 0 & vartypen < 2046] <-
+    paste0("%-", formats[vartypen >= 0 & vartypen < 2046], "s")
 
   attr(data, "formats") <- formats
 
   # Create a datalabel
-  if (is.null(data.label)){
+  if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
-    attr(data, "datalabel") <- iconv(data.label, to="CP1252", sub="byte")
+    attr(data, "datalabel") <- save.encoding(data.label)
   }
 
   # Create the 17 char long timestamp. It may contain 17 char long strings
-  if (!time.stamp){
+  if (!time.stamp) {
     attr(data, "timestamp") <- ""
   } else {
     attr(data, "timestamp") <- format(Sys.time(), "%d %b %Y %H:%M")

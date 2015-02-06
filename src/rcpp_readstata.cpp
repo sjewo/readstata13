@@ -56,8 +56,6 @@ void test(std::string testme, FILE * file)
   readstr(test,file, sizeof(test));
   if (strcmp(testMe,test)!=0)
   {
-    printf("When attempting to read %s:", testme.c_str());
-
     throw std::range_error("Something went wrong!");
   }
 }

@@ -6,7 +6,8 @@ Authors@R: c(
     person("Jan Marvin", "Garbuszus",
     email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre")),
     person("Sebastian", "Jeworutzki",
-    email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = "aut")
+    email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = "aut"),
+    person("R Core Team", role="cph")
     )
 Author: Jan Marvin Garbuszus and Sebastian Jeworutzki
 Maintainer: Sebastian Jeworutzki <Sebastian.Jeworutzki@ruhr-uni-bochum.de>

@@ -1,3 +1,10 @@
+0.5
+- write dta-files
+- read/write LSF and MSF files
+- source testing and cleaning
+- support for multiple label languages (see http://www.stata.com/manuals13/dlabellanguage.pdf)
+- additional tools for label handling
+
 0.4
 - convert.dates from foreign::read.dta()
 - handle different NA values

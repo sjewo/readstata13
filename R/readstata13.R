@@ -3,9 +3,8 @@
 #' Function to read the Stata 13 file format into a data.frame.
 #'
 #'
-#' @author
-#' Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de},
-#' Sebastian Jeworutzki \email{Sebastian.Jeworutzki@@ruhr-uni-bochum.de}
+#' @author Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #'
 #' @name readstata13
 #' @docType package

@@ -19,30 +19,30 @@
 #' \code{save.dta13} writes a Stata 13 dta file bytewise and saves the data
 #' into a dta-file.
 #'
-#' @param file string. Path to the dta file you want to export.
-#' @param data data.frame. A data.frame Object.
-#' @param data.label string. Name of the dta-file.
-#' @param time.stamp logical. If TRUE add a time.stamp to the dta-file.
-#' @param convert.factors logical. If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
-#' @param convert.dates logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()
-#' @param tz string. The name of the timezone convert.dates will use.
-#' @param add.rownames logical. If TRUE a new variable rownames will be added to the dta-file.
-#' @param compress logical. If TRUE the resulting dta-file will use all of Statas numeric-vartypes.
+#' @param file \emph{character.} Path to the dta file you want to export.
+#' @param data \emph{data.frame.} A data.frame Object.
+#' @param data.label \emph{character.} Name of the dta-file.
+#' @param time.stamp \emph{logical.} If TRUE add a time.stamp to the dta-file.
+#' @param convert.factors \emph{logical.} If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
+#' @param convert.dates \emph{logical.} If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()
+#' @param tz \emph{character.} The name of the timezone convert.dates will use.
+#' @param add.rownames \emph{logical.} If TRUE a new variable rownames will be added to the dta-file.
+#' @param compress \emph{logical.} If TRUE the resulting dta-file will use all of Statas numeric-vartypes.
 #' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
 #'   \item{time.stamp:}{Timestamp of file creation}
-#'   \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
+#'   \item{formats:}{Stata display formats. May be used with \code{\link[base]{sprintf}}}
 #'   \item{type:}{Stata data type (see Stata Corp 2014)}
 #'   \item{var.labels:}{Variable labels}
 #'   \item{version:}{dta file format version}
 #'   \item{strl:}{List of character vectors for the new strL string variable type. The first element is the identifier and the second element the string.}
 #' }
-#' @seealso \code{\link{write.dta}} and \code{memisc} for dta files from Stata
+#' @seealso \code{\link[foreign]{write.dta}} and \code{memisc} for dta files from Stata
 #' versions < 13.
 #' @references Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
-#' @author Jan Marvin Garbuszus \email{jan.garbuszus@@rub.de}
-#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
+#' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
 #' @export
 save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,

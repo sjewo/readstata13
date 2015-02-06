@@ -7,16 +7,21 @@
 set.lang(dat, lang = NA, generate.factors = FALSE)
 }
 \arguments{
-\item{dat}{data.frame. Data.frame created by read.stata13.}
+\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
 
-\item{lang}{string. Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
 
-\item{generate.factors}{logical. If TRUE generates factors.}
+\item{generate.factors}{\emph{logical.} If TRUE generates factors.}
 }
 \value{
 Returns a data.frame with value labels in language "lang".
 }
 \description{
-Assign Stata Language Labels
+Changes default label language for a dataset.
+}
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
+
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 

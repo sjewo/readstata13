@@ -9,25 +9,25 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   convert.dates = TRUE, replace.strl = FALSE, add.rownames = FALSE)
 }
 \arguments{
-\item{file}{string. Path to the dta file you want to import.}
+\item{file}{\emph{character.} Path to the dta file you want to import.}
 
-\item{convert.factors}{logical. If TRUE factors from Stata value labels are created.}
+\item{convert.factors}{\emph{logical.} If TRUE factors from Stata value labels are created.}
 
-\item{generate.factors}{logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
+\item{generate.factors}{\emph{logical.} If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
 
-\item{encoding}{string. Strings can be converted from Windows-1252 to system encoding.
+\item{encoding}{\emph{character.} Strings can be converted from Windows-1252 to system encoding.
 Options are "latin1" or "utf-8" to specify target encoding explicitly.}
 
-\item{convert.underscore}{logical. If TRUE "_" in variable names will be changed to "."}
+\item{convert.underscore}{\emph{logical.} If TRUE "_" in variable names will be changed to "."}
 
-\item{missing.type}{logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
+\item{missing.type}{\emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
 "missing" will be created.}
 
-\item{convert.dates}{logical. If TRUE Stata dates are converted.}
+\item{convert.dates}{\emph{logical.} If TRUE Stata dates are converted.}
 
-\item{replace.strl}{logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
+\item{replace.strl}{\emph{logical.} If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
 
-\item{add.rownames}{logical. If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.}
+\item{add.rownames}{\emph{logical.} If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes include
@@ -79,9 +79,9 @@ versions is not implemented.
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().
 }
 \author{
-Jan Marvin Garbuszus \email{jan.garbuszus@rub.de}
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
-Sebastian Jeworutzki \email{sebastian.jeworutzki@rub.de}
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 \references{
 Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}

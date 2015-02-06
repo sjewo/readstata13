@@ -2,22 +2,22 @@
 % Please edit documentation in R/tools.R
 \name{set.label}
 \alias{set.label}
-\title{Assign Stata labels to a variable}
+\title{Assign Stata Labels to a Variable}
 \usage{
 set.label(dat, var.name, lang = NA)
 }
 \arguments{
-\item{dat}{data.frame. Data.frame created by read.stata13.}
+\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
 
-\item{var.name}{character. Name of the variable in the data.frame}
+\item{var.name}{\emph{character.} Name of the variable in the data.frame}
 
-\item{lang}{string. Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
 }
 \value{
 Returns a labeled factor
 }
 \description{
-Assign Stata labels to a variable
+Assign value labels from a Stata label set to a variable.
 }
 \examples{
 dat <- read.dta13("http://www.stata-press.com/data/r13/autofull.dta",

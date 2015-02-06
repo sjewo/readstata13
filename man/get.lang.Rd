@@ -2,14 +2,14 @@
 % Please edit documentation in R/tools.R
 \name{get.lang}
 \alias{get.lang}
-\title{Show default label language}
+\title{Show Default Label Language}
 \usage{
 get.lang(dat, print = T)
 }
 \arguments{
-\item{dat}{data.frame. Data.frame created by read.stata13.}
+\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
 
-\item{print.}{If TRUE print available languages and default language.}
+\item{print}{\emph{logical.} If TRUE print available languages and default language.}
 }
 \value{
 Returns a list with two components:
@@ -19,10 +19,15 @@ Returns a list with two components:
 }
 }
 \description{
-Show default label language
+Displays informations about the defined label languages.
 }
 \details{
 Stata allows to define multiple label sets in different languages. This functions reports the
 available languages and the selected default language.
+}
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
+
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 

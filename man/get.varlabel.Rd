@@ -2,21 +2,26 @@
 % Please edit documentation in R/tools.R
 \name{get.varlabel}
 \alias{get.varlabel}
-\title{Get Stata Variable labels}
+\title{Get Stata Variable Labels}
 \usage{
 get.varlabel(dat, var.name = NULL, lang = NA)
 }
 \arguments{
-\item{dat}{data.frame. Data.frame created by read.stata13.}
+\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
 
-\item{var.name}{character vector. Variable names. If NULL label for all variables.}
+\item{var.name}{\emph{character vector.} Variable names. If NULL label for all variables.}
 
-\item{lang}{string. Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
 }
 \value{
 Returns an named vector of variable labels
 }
 \description{
-Get Stata Variable labels
+Retrieve variable labels from dataset attributes.
+}
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
+
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 

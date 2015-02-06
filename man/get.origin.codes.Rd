@@ -2,23 +2,23 @@
 % Please edit documentation in R/tools.R
 \name{get.origin.codes}
 \alias{get.origin.codes}
-\title{Get origin code numbers for factors}
+\title{Get Origin Code Numbers for Factors}
 \usage{
 get.origin.codes(x, label.table)
 }
 \arguments{
-\item{x}{factor. Factor to obtain code for}
+\item{x}{\emph{factor.} Factor to obtain code for}
 
-\item{label.table}{table. Table with factor levels obtained by \code{\link{get.label}}.}
+\item{label.table}{\emph{table.} Table with factor levels obtained by \code{\link{get.label}}.}
 }
 \value{
 Returns an integer with original codes
 }
 \description{
-Get origin code numbers for factors
+Recreates the code numbers of a factor as stored in the Stata dataset.
 }
 \details{
-While converting numeric variables to factors, the original code numbers get lost.  This function reconstructs the codes from the attribute "label.table".
+While converting numeric variables to factors, the original code numbers is lost.  This function reconstructs the codes from the attribute "label.table".
 }
 \examples{
 dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
@@ -28,5 +28,10 @@ labtab <- get.label(dat, labname)
 # comparsion
 get.origin.codes(dat$foreign, labtab)
 as.integer(dat$foreign)
+}
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
+
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 

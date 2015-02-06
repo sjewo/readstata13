@@ -2,20 +2,20 @@
 % Please edit documentation in R/tools.R
 \name{get.label}
 \alias{get.label}
-\title{Get Stata label table for a label set}
+\title{Get Stata Label Table for a Label Set}
 \usage{
 get.label(dat, label.name)
 }
 \arguments{
-\item{dat}{data.frame. Data.frame created by read.stata13.}
+\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
 
-\item{label.name}{character. Name of the Stata label set}
+\item{label.name}{\emph{character.} Name of the Stata label set}
 }
 \value{
 Returns a named vector of code numbers
 }
 \description{
-Get Stata label table for a label set
+Retrieve the value labels for a specific Stata label set.
 }
 \details{
 This function returns the table of factor levels which represent a Stata label set.
@@ -25,5 +25,10 @@ The name of a label set for a variable can be obtained by \code{\link{get.label.
 dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
 labname <- get.label.name(dat,"foreign")
 get.label(dat, labname)
+}
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
+
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 

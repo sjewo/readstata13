@@ -20,17 +20,17 @@
 #' \code{read.dta13} reads a Stata 13 dta file and imports the data
 #' into a data.frame.
 #'
-#' @param file  string. Path to the dta file you want to import.
-#' @param convert.factors logical. If TRUE factors from Stata value labels are created.
-#' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
-#' @param encoding string. Strings can be converted from Windows-1252 to system encoding.
+#' @param file  \emph{character.} Path to the dta file you want to import.
+#' @param convert.factors \emph{logical.} If TRUE factors from Stata value labels are created.
+#' @param generate.factors \emph{logical.} If TRUE and convert.factors is TRUE missing factor labels are created from integers.
+#' @param encoding \emph{character.} Strings can be converted from Windows-1252 to system encoding.
 #'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
-#' @param convert.underscore logical. If TRUE "_" in variable names will be changed to "."
-#' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
+#' @param convert.underscore \emph{logical.} If TRUE "_" in variable names will be changed to "."
+#' @param missing.type \emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
 #' "missing" will be created.
-#' @param replace.strl logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
-#' @param convert.dates logical. If TRUE Stata dates are converted.
-#' @param add.rownames logical. If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.
+#' @param replace.strl \emph{logical.} If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
+#' @param convert.dates \emph{logical.} If TRUE Stata dates are converted.
+#' @param add.rownames \emph{logical.} If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.
 #'
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary file and read afterwards.
@@ -75,8 +75,8 @@
 #' @seealso \code{\link{read.dta}} and \code{memisc} for dta files from Stata
 #' versions < 13.
 #' @references Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
-#' @author Jan Marvin Garbuszus \email{jan.garbuszus@@rub.de}
-#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@rub.de}
+#' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,

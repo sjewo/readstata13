@@ -9,30 +9,30 @@ save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
   add.rownames = FALSE, compress = FALSE)
 }
 \arguments{
-\item{data}{data.frame. A data.frame Object.}
+\item{data}{\emph{data.frame.} A data.frame Object.}
 
-\item{file}{string. Path to the dta file you want to export.}
+\item{file}{\emph{character.} Path to the dta file you want to export.}
 
-\item{data.label}{string. Name of the dta-file.}
+\item{data.label}{\emph{character.} Name of the dta-file.}
 
-\item{time.stamp}{logical. If TRUE add a time.stamp to the dta-file.}
+\item{time.stamp}{\emph{logical.} If TRUE add a time.stamp to the dta-file.}
 
-\item{convert.factors}{logical. If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.}
+\item{convert.factors}{\emph{logical.} If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.}
 
-\item{convert.dates}{logical. If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()}
+\item{convert.dates}{\emph{logical.} If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()}
 
-\item{tz}{string. The name of the timezone convert.dates will use.}
+\item{tz}{\emph{character.} The name of the timezone convert.dates will use.}
 
-\item{add.rownames}{logical. If TRUE a new variable rownames will be added to the dta-file.}
+\item{add.rownames}{\emph{logical.} If TRUE a new variable rownames will be added to the dta-file.}
 
-\item{compress}{logical. If TRUE the resulting dta-file will use all of Statas numeric-vartypes.}
+\item{compress}{\emph{logical.} If TRUE the resulting dta-file will use all of Statas numeric-vartypes.}
 }
 \value{
 The function writes a dta-file to disk. The following features of the dta file format are supported:
 \describe{
   \item{datalabel:}{Dataset label}
   \item{time.stamp:}{Timestamp of file creation}
-  \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
+  \item{formats:}{Stata display formats. May be used with \code{\link[base]{sprintf}}}
   \item{type:}{Stata data type (see Stata Corp 2014)}
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
@@ -44,15 +44,15 @@ The function writes a dta-file to disk. The following features of the dta file f
 into a dta-file.
 }
 \author{
-Jan Marvin Garbuszus \email{jan.garbuszus@rub.de}
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
-Sebastian Jeworutzki \email{sebastian.jeworutzki@rub.de}
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 \references{
 Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
 }
 \seealso{
-\code{\link{write.dta}} and \code{memisc} for dta files from Stata
+\code{\link[foreign]{write.dta}} and \code{memisc} for dta files from Stata
 versions < 13.
 }
 

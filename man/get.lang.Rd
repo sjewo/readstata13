@@ -4,15 +4,25 @@
 \alias{get.lang}
 \title{Show default label language}
 \usage{
-get.lang(dat)
+get.lang(dat, print = T)
 }
 \arguments{
-\item{dat}{data.frame. Imported data.frame}
+\item{dat}{data.frame. Data.frame created by read.stata13.}
+
+\item{print.}{If TRUE print available languages and default language.}
 }
 \value{
-If a language label was set, it will be returned otherwise NA.
+Returns a list with two components:
+\describe{
+\item{languages:}{Vector of label languages used in the dataset}
+\item{default:}{Name of the actual default label language, otherwise NA}
+}
 }
 \description{
 Show default label language
+}
+\details{
+Stata allows to define multiple label sets in different languages. This functions reports the
+available languages and the selected default language.
 }
 

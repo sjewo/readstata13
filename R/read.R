@@ -17,15 +17,15 @@
 
 #' Read Stata 13 Binary Files
 #'
-#' \code{read.dta13} reads a Stata 13 dta file bytewise and imports the data
+#' \code{read.dta13} reads a Stata 13 dta file and imports the data
 #' into a data.frame.
 #'
 #' @param file  string. Path to the dta file you want to import.
 #' @param convert.factors logical. If TRUE factors from Stata value labels are created.
 #' @param generate.factors logical. If TRUE and convert.factors is TRUE missing factor labels are created from integers.
-#' @param encoding string. If wanted strings can be converted from Windows-1252 to system encoding.
+#' @param encoding string. Strings can be converted from Windows-1252 to system encoding.
 #'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
-#' @param convert.underscore logical. Changes variable name from "_" to "."
+#' @param convert.underscore logical. If TRUE "_" in variable names will be changed to "."
 #' @param missing.type logical. Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
 #' "missing" will be created.
 #' @param replace.strl logical. If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.
@@ -35,22 +35,22 @@
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary file and read afterwards.
 #'
-#' Stata files are encoded in ansinew. Depending on your systems default encoding certain characters may appear wrong.
+#' Stata files are encoded in ansinew. Depending on your systems default encoding certain characters may appear wrong.  
 #' Using a correct encoding may fix these.
 #'
-#' Variable names stored inside the dta-file will form the variables of the resulting data.frame. Stata types char, byte,
-#' and int will become integer; float and double will become numerics. Respective missing values are handled, though R only
-#' knows a single missing type, while Stata knows 27 hence all Stata missings will become NA in R. If you need to keep track
+#' Variable names stored inside the dta-file will be used in the resulting data.frame. Stata types char, byte,
+#' and int will become integer; float and double will become numerics. Respective missing values are handled.  R only
+#' knows a single missing type, while Stata knows 27, so all Stata missings will become NA in R.  If you need to keep track
 #' of Statas original missing types, you may use \code{missing.type=TRUE}.
 #'
 #' Stata dates are converted to R's Date class the same way foreign handles dates.
 #'
 #' Stata 13 introduced a new character type called strL. strLs are able to store strings of any size up to 2 billion
-#' characters. While R is able to store strings of this size in a character, certain data.frames may appear messed, if long
+#' characters.  While R is able to store strings of this size in a character, certain data.frames may appear messed, if long
 #' strings are inserted default is \code{FALSE}.
 #'
 #' In R you may use rownames to store characters (see for instance \code{data(swiss)}). In Stata this is not possible and
-#' rownames have to be stored as a variable. If this is the case for your file and you want to use rownames,
+#' rownames have to be stored as a variable.  If this is the case for your file and you want to use rownames,
 #' \code{add.rownames=TRUE} will convert the first variable of the dta-file into rownames of the resulting data.frame.
 #'
 #' Beginning with Stata 13 (format 117) a new dta-format was introduced, therefore reading dta-files from earlier Stata

@@ -4,19 +4,22 @@
 \alias{get.label.name}
 \title{Get name of Stata label set for a variable}
 \usage{
-get.label.name(dat, var.name, lang = NA)
+get.label.name(dat, var.name = NULL, lang = NA)
 }
 \arguments{
-\item{dat}{data.frame. Imported data.frame}
+\item{dat}{data.frame. Data.frame created by read.stata13.}
 
-\item{var.name}{character. Variable name}
+\item{var.name}{character vector. Variable names. If NULL names of all label sets.}
 
-\item{lang}{string. Label language. Default language defined by get.lang() is used if NA}
+\item{lang}{string. Label language. Default language defined by \code{\link{get.lang}} is used if NA}
 }
 \value{
-Returns the variable name as string
+Returns an named vector of variable labels
 }
 \description{
 Get name of Stata label set for a variable
+}
+\details{
+Stata stores factor labels in variable independent labels sets.  This function retrieves the name of the label set for a variable.
 }
 

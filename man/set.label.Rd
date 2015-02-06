@@ -4,12 +4,14 @@
 \alias{set.label}
 \title{Assign Stata labels to a variable}
 \usage{
-set.label(x, var.name)
+set.label(dat, var.name, lang = NA)
 }
 \arguments{
-\item{x}{data.frame. Imported data.frame}
+\item{dat}{data.frame. Data.frame created by read.stata13.}
 
 \item{var.name}{character. Name of the variable in the data.frame}
+
+\item{lang}{string. Label language. Default language defined by \code{\link{get.lang}} is used if NA}
 }
 \value{
 Returns a labeled factor
@@ -18,7 +20,7 @@ Returns a labeled factor
 Assign Stata labels to a variable
 }
 \examples{
-dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",
+dat <- read.dta13("http://www.stata-press.com/data/r13/autofull.dta",
                    convert.factors = FALSE)
 
 # compare vectors

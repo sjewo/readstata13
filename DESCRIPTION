@@ -9,7 +9,7 @@ Authors@R: c(
     email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = c("aut", "cre")),
     person("R Core Team", role="cph")
     )
-Description: Function to read the Stata 13 file format
+Description: Function to read and write the Stata 13 file format
 URL: https://github.com/sjewo/readstata13
 License: GPL-2 | file LICENSE
 Imports:

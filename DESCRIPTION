@@ -4,15 +4,13 @@ Title: Import Stata 13 Datafiles
 Version: 0.5
 Authors@R: c(
     person("Jan Marvin", "Garbuszus",
-    email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut", "cre")),
+    email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut")),
     person("Sebastian", "Jeworutzki",
-    email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = "aut"),
+    email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = c("aut", "cre")),
     person("R Core Team", role="cph")
     )
-Author: Jan Marvin Garbuszus and Sebastian Jeworutzki
-Maintainer: Sebastian Jeworutzki <Sebastian.Jeworutzki@ruhr-uni-bochum.de>
 Description: Function to read the Stata 13 file format
-Url: https://github.com/sjewo/readstata13
+URL: https://github.com/sjewo/readstata13
 License: GPL-2 | file LICENSE
 Imports:
     Rcpp (>= 0.11.2)

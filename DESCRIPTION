@@ -16,3 +16,4 @@ Imports:
     Rcpp (>= 0.11.2)
 LinkingTo: Rcpp
 ByteCompile: yes
+SystemRequirements: C++11

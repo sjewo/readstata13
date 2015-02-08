@@ -56,6 +56,7 @@ void test(std::string testme, FILE * file)
   readstr(test,file, 1+testme.size());
   if (strcmp(testMe,test)!=0)
   {
+    REprintf("When attempting to read %s:", testme.c_str());
     throw std::range_error("Something went wrong!");
   }
   delete[] test;
@@ -360,7 +361,7 @@ List stata(const char * filePath, const bool missing)
 
     char chvarname[33];
     char chcharact[33];
-    char *nnocharacter = new char[nocharacter-66];
+    char *nnocharacter = new char[nocharacter-65]; // we need more memory here
 
     readstr(chvarname, file, sizeof(chvarname)+1);
     readstr(chcharact, file, sizeof(chcharact)+1);
@@ -373,11 +374,12 @@ List stata(const char * filePath, const bool missing)
     chs[2] = nnocharacter;
 
     delete[] nnocharacter;
-
+    
     // add characteristics to the list
     ch.push_front( chs );
 
-    fseek(file, 5, SEEK_CUR); // </ch>
+    //fseek(file, 5, SEEK_CUR); // </ch>
+    test("</ch>", file);
 
     // read next tag
     readstr(tago, file, sizeof(tago));
@@ -661,7 +663,7 @@ List stata(const char * filePath, const bool missing)
     CharacterVector label(labn);
     for (int i=0; i < labn; ++i) {
       int const lablen = off[i+1]-off[i];
-      char *lab = new char[lablen];
+      char *lab = new char[lablen+1]; //add + 1
       readstr(lab, file, lablen+1);
       label[i] = lab;
       delete[] lab;

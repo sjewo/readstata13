@@ -106,19 +106,19 @@ get.lang <- function(dat, print=T) {
 get.label.name <- function(dat, var.name=NULL, lang=NA) {
     vnames  <- names(dat)
     if (is.na(lang) | lang == get.lang(dat, F)$default) {
-    labelsets <- attr(dat, "val.lab")
-    labelsets[labelsets==""] <- NA
+    labelsets <- attr(dat, "val.labels")
     names(labelsets) <- vnames
-    labelsets <- labelsets[vnames]
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
     varname <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
                       function(x) x[1])
-    labelsets <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
+    labelsets.tmp <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
                         function(x) x[3])
-    names(labelsets) <- varname
-    labelsets <- labelsets[vnames]
+    names(labelsets.tmp) <- varname
+    
+    labelsets <- rep("", length(vnames))
     names(labelsets) <- vnames
+    labelsets[varname] <- labelsets.tmp[varname]
   }
 
    if(is.null(var.name)) {
@@ -247,7 +247,6 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     types <- attr(dat, "types")
     label <- attr(dat, "label.table")
     val.labels <- get.label.name(dat, NULL, lang)
-    val.labels <- val.labels[!is.na(val.labels)]
     oldval.labels <- get.label.name(dat)
     oldval.labels <- oldval.labels[!is.na(oldval.labels)]
     oldlang <- get.lang(dat, F)$default
@@ -255,7 +254,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     cat("Replacing value labels. This might take some time...\n")
     pb <- txtProgressBar(min=1,max=length(val.labels)+1)
 
-    for (i in seq_along(val.labels)) {
+    for (i in seq_along(val.labels[val.labels!=""])) {
       labname <- val.labels[i]
       vartype <- types[i]
       labtable <- label[[labname]]
@@ -306,7 +305,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 
     # set new default lang and store string as default attributes
     names(val.labels) <- NULL
-    attr(dat, "val.lab") <- val.labels
+    attr(dat, "val.labels") <- val.labels
     attr(dat, "expansion.fields")[[
       grep("_lang_c", attr(dat, "expansion.fields"))
       ]][3] <- lang

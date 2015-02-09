@@ -241,7 +241,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   IntegerVector vartype(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     uint16_t nvartype = 0;
     nvartype = readbin(nvartype, file, swapit);
@@ -256,7 +256,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector varnames(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nvarnames [33];
     readstr(nvarnames, file, sizeof(nvarnames)+1);
@@ -292,7 +292,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector formats(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nformats[49];
     readstr(nformats, file, sizeof(nformats)+1);
@@ -309,7 +309,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector valLabels(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nvalLabels[33];
     readstr(nvalLabels, file, sizeof(nvalLabels)+1);
@@ -324,7 +324,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector varLabels(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nvarLabels[81];
     readstr(nvarLabels, file, sizeof(nvarLabels)+1);
@@ -365,7 +365,7 @@ List stata(const char * filePath, const bool missing)
 
     readstr(chvarname, file, sizeof(chvarname)+1);
     readstr(chcharact, file, sizeof(chcharact)+1);
-    readstr(nnocharacter, file, nocharacter-65);
+    readstr(nnocharacter, file, nocharacter-66+1);
 
     // chs vector
     CharacterVector chs(3);
@@ -397,7 +397,7 @@ List stata(const char * filePath, const bool missing)
 
   // 1. create the list
   List df(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     int const type = vartype[i];
     switch(type)

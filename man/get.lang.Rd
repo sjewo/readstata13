@@ -7,9 +7,9 @@
 get.lang(dat, print = T)
 }
 \arguments{
-\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
+\item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
-\item{print}{\emph{logical.} If TRUE print available languages and default language.}
+\item{print}{\emph{logical.} If \code{TRUE}, print available languages and default language.}
 }
 \value{
 Returns a list with two components:

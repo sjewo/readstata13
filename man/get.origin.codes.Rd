@@ -18,10 +18,10 @@ Returns an integer with original codes
 Recreates the code numbers of a factor as stored in the Stata dataset.
 }
 \details{
-While converting numeric variables to factors, the original code numbers is lost.  This function reconstructs the codes from the attribute "label.table".
+While converting numeric variables into factors, the original code numbers are lost.  This function reconstructs the codes from the attribute \code{label.table}.
 }
 \examples{
-dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
 labname <- get.label.name(dat,"foreign")
 labtab <- get.label(dat, labname)
 

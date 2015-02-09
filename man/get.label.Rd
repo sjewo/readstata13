@@ -7,7 +7,7 @@
 get.label(dat, label.name)
 }
 \arguments{
-\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
+\item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
 \item{label.name}{\emph{character.} Name of the Stata label set}
 }
@@ -22,7 +22,7 @@ This function returns the table of factor levels which represent a Stata label s
 The name of a label set for a variable can be obtained by \code{\link{get.label.name}}.
 }
 \examples{
-dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
 labname <- get.label.name(dat,"foreign")
 get.label(dat, labname)
 }

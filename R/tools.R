@@ -55,8 +55,8 @@ get.filepath <- function(path=""){
 #'
 #' Displays informations about the defined label languages.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
-#' @param print \emph{logical.} If TRUE print available languages and default language.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @param print \emph{logical.} If \code{TRUE}, print available languages and default language.
 #' @return Returns a list with two components: 
 #' \describe{
 #' \item{languages:}{Vector of label languages used in the dataset}
@@ -95,8 +95,8 @@ get.lang <- function(dat, print=T) {
 #'
 #' Retrieves the Stata label set in the dataset for all or an vector of variable names.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
-#' @param var.name \emph{character vector.} Variable names. If NULL names of all label sets.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @param var.name \emph{character vector.} Variable names. If \code{NULL}, get names of all label sets.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
 #' @return Returns an named vector of variable labels
 #' @details Stata stores factor labels in variable independent labels sets.  This function retrieves the name of the label set for a variable. 
@@ -106,19 +106,23 @@ get.lang <- function(dat, print=T) {
 get.label.name <- function(dat, var.name=NULL, lang=NA) {
     vnames  <- names(dat)
     if (is.na(lang) | lang == get.lang(dat, F)$default) {
-    labelsets <- attr(dat, "val.lab")
+    labelsets <- attr(dat, "val.labels")
     names(labelsets) <- vnames
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
     varname <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
                       function(x) x[1])
-    labelsets <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
+    labelsets.tmp <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
                         function(x) x[3])
-    names(labelsets) <- varname
+    names(labelsets.tmp) <- varname
+    
+    labelsets <- rep("", length(vnames))
+    names(labelsets) <- vnames
+    labelsets[varname] <- labelsets.tmp[varname]
   }
 
    if(is.null(var.name)) {
-    return(labelsets[vnames])
+    return(labelsets)
    } else {
     return(labelsets[var.name])
    }
@@ -131,11 +135,11 @@ get.label.name <- function(dat, var.name=NULL, lang=NA) {
 #' @param x \emph{factor.} Factor to obtain code for
 #' @param label.table \emph{table.} Table with factor levels obtained by \code{\link{get.label}}.
 #' @return Returns an integer with original codes
-#' @details While converting numeric variables to factors, the original code numbers is lost.  This function reconstructs the codes from the attribute "label.table".
+#' @details While converting numeric variables into factors, the original code numbers are lost.  This function reconstructs the codes from the attribute \code{label.table}.
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @examples
-#' dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+#' dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
 #' labname <- get.label.name(dat,"foreign")
 #' labtab <- get.label(dat, labname)
 #'
@@ -156,13 +160,13 @@ get.origin.codes <- function(x, label.table) {
 #'
 #' Retrieve the value labels for a specific Stata label set.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param label.name \emph{character.} Name of the Stata label set
 #' @return Returns a named vector of code numbers
 #' @details This function returns the table of factor levels which represent a Stata label set.  
 #' The name of a label set for a variable can be obtained by \code{\link{get.label.name}}. 
 #' @examples
-#' dat <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+#' dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
 #' labname <- get.label.name(dat,"foreign")
 #' get.label(dat, labname)
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
@@ -176,13 +180,12 @@ get.label <- function(dat, label.name) {
 #'
 #' Assign value labels from a Stata label set to a variable.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param var.name \emph{character.} Name of the variable in the data.frame
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
 #' @return Returns a labeled factor
 #' @examples
-#' dat <- read.dta13("http://www.stata-press.com/data/r13/autofull.dta",
-#'                    convert.factors = FALSE)
+#' dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
 #'
 #' # compare vectors
 #' set.label(dat, "foreign")
@@ -199,8 +202,8 @@ set.label <- function(dat, var.name, lang=NA) {
 #'
 #' Retrieve variable labels from dataset attributes.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
-#' @param var.name \emph{character vector.} Variable names. If NULL label for all variables.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @param var.name \emph{character vector.} Variable names. If NULL, get label for all variables.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
 #' @return Returns an named vector of variable labels
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
@@ -229,9 +232,9 @@ get.varlabel <- function(dat, var.name=NULL, lang=NA) {
 #'
 #' Changes default label language for a dataset.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
-#' @param generate.factors \emph{logical.} If TRUE generates factors.
+#' @param generate.factors \emph{logical.} If \code{TRUE}, missing factor levels are generated.
 #' @return Returns a data.frame with value labels in language "lang".
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
@@ -245,31 +248,33 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     label <- attr(dat, "label.table")
     val.labels <- get.label.name(dat, NULL, lang)
     oldval.labels <- get.label.name(dat)
+    oldval.labels <- oldval.labels[!is.na(oldval.labels)]
     oldlang <- get.lang(dat, F)$default
 
     cat("Replacing value labels. This might take some time...\n")
-    pb <- txtProgressBar(min=1,max=length(val.labels))
+    pb <- txtProgressBar(min=1,max=length(val.labels)+1)
 
-    for (i in seq_along(val.labels)) {
+    for (i in seq_along(val.labels[val.labels!=""])) {
       labname <- val.labels[i]
       vartype <- types[i]
       labtable <- label[[labname]]
-
+      varname <- names(val.labels)[i]
+      
       # get old codes
-      if(is.factor(dat[,i])) {
-        oldlabname <- get.label.name(dat, names(dat)[i])
+      if(is.factor(dat[, varname])) {
+        oldlabname <- get.label.name(dat, varname)
         oldlabtab <- get.label(dat, oldlabname)
-        codes <- get.origin.codes(dat[,i], oldlabtab)
+        codes <- get.origin.codes(dat[,varname], oldlabtab)
         varunique <- na.omit(unique(codes))
       } else {
-        varunique <- na.omit(unique(dat[,i]))
+        varunique <- na.omit(unique(dat[,varname]))
       }
 
-      if(labname %in% names(label) & vartype > 65527 & is.factor(dat[,i])) {
+      if(labname %in% names(label) & vartype > 65527 & is.factor(dat[,varname])) {
         # assign label if label set is complete
         if (all(varunique %in% labtable)) {
 
-          dat[,i] <- factor(codes, levels=labtable,
+          dat[,varname] <- factor(codes, levels=labtable,
                             labels=names(labtable))
         }
         # else generate labels from codes
@@ -277,7 +282,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
         names(varunique) <- as.character(varunique)
         gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-        dat[,i] <- factor(dat[,i], levels=gen.lab,
+        dat[,varname] <- factor(dat[,varname], levels=gen.lab,
                           labels=names(gen.lab))
       } else {
         warning(paste(vnames[i], "Missing factor labels - no labels assigned.
@@ -300,7 +305,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 
     # set new default lang and store string as default attributes
     names(val.labels) <- NULL
-    attr(dat, "val.lab") <- val.labels
+    attr(dat, "val.labels") <- val.labels
     attr(dat, "expansion.fields")[[
       grep("_lang_c", attr(dat, "expansion.fields"))
       ]][3] <- lang

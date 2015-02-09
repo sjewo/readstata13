@@ -7,9 +7,9 @@
 get.label.name(dat, var.name = NULL, lang = NA)
 }
 \arguments{
-\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
+\item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
-\item{var.name}{\emph{character vector.} Variable names. If NULL names of all label sets.}
+\item{var.name}{\emph{character vector.} Variable names. If \code{NULL}, get names of all label sets.}
 
 \item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
 }

@@ -52,14 +52,14 @@ static void readstr(char *var, FILE * fp, int nchar)
 void test(std::string testme, FILE * file)
 {
   const char *testMe = testme.c_str();
-  char test[1+testme.size()];
-  readstr(test,file, sizeof(test));
+  char *test = new char[1+testme.size()];
+  readstr(test,file, 1+testme.size());
   if (strcmp(testMe,test)!=0)
   {
-    printf("When attempting to read %s:", testme.c_str());
-
+    REprintf("When attempting to read %s:", testme.c_str());
     throw std::range_error("Something went wrong!");
   }
+  delete[] test;
 }
 
 //' Reads the binary Stata file
@@ -159,7 +159,7 @@ List stata(const char * filePath, const bool missing)
   uint8_t ndlabel = 0;
   ndlabel = readbin(ndlabel, file, swapit);
 
-  char datalabel [ndlabel];
+  char *datalabel = new char[ndlabel];
   if (ndlabel>0)
   {
     readstr(datalabel, file, ndlabel+1);
@@ -169,6 +169,7 @@ List stata(const char * filePath, const bool missing)
 
   CharacterVector datalabelCV(1);
   datalabelCV(0) = datalabel;
+  delete[] datalabel;
 
   fseek(file, 8, SEEK_CUR); //</label>
   test("<timestamp>", file);
@@ -183,7 +184,7 @@ List stata(const char * filePath, const bool missing)
   uint8_t ntimestamp = 0;
   ntimestamp = readbin(ntimestamp, file, swapit);
 
-  char timestamp [ntimestamp];
+  char *timestamp = new char[ntimestamp];
   if (ntimestamp == 17) // ntimestap is 0 or 17
   {
     readstr(timestamp, file, ntimestamp+1);
@@ -193,7 +194,8 @@ List stata(const char * filePath, const bool missing)
 
   CharacterVector timestampCV(1);
   timestampCV(0) = timestamp;
-
+  delete[] timestamp;
+  
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
 
@@ -239,7 +241,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   IntegerVector vartype(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     uint16_t nvartype = 0;
     nvartype = readbin(nvartype, file, swapit);
@@ -254,7 +256,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector varnames(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nvarnames [33];
     readstr(nvarnames, file, sizeof(nvarnames)+1);
@@ -290,7 +292,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector formats(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nformats[49];
     readstr(nformats, file, sizeof(nformats)+1);
@@ -307,7 +309,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector valLabels(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nvalLabels[33];
     readstr(nvalLabels, file, sizeof(nvalLabels)+1);
@@ -322,7 +324,7 @@ List stata(const char * filePath, const bool missing)
   */
 
   CharacterVector varLabels(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     char nvarLabels[81];
     readstr(nvarLabels, file, sizeof(nvarLabels)+1);
@@ -359,11 +361,11 @@ List stata(const char * filePath, const bool missing)
 
     char chvarname[33];
     char chcharact[33];
-    char nnocharacter[nocharacter-66];
+    char *nnocharacter = new char[nocharacter-65]; // we need more memory here
 
     readstr(chvarname, file, sizeof(chvarname)+1);
     readstr(chcharact, file, sizeof(chcharact)+1);
-    readstr(nnocharacter, file, sizeof(nnocharacter)+1);
+    readstr(nnocharacter, file, nocharacter-66+1);
 
     // chs vector
     CharacterVector chs(3);
@@ -371,10 +373,13 @@ List stata(const char * filePath, const bool missing)
     chs[1] = chcharact;
     chs[2] = nnocharacter;
 
+    delete[] nnocharacter;
+    
     // add characteristics to the list
     ch.push_front( chs );
 
-    fseek(file, 5, SEEK_CUR); // </ch>
+    //fseek(file, 5, SEEK_CUR); // </ch>
+    test("</ch>", file);
 
     // read next tag
     readstr(tago, file, sizeof(tago));
@@ -392,7 +397,7 @@ List stata(const char * filePath, const bool missing)
 
   // 1. create the list
   List df(k);
-  for (unsigned int i=0; i<k; ++i)
+  for (uint16_t i=0; i<k; ++i)
   {
     int const type = vartype[i];
     switch(type)
@@ -491,9 +496,10 @@ List stata(const char * filePath, const bool missing)
         int32_t len = 0;
         len = vartype[i];
 
-        char val_s[len];
-        readstr(val_s, file, sizeof(val_s)+1);
+        char *val_s = new char[len];
+        readstr(val_s, file, len+1);
         as<CharacterVector>(df[i])[j] = val_s;
+        delete[] val_s;
         break;
       }
         // string of any length
@@ -560,16 +566,18 @@ List stata(const char * filePath, const bool missing)
 
     if (t==129)
     {
-      char strl [len];
-      readstr(strl, file, sizeof(strl));
+      char *strl = new char[len];
+      readstr(strl, file, len);
       strls(1) = strl;
+      delete[] strl;
     } else
     {
       if (t==130)
       {
-        char strl [len+1];
-        readstr(strl, file, sizeof(strl));
+        char *strl = new char[len+1];
+        readstr(strl, file, len+1);
         strls(1) = strl;
+        delete[] strl;
       }
     }
 
@@ -655,9 +663,10 @@ List stata(const char * filePath, const bool missing)
     CharacterVector label(labn);
     for (int i=0; i < labn; ++i) {
       int const lablen = off[i+1]-off[i];
-      char lab[lablen];
-      readstr(lab, file, sizeof(lab)+1);
+      char *lab = new char[lablen+1]; //add + 1
+      readstr(lab, file, lablen+1);
       label[i] = lab;
+      delete[] lab;
     }
 
     // sort labels according to indx

@@ -52,6 +52,6 @@ T swap_endian(T t) {
 
   else
     return t;
-};
+}
 
 #endif

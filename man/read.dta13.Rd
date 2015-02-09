@@ -11,23 +11,23 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
 
-\item{convert.factors}{\emph{logical.} If TRUE factors from Stata value labels are created.}
+\item{convert.factors}{\emph{logical.} If \code{TRUE}, factors from Stata value labels are created.}
 
-\item{generate.factors}{\emph{logical.} If TRUE and convert.factors is TRUE missing factor labels are created from integers.}
+\item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is TRUE, missing factor labels are created from integers.}
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252 to system encoding.
 Options are "latin1" or "utf-8" to specify target encoding explicitly.}
 
-\item{convert.underscore}{\emph{logical.} If TRUE "_" in variable names will be changed to "."}
+\item{convert.underscore}{\emph{logical.} If \code{TRUE}, "_" in variable names will be changed to "."}
 
-\item{missing.type}{\emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z. If TRUE, attribute
-"missing" will be created.}
+\item{missing.type}{\emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z.
+If \code{TRUE}, attribute \code{missing} will be created.}
 
-\item{convert.dates}{\emph{logical.} If TRUE Stata dates are converted.}
+\item{convert.dates}{\emph{logical.} If \code{TRUE}, Stata dates are converted.}
 
-\item{replace.strl}{\emph{logical.} If TRUE replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
+\item{replace.strl}{\emph{logical.} If \code{TRUE}, replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
 
-\item{add.rownames}{\emph{logical.} If TRUE the first variable will be used as rownames. Variable will be dropped afterwards.}
+\item{add.rownames}{\emph{logical.} If \code{TRUE}, the first column will be used as rownames. Variable will be dropped afterwards.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes include
@@ -54,11 +54,11 @@ into a data.frame.
 \details{
 If the filename is a url, the file will be downloaded as a temporary file and read afterwards.
 
-Stata files are encoded in ansinew. Depending on your systems default encoding certain characters may appear wrong.
+Stata files are encoded in ansinew. Depending on your system default encoding certain characters may appear wrong.
 Using a correct encoding may fix these.
 
-Variable names stored inside the dta-file will be used in the resulting data.frame. Stata types char, byte,
-and int will become integer; float and double will become numerics. Respective missing values are handled.  R only
+Variable names stored in the dta-file will be used in the resulting data.frame. Stata types char, byte,
+and int will become integer; float and double will become numerics. R only
 knows a single missing type, while Stata knows 27, so all Stata missings will become NA in R.  If you need to keep track
 of Statas original missing types, you may use \code{missing.type=TRUE}.
 
@@ -68,11 +68,11 @@ Stata 13 introduced a new character type called strL. strLs are able to store st
 characters.  While R is able to store strings of this size in a character, certain data.frames may appear messed, if long
 strings are inserted default is \code{FALSE}.
 
-In R you may use rownames to store characters (see for instance \code{data(swiss)}). In Stata this is not possible and
+In R, you may use rownames to store characters (see for instance \code{data(swiss)}). In Stata, this is not possible and
 rownames have to be stored as a variable.  If this is the case for your file and you want to use rownames,
 \code{add.rownames=TRUE} will convert the first variable of the dta-file into rownames of the resulting data.frame.
 
-Beginning with Stata 13 (format 117) a new dta-format was introduced, therefore reading dta-files from earlier Stata
+Beginning with Stata 13 (format 117), a new dta-format was introduced, therefore reading dta-files from earlier Stata
 versions is not implemented.
 }
 \note{

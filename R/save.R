@@ -22,12 +22,13 @@
 #' @param file \emph{character.} Path to the dta file you want to export.
 #' @param data \emph{data.frame.} A data.frame Object.
 #' @param data.label \emph{character.} Name of the dta-file.
-#' @param time.stamp \emph{logical.} If TRUE add a time.stamp to the dta-file.
-#' @param convert.factors \emph{logical.} If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
-#' @param convert.dates \emph{logical.} If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()
+#' @param time.stamp \emph{logical.} If \code{TRUE}, add a time.stamp to the dta-file.
+#' @param convert.factors \emph{logical.} If \code{TRUE}, factors will be converted to Stata variables with labels. 
+#' Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
+#' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted to Stata date time format. Code from \code{foreign::write.dta}
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
-#' @param add.rownames \emph{logical.} If TRUE a new variable rownames will be added to the dta-file.
-#' @param compress \emph{logical.} If TRUE the resulting dta-file will use all of Statas numeric-vartypes.
+#' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames will be added to the dta-file.
+#' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will use all of Statas numeric-vartypes.
 #' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}

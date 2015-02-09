@@ -15,17 +15,18 @@ save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
 
 \item{data.label}{\emph{character.} Name of the dta-file.}
 
-\item{time.stamp}{\emph{logical.} If TRUE add a time.stamp to the dta-file.}
+\item{time.stamp}{\emph{logical.} If \code{TRUE}, add a time.stamp to the dta-file.}
 
-\item{convert.factors}{\emph{logical.} If TRUE factors will be converted to Stata variables with labels. Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.}
+\item{convert.factors}{\emph{logical.} If \code{TRUE}, factors will be converted to Stata variables with labels.
+Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.}
 
-\item{convert.dates}{\emph{logical.} If TRUE dates will be converted to Stata date time format. Code from foreign::write.dta()}
+\item{convert.dates}{\emph{logical.} If \code{TRUE}, dates will be converted to Stata date time format. Code from \code{foreign::write.dta}}
 
 \item{tz}{\emph{character.} The name of the timezone convert.dates will use.}
 
-\item{add.rownames}{\emph{logical.} If TRUE a new variable rownames will be added to the dta-file.}
+\item{add.rownames}{\emph{logical.} If \code{TRUE}, a new variable rownames will be added to the dta-file.}
 
-\item{compress}{\emph{logical.} If TRUE the resulting dta-file will use all of Statas numeric-vartypes.}
+\item{compress}{\emph{logical.} If \code{TRUE}, the resulting dta-file will use all of Statas numeric-vartypes.}
 }
 \value{
 The function writes a dta-file to disk. The following features of the dta file format are supported:

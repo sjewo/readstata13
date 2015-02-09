@@ -7,7 +7,7 @@
 set.label(dat, var.name, lang = NA)
 }
 \arguments{
-\item{dat}{\emph{data.frame.} Data.frame created by read.dta13.}
+\item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
 \item{var.name}{\emph{character.} Name of the variable in the data.frame}
 
@@ -20,8 +20,7 @@ Returns a labeled factor
 Assign value labels from a Stata label set to a variable.
 }
 \examples{
-dat <- read.dta13("http://www.stata-press.com/data/r13/autofull.dta",
-                   convert.factors = FALSE)
+dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
 
 # compare vectors
 set.label(dat, "foreign")

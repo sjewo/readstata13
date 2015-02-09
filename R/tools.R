@@ -55,8 +55,8 @@ get.filepath <- function(path=""){
 #'
 #' Displays informations about the defined label languages.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
-#' @param print \emph{logical.} If TRUE print available languages and default language.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @param print \emph{logical.} If \code{TRUE}, print available languages and default language.
 #' @return Returns a list with two components: 
 #' \describe{
 #' \item{languages:}{Vector of label languages used in the dataset}
@@ -95,8 +95,8 @@ get.lang <- function(dat, print=T) {
 #'
 #' Retrieves the Stata label set in the dataset for all or an vector of variable names.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
-#' @param var.name \emph{character vector.} Variable names. If NULL names of all label sets.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @param var.name \emph{character vector.} Variable names. If \code{NULL}, get names of all label sets.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
 #' @return Returns an named vector of variable labels
 #' @details Stata stores factor labels in variable independent labels sets.  This function retrieves the name of the label set for a variable. 
@@ -135,7 +135,7 @@ get.label.name <- function(dat, var.name=NULL, lang=NA) {
 #' @param x \emph{factor.} Factor to obtain code for
 #' @param label.table \emph{table.} Table with factor levels obtained by \code{\link{get.label}}.
 #' @return Returns an integer with original codes
-#' @details While converting numeric variables to factors, the original code numbers is lost.  This function reconstructs the codes from the attribute "label.table".
+#' @details While converting numeric variables into factors, the original code numbers are lost.  This function reconstructs the codes from the attribute \code{label.table}.
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @examples
@@ -160,7 +160,7 @@ get.origin.codes <- function(x, label.table) {
 #'
 #' Retrieve the value labels for a specific Stata label set.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param label.name \emph{character.} Name of the Stata label set
 #' @return Returns a named vector of code numbers
 #' @details This function returns the table of factor levels which represent a Stata label set.  
@@ -180,7 +180,7 @@ get.label <- function(dat, label.name) {
 #'
 #' Assign value labels from a Stata label set to a variable.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param var.name \emph{character.} Name of the variable in the data.frame
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
 #' @return Returns a labeled factor
@@ -202,8 +202,8 @@ set.label <- function(dat, var.name, lang=NA) {
 #'
 #' Retrieve variable labels from dataset attributes.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
-#' @param var.name \emph{character vector.} Variable names. If NULL label for all variables.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @param var.name \emph{character vector.} Variable names. If NULL, get label for all variables.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
 #' @return Returns an named vector of variable labels
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
@@ -232,9 +232,9 @@ get.varlabel <- function(dat, var.name=NULL, lang=NA) {
 #'
 #' Changes default label language for a dataset.
 #'
-#' @param dat \emph{data.frame.} Data.frame created by read.dta13.
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
-#' @param generate.factors \emph{logical.} If TRUE generates factors.
+#' @param generate.factors \emph{logical.} If \code{TRUE}, missing factor levels are generated.
 #' @return Returns a data.frame with value labels in language "lang".
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}

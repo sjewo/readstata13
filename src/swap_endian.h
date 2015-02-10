@@ -8,7 +8,7 @@
   + __GNUC_PATCHLEVEL__)
 
 /* Test for GCC < 4.8.0 */
-#if GCC_VERSION < 40800
+#if GCC_VERSION < 40800 & !__clang__
 static inline unsigned short __builtin_bswap16(unsigned short a)
 {
   return (a<<8)|(a>>8);
@@ -52,6 +52,6 @@ T swap_endian(T t) {
 
   else
     return t;
-};
+}
 
 #endif

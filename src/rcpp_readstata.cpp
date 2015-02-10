@@ -18,6 +18,7 @@
 #include <Rcpp.h>
 #include "string"
 #include <stdint.h>
+#include "statadefines.h"
 #include "swap_endian.h"
 
 using namespace Rcpp;
@@ -62,12 +63,12 @@ void test(std::string testme, FILE * file)
   delete[] test;
 }
 
-//' Reads the binary Stata file
-//'
-//' @param filePath The full systempath to the dta file you want to import.
-//' @param missing logical if missings should be converted outside of Rcpp.
-//' @import Rcpp
-//' @export
+// Reads the binary Stata file
+//
+// @param filePath The full systempath to the dta file you want to import.
+// @param missing logical if missings should be converted outside of Rcpp.
+// @import Rcpp
+// @export
 // [[Rcpp::export]]
 List stata(const char * filePath, const bool missing)
 {
@@ -195,7 +196,7 @@ List stata(const char * filePath, const bool missing)
   CharacterVector timestampCV(1);
   timestampCV(0) = timestamp;
   delete[] timestamp;
-  
+
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
 
@@ -374,7 +375,7 @@ List stata(const char * filePath, const bool missing)
     chs[2] = nnocharacter;
 
     delete[] nnocharacter;
-    
+
     // add characteristics to the list
     ch.push_front( chs );
 
@@ -432,10 +433,8 @@ List stata(const char * filePath, const bool missing)
       {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
-        double const dmin = -0x1.fffffffffffffp1023;
-        double const dmax = 0x1.fffffffffffffp1022;
 
-        if ((missing == FALSE) & ((val_d<dmin) | (val_d>dmax)) )
+        if ((missing == FALSE) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_d;
@@ -446,9 +445,7 @@ List stata(const char * filePath, const bool missing)
       {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
-        float const minmax = 0x1.fffffp126;
-
-        if ((missing == FALSE) & ((val_f<(-minmax)) | (val_f>minmax)) )
+        if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_f;
@@ -460,7 +457,7 @@ List stata(const char * filePath, const bool missing)
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
 
-        if ((missing == FALSE) & ((val_l<(-2147483647)) | (val_l>2147483620)) )
+        if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_l;
@@ -472,7 +469,7 @@ List stata(const char * filePath, const bool missing)
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
 
-        if ((missing == FALSE) & ((val_i<(-32767)) | (val_i>32740)) )
+        if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_i;
@@ -484,7 +481,7 @@ List stata(const char * filePath, const bool missing)
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
 
-        if ((missing == FALSE) & ( (val_b<(-127)) | (val_b>100)) )
+        if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_b;

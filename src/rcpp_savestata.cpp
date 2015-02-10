@@ -19,6 +19,7 @@
 #include <string>
 #include <fstream>
 #include <stdint.h>
+#include "statadefines.h"
 #include "swap_endian.h"
 // #include <cstdint> //C++11
 
@@ -46,11 +47,11 @@ static void writebin(T t, fstream& dta, bool swapit)
   }
 }
 
-//' Writes the binary Stata file
-//'
-//' @param filePath The full systempath to the dta file you want to export.
-//' @param dat an R-Object of class data.frame.
-//' @export
+// Writes the binary Stata file
+//
+// @param filePath The full systempath to the dta file you want to export.
+// @param dat an R-Object of class data.frame.
+// @export
 // [[Rcpp::export]]
 int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 {
@@ -303,11 +304,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // store numeric as Stata double (double)
         case 65526:
         {
-          double const na = (0x1.0000000000000p1023);
           double val_d = as<NumericVector>(dat[i])[j];
 
           if ( (val_d == NA_REAL) | R_IsNA(val_d) )
-            val_d = na;
+            val_d = STATA_DOUBLE_NA;
 
           writebin(val_d, dta, swapit);
 
@@ -316,11 +316,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // float
         case 65527:
         {
-          float const na = (0x1.000000p127);
           float val_f = as<NumericVector>(dat[i])[j];
 
           if ( (val_f == NA_REAL) | R_IsNA(val_f) )
-            val_f = na;
+            val_f = STATA_FLOAT_NA;
 
           writebin(val_f, dta, swapit);
 
@@ -329,11 +328,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // store integer as Stata long (int32_t)
         case 65528:
         {
-          int32_t const na = (0x7fffffe5);
           int32_t val_l = as<IntegerVector>(dat[i])[j];
 
           if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) )
-            val_l = na;
+            val_l = STATA_INT_NA;
 
           writebin(val_l, dta, swapit);
 
@@ -342,7 +340,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // int
         case 65529:
         {
-          int16_t const na = (32741);
           union v {
             int32_t   l;
             int16_t   i;
@@ -353,7 +350,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           int16_t val_i = val.i;
 
           if (val.l == NA_INTEGER)
-            val_i = na;
+            val_i = STATA_SHORTINT_NA;
 
           writebin(val_i, dta, swapit);
 
@@ -362,7 +359,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // byte
         case 65530:
         {
-          int8_t const na = (101);
           union v {
             int32_t   l;
             int8_t    b;
@@ -373,7 +369,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           int8_t val_b = val.b;
 
           if (val.l == NA_INTEGER)
-            val_b = na;
+            val_b = STATA_BYTE_NA;
 
           writebin(val_b, dta, swapit);
 

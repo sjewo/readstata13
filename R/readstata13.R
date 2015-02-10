@@ -1,4 +1,4 @@
-#' Import Stata 13 Datafiles
+#' Import Stata 13 Data Files
 #'
 #' Function to read the Stata 13 file format into a data.frame.
 #'

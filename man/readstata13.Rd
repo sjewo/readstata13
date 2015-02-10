@@ -4,7 +4,7 @@
 \name{readstata13}
 \alias{readstata13}
 \alias{readstata13-package}
-\title{Import Stata 13 Datafiles}
+\title{Import Stata 13 Data Files}
 \description{
 Function to read the Stata 13 file format into a data.frame.
 }

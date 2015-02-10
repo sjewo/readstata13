@@ -47,11 +47,11 @@ static void writebin(T t, fstream& dta, bool swapit)
   }
 }
 
-//' Writes the binary Stata file
-//'
-//' @param filePath The full systempath to the dta file you want to export.
-//' @param dat an R-Object of class data.frame.
-//' @export
+// Writes the binary Stata file
+//
+// @param filePath The full systempath to the dta file you want to export.
+// @param dat an R-Object of class data.frame.
+// @export
 // [[Rcpp::export]]
 int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 {

@@ -432,10 +432,10 @@ List stata(const char * filePath, const bool missing)
       {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
-        double const dmin = -1.79769e+308;
-        double const dmax = +8.988e+307;
+        double const dmin = -pow(2,1023);
+        double const dmax = pow(2,1022);
 
-        if ((missing == FALSE) & ((val_d<=dmin) | (val_d>=dmax)) )
+        if ((missing == FALSE) & ((val_d<dmin) | (val_d>dmax)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_d;
@@ -446,9 +446,8 @@ List stata(const char * filePath, const bool missing)
       {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
-        float const minmax = +1.701e+38;
-
-        if ((missing == FALSE) & ((val_f<=(-minmax)) | (val_f>=minmax)) )
+        float const minmax = pow(2.0, 126);
+        if ((missing == FALSE) & ((val_f<(-minmax)) | (val_f>minmax)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_f;
@@ -460,7 +459,7 @@ List stata(const char * filePath, const bool missing)
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
 
-        if ((missing == FALSE) & ((val_l<=(-2147483647)) | (val_l>=2147483620)) )
+        if ((missing == FALSE) & ((val_l<(-2147483647)) | (val_l>2147483620)) )
           INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_l;
@@ -472,7 +471,7 @@ List stata(const char * filePath, const bool missing)
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
 
-        if ((missing == FALSE) & ((val_i<=(-32767)) | (val_i>=32740)) )
+        if ((missing == FALSE) & ((val_i<(-32767)) | (val_i>32740)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_i;
@@ -484,7 +483,7 @@ List stata(const char * filePath, const bool missing)
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
 
-        if ((missing == FALSE) & ( (val_b<=(-127)) | (val_b>=100)) )
+        if ((missing == FALSE) & ( (val_b<(-127)) | (val_b>100)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_b;

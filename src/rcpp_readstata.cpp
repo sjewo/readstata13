@@ -30,6 +30,18 @@ using namespace std;
 #define lsf "MSF"
 #endif
 
+/*Define missings*/
+#define STATA_BYTE_NA_MIN -127
+#define STATA_BYTE_NA_MAX +100
+#define STATA_SHORTINT_NA_MIN -32767
+#define STATA_SHORTINT_NA_MAX +32740
+#define STATA_INT_NA_MIN -2147483647
+#define STATA_INT_NA_MAX +2147483620
+#define STATA_FLOAT_NA_MAX (1+15/pow(16,1)+15/pow(16,2)+15/pow(16,3)+15/pow(16,4)+15/pow(16,5)+14/pow(16,6))*pow(2,126)
+#define STATA_FLOAT_NA_MIN -STATA_FLOAT_NA_MAX
+#define STATA_DOUBLE_NA_MAX (1+15/pow(16,1)+15/pow(16,2)+15/pow(16,3)+15/pow(16,4)+15/pow(16,5)+15/pow(16,6)+15/pow(16,7)+15/pow(16,8)+15/pow(16,9)+15/pow(16,10)+15/pow(16,11)+15/pow(16,12)+15/pow(16,13))*pow(2,1022)
+#define STATA_DOUBLE_NA_MIN -1*(1+15/pow(16,1)+15/pow(16,2)+15/pow(16,3)+15/pow(16,4)+15/pow(16,5)+15/pow(16,6)+15/pow(16,7)+15/pow(16,8)+15/pow(16,9)+15/pow(16,10)+15/pow(16,11)+15/pow(16,12)+15/pow(16,13))*pow(2,1023)
+
 template <typename T>
 T readbin( T t , FILE * file, bool swapit)
 {
@@ -432,10 +444,11 @@ List stata(const char * filePath, const bool missing)
       {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
-        double const dmin = -pow(2,1023);
-        double const dmax = pow(2,1022);
+        Rprintf("val:%f\tmin:%f\n",val_d, STATA_DOUBLE_NA_MAX);
+        Rprintf("val:%a\tmin:%a\n",val_d, STATA_DOUBLE_NA_MAX);
 
-        if ((missing == FALSE) & ((val_d<dmin) | (val_d>dmax)) )
+
+        if ((missing == FALSE) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_d;
@@ -446,8 +459,7 @@ List stata(const char * filePath, const bool missing)
       {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
-        float const minmax = pow(2.0, 126);
-        if ((missing == FALSE) & ((val_f<(-minmax)) | (val_f>minmax)) )
+        if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_f;
@@ -459,7 +471,7 @@ List stata(const char * filePath, const bool missing)
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
 
-        if ((missing == FALSE) & ((val_l<(-2147483647)) | (val_l>2147483620)) )
+        if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_l;
@@ -471,7 +483,7 @@ List stata(const char * filePath, const bool missing)
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
 
-        if ((missing == FALSE) & ((val_i<(-32767)) | (val_i>32740)) )
+        if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_i;
@@ -483,7 +495,7 @@ List stata(const char * filePath, const bool missing)
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
 
-        if ((missing == FALSE) & ( (val_b<(-127)) | (val_b>100)) )
+        if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_b;

@@ -303,7 +303,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // store numeric as Stata double (double)
         case 65526:
         {
-          double const na = (8.98847e+307);
+          double const na = pow(2, 1023);
           double val_d = as<NumericVector>(dat[i])[j];
 
           if ( (val_d == NA_REAL) | R_IsNA(val_d) )
@@ -316,7 +316,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // float
         case 65527:
         {
-          float const na = (1.70141e+38);
+          float const na = pow(2, 127);
           float val_f = as<NumericVector>(dat[i])[j];
 
           if ( (val_f == NA_REAL) | R_IsNA(val_f) )

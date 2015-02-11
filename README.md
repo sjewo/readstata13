@@ -12,6 +12,14 @@ The package is now hosted on CRAN.
 install.packages("readstata13")
 ```
 
+## Usage
+```R
+library(readstata13)
+dat <- read.dta13("path to file.dta")
+save.dta13(dat, file="newfile.dta")
+```
+
+## Development Version
 To install the current release (0.5-3) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
 
 ```R
@@ -30,12 +38,6 @@ To install the current development version from github:
 devtools::install_github("sjewo/readstata13", ref="testing")
 ```
 
-## Usage
-```R
-library(readstata13)
-dat <- read.dta13("path to file.dta")
-save.dta13(dat, file="newfile.dta")
-```
 
 ## Current Status
 

@@ -160,7 +160,7 @@ List stata(const char * filePath, const bool missing)
   uint8_t ndlabel = 0;
   ndlabel = readbin(ndlabel, file, swapit);
 
-  char *datalabel = new char[ndlabel];
+  char *datalabel = new char[ndlabel+1];
   if (ndlabel>0)
   {
     readstr(datalabel, file, ndlabel+1);

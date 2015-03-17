@@ -201,6 +201,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (!time.stamp) {
     attr(data, "timestamp") <- ""
   } else {
+    lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
     attr(data, "timestamp") <- format(Sys.time(), "%d %b %Y %H:%M")
   }
 

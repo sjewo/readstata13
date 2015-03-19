@@ -20,10 +20,13 @@ Returns a labeled factor
 Assign value labels from a Stata label set to a variable.
 }
 \examples{
-dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
+dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"), convert.factors=FALSE)
 
 # compare vectors
-set.label(dat, "foreign")
-dat$foreign
+set.label(dat, "type")
+dat$type
+
+# German label
+set.label(dat, "type", "de")
 }
 

@@ -21,13 +21,13 @@ Recreates the code numbers of a factor as stored in the Stata dataset.
 While converting numeric variables into factors, the original code numbers are lost.  This function reconstructs the codes from the attribute \code{label.table}.
 }
 \examples{
-dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
-labname <- get.label.name(dat,"foreign")
+dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))
+labname <- get.label.name(dat,"type")
 labtab <- get.label(dat, labname)
 
 # comparsion
-get.origin.codes(dat$foreign, labtab)
-as.integer(dat$foreign)
+get.origin.codes(dat$type, labtab)
+as.integer(dat$type)
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

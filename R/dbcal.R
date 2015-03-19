@@ -137,3 +137,31 @@ stbcal <- function(stbcalfile) {
 
   return(stbcal)
 }
+
+#' Convert Stata business calendar dates in readable dates.
+#'
+#' Convert Stata business calendar dates in readable dates.
+#'
+#' @param buisdays numeric Vector of business dates
+#' @param cal data.frame Conversion table for business calendar dates
+#' @param format character String with date format as in \code{\link{as.Date}}
+#' @return Returns a vector of readable dates.
+#' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
+#' @examples
+#' # read business calendar and data
+#' sp500 <- stbcal(system.file("extdata/sp500.stbcal", package="readstata13"))
+#' dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))
+#'
+#' # convert dates and check
+#' dat$ldatescal2 <- as.caldays(dat$ldate, sp500)
+#' all(dat$ldatescal2==dat$ldatescal)
+#' @export
+as.caldays  <- function(buisdays, cal, format="%Y-%m-%d") {
+  rownames(cal) <- cal$buisdays
+  dates  <- cal[as.character(buisdays), "range"]
+
+  if(!is.null(format))
+    as.Date(dates, format = format)
+  return(dates)
+}

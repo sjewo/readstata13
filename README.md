@@ -55,10 +55,10 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 * handle different NA values
 * handle multiple label languages
 * convert dates
+* reading business calendar files
 
 ### Todo
 
-* handle some more date formats
 * cleanup of Rccp code
 
 ### Test

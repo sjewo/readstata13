@@ -135,6 +135,9 @@ stbcal <- function(stbcalfile) {
     attr(stbcal, "purpose") <- purpose
   }
 
+  # restore locale
+  Sys.setlocale("LC_TIME", lct)
+
   return(stbcal)
 }
 

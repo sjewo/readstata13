@@ -22,8 +22,8 @@ This function returns the table of factor levels which represent a Stata label s
 The name of a label set for a variable can be obtained by \code{\link{get.label.name}}.
 }
 \examples{
-dat <- read.dta13(system.file("inst/exdata/statacar.dta", package="readstata13"))
-labname <- get.label.name(dat,"foreign")
+dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))
+labname <- get.label.name(dat,"type")
 get.label(dat, labname)
 }
 \author{

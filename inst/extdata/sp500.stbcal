@@ -1,0 +1,23 @@
+* Business calendar "sp500" created by -bcal create-
+* Created/replaced on 18 Nov 2014
+
+version 12.1
+purpose "S&P 500 for 2001"
+dateformat ymd
+
+range 2001jan02 2001dec31
+centerdate 2001jan02
+
+omit dayofweek (Sa Su)
+omit date 2001jan15
+omit date 2001feb19
+omit date 2001apr13
+omit date 2001may28
+omit date 2001jul04
+omit date 2001sep03
+omit date 2001sep11
+omit date 2001sep12
+omit date 2001sep13
+omit date 2001sep14
+omit date 2001nov22
+omit date 2001dec25

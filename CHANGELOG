@@ -1,3 +1,7 @@
+0.6
+- various fixes
+- reading stbcal-files
+
 0.5
 - write dta-files
 - read/write LSF and MSF files

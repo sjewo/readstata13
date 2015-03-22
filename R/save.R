@@ -23,7 +23,7 @@
 #' @param data \emph{data.frame.} A data.frame Object.
 #' @param data.label \emph{character.} Name of the dta-file.
 #' @param time.stamp \emph{logical.} If \code{TRUE}, add a time.stamp to the dta-file.
-#' @param convert.factors \emph{logical.} If \code{TRUE}, factors will be converted to Stata variables with labels. 
+#' @param convert.factors \emph{logical.} If \code{TRUE}, factors will be converted to Stata variables with labels.
 #' Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
 #' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted to Stata date time format. Code from \code{foreign::write.dta}
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
@@ -203,6 +203,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   } else {
     lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
     attr(data, "timestamp") <- format(Sys.time(), "%d %b %Y %H:%M")
+    Sys.setlocale("LC_TIME",lct)
   }
 
   expfield <- attr(data, "expansion.fields")

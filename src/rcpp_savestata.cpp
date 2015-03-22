@@ -316,9 +316,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
           // float
         case 65527:
         {
-          float val_f = as<NumericVector>(dat[i])[j];
+          double val_d = as<NumericVector>(dat[i])[j];
+          float val_f = (double)(val_d);
 
-          if ( (val_f == NA_REAL) | R_IsNA(val_f) )
+          if ( (val_d == NA_REAL) | (R_IsNA(val_d)) )
             val_f = STATA_FLOAT_NA;
 
           writebin(val_f, dta, swapit);

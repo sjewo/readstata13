@@ -4,7 +4,7 @@ Package to read and write the new Stata 13 file format (dta version 117) into a 
 
 The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rccp.
 
-Additionally the package support many features of the Stata dta format like label sets in different languages (`?set.lang`) or business calendars (`?as.caldays`).
+Additionally the package supports many features of the Stata dta format like label sets in different languages (`?set.lang`) or business calendars (`?as.caldays`).
 
 
 ## Installation

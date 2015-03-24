@@ -259,8 +259,8 @@ List stata(const char * filePath, const bool missing)
   CharacterVector varnames(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nvarnames [33];
-    readstr(nvarnames, file, sizeof(nvarnames)+1);
+    char nvarnames [34];
+    readstr(nvarnames, file, sizeof(nvarnames));
     varnames[i] = nvarnames;
   }
 
@@ -295,8 +295,8 @@ List stata(const char * filePath, const bool missing)
   CharacterVector formats(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nformats[49];
-    readstr(nformats, file, sizeof(nformats)+1);
+    char nformats[50];
+    readstr(nformats, file, sizeof(nformats));
     formats[i] = nformats;
   }
 
@@ -312,8 +312,8 @@ List stata(const char * filePath, const bool missing)
   CharacterVector valLabels(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nvalLabels[33];
-    readstr(nvalLabels, file, sizeof(nvalLabels)+1);
+    char nvalLabels[34];
+    readstr(nvalLabels, file, sizeof(nvalLabels));
     valLabels[i] = nvalLabels;
   }
 
@@ -327,8 +327,8 @@ List stata(const char * filePath, const bool missing)
   CharacterVector varLabels(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nvarLabels[81];
-    readstr(nvarLabels, file, sizeof(nvarLabels)+1);
+    char nvarLabels[82];
+    readstr(nvarLabels, file, sizeof(nvarLabels));
     varLabels[i] = nvarLabels;
   }
 
@@ -360,12 +360,12 @@ List stata(const char * filePath, const bool missing)
     uint32_t nocharacter = 0;
     nocharacter = readbin(nocharacter, file, swapit);
 
-    char chvarname[33];
-    char chcharact[33];
+    char chvarname[34];
+    char chcharact[34];
     char *nnocharacter = new char[nocharacter-65]; // we need more memory here
 
-    readstr(chvarname, file, sizeof(chvarname)+1);
-    readstr(chcharact, file, sizeof(chcharact)+1);
+    readstr(chvarname, file, sizeof(chvarname));
+    readstr(chcharact, file, sizeof(chcharact));
     readstr(nnocharacter, file, nocharacter-66+1);
 
     // chs vector
@@ -445,7 +445,7 @@ List stata(const char * filePath, const bool missing)
       {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
-        
+
         if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
@@ -613,8 +613,8 @@ List stata(const char * filePath, const bool missing)
     nlen = readbin(nlen, file, swapit);
 
     // name of this label set
-    char nlabname[33];
-    readstr(nlabname, file, sizeof(nlabname)+1);
+    char nlabname[34];
+    readstr(nlabname, file, sizeof(nlabname));
 
     //padding
     fseek(file, 3, SEEK_CUR);
@@ -685,9 +685,9 @@ List stata(const char * filePath, const bool missing)
   }
 
   /*
-   * Final test if we reached the end of the file
-   * close the file
-   */
+  * Final test if we reached the end of the file
+  * close the file
+  */
 
   fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
   test("</stata_dta>", file);

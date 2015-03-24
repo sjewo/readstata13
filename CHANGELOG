@@ -1,3 +1,6 @@
+0.6.1
+- fix heap overflow
+
 0.6
 - various fixes
 - reading stbcal-files

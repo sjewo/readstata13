@@ -1,7 +1,7 @@
 Package: readstata13
 Type: Package
 Title: Import Stata 13 Data Files
-Version: 0.6
+Version: 0.6.1
 Authors@R: c(
     person("Jan Marvin", "Garbuszus",
     email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut")),
@@ -11,6 +11,7 @@ Authors@R: c(
     )
 Description: Function to read and write the Stata 13 file format.
 URL: https://github.com/sjewo/readstata13
+BugReports: https://github.com/sjewo/readstata13/issues
 License: GPL-2 | file LICENSE
 Imports:
     Rcpp (>= 0.11.2)

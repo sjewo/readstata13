@@ -4,6 +4,8 @@ Package to read and write the new Stata 13 file format (dta version 117) into a 
 
 The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rccp.
 
+Additionally the package supports many features of the Stata dta format like label sets in different languages (`?set.lang`) or business calendars (`?as.caldays`).
+
 
 ## Installation
 
@@ -20,16 +22,16 @@ save.dta13(dat, file="newfile.dta")
 ```
 
 ## Development Version
-To install the current release (0.6) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
+To install the current release (0.6.1) from github you need the plattform specific build tools. On Windows a current installation of [Rtools](http://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X users need to install [Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.6")
+devtools::install_github("sjewo/readstata13", ref="0.6.1")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.6")
+install_github("readstata13", username="sjewo", ref="0.6.1")
 ```
 
 To install the current development version from github:

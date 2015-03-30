@@ -434,7 +434,7 @@ List stata(const char * filePath, const bool missing)
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
 
-        if ((missing == FALSE) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
+        if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_d;

@@ -561,12 +561,7 @@ List stata(const char * filePath, const bool missing)
       case 2045:
       {
         int32_t len = 0;
-        len = vartype[i];
-
-        if (atoi(version)==117)
-          len = len+1;
-        if (atoi(version)==118)
-          len = len+2;
+        len = vartype[i]+1;
 
         char *val_s = new char[len];
         readstr(val_s, file, len);

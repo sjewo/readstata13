@@ -35,7 +35,7 @@ template <typename T>
 T readbin( T t , FILE * file, bool swapit)
 {
   if (fread(&t, sizeof(t), 1, file) != 1)
-    perror("a binary read error occurred");
+    Rcpp::stop("num: a binary read error occurred");
   if (swapit==0)
     return(t);
   else
@@ -46,7 +46,7 @@ static void readstr(char *var, FILE * fp, int nchar)
 {
   nchar = nchar-1;
   if (!fread(var, nchar, 1, fp))
-    perror("a binary read error occurred");
+    Rcpp::stop("char: a binary read error occurred");
   var[nchar] = '\0';
 }
 
@@ -57,8 +57,7 @@ void test(std::string testme, FILE * file)
   readstr(test,file, 1+testme.size());
   if (strcmp(testMe,test)!=0)
   {
-    REprintf("When attempting to read %s:", testme.c_str());
-    throw std::range_error("Something went wrong!");
+    Rcpp::stop("When attempting to read %s: Something went wrong!", testme.c_str());
   }
   delete[] test;
 }
@@ -102,7 +101,8 @@ List stata(const char * filePath, const bool missing)
   * version is a 4 byte character e.g. "117"
   */
 
-  int8_t gversion = 118L; //g = good
+  int8_t fversion = 117L; //f = first
+  int8_t lversion = 118L; //l = last
 
   char version [4];
   readstr(version, file, sizeof(version));
@@ -110,9 +110,11 @@ List stata(const char * filePath, const bool missing)
   IntegerVector versionIV(1);
   versionIV(0) = atoi(version);
 
-  // check the release version. continue if "117"
-  if (gversion<atoi(version))
-    throw std::range_error("Version: Not a version 13/14 dta-file.");
+  // check the release version.
+  if (atoi(version)<fversion || atoi(version)>lversion)
+  {
+    Rcpp::stop("File version is %d.\nVersion: Not a version 13/14 dta-file", atoi(version));
+  }
 
   fseek(file, 10, SEEK_CUR); // </release>
   test("<byteorder>", file);

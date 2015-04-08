@@ -35,7 +35,7 @@ template <typename T>
 T readbin( T t , FILE * file, bool swapit)
 {
   if (fread(&t, sizeof(t), 1, file) != 1)
-    Rcpp::stop("num: a binary read error occurred");
+    Rcpp::warning("num: a binary read error occurred");
   if (swapit==0)
     return(t);
   else
@@ -46,7 +46,7 @@ static void readstr(char *var, FILE * fp, int nchar)
 {
   nchar = nchar-1;
   if (!fread(var, nchar, 1, fp))
-    Rcpp::stop("char: a binary read error occurred");
+    Rcpp::warning("char: a binary read error occurred");
   var[nchar] = '\0';
 }
 
@@ -92,7 +92,7 @@ List stata(const char * filePath, const bool missing)
   expfbit[1] = '\0';
 
   if (strcmp(fbit,expfbit)!=0)
-    throw std::range_error("First byte: Not a version 13/14 dta-file.");
+    Rcpp::stop("First byte: Not a version 13/14 dta-file.");
 
   fseek(file, 18, SEEK_CUR);// stata_dta><header>
   test("<release>", file);
@@ -167,13 +167,13 @@ List stata(const char * filePath, const bool missing)
   * datalabel: string max length 80
   */
 
-  uint8_t ndlabel = 0;
+  uint8_t ndlabel = 0, lablen = 0;
   ndlabel = readbin(ndlabel, file, swapit);
 
   if (atoi(version)==117)
-    ndlabel = ndlabel+1;
+    lablen = ndlabel+1;
   if (atoi(version)==118)
-    ndlabel = ndlabel+2;
+    lablen = ndlabel+2;
 
   char *datalabel = new char[ndlabel];
 

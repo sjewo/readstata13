@@ -1,6 +1,6 @@
 #readstata13
 
-Package to read and write the new Stata 13 file format (dta version 117) into a R data.frame. 
+Package to read and write the new Stata file format (dta version 117 and 118) into a R data.frame. 
 
 The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rccp.
 

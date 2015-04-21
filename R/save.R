@@ -121,17 +121,19 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
+  empty <- sapply(data, function(x) all(is.na(x)))
   if (!compress) {
     vartypen[ff] <- 65526
     vartypen[ii] <- 65528
     vartypen[factors] <- 65528
+    vartypen[empty] <- 65530
   } else {
-    varTmin <- sapply(data[ff], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[ff], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[ff & !empty], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[ff & !empty], function(x) max(x,na.rm=TRUE))
 
     # check if numeric is float or double
     fminmax <- 1.701e+38
-    for (k in names(which(ff))) {
+    for (k in names(which(ff & !empty))) {
       vartypen[k][varTmin[k] < (-fminmax) | varTmax[k] > fminmax] <- 65526
       vartypen[k][varTmin[k] > (-fminmax) & varTmax[k] < fminmax] <- 65527
     }
@@ -139,18 +141,21 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     bmin <- -127; bmax <- 100
     imin <- -32767; imax <- 32740
     # check if integer is byte, int or long
-    for (k in names(which(ii))) {
+    for (k in names(which(ii & !empty))) {
       vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- 65528
       vartypen[k][varTmin[k] > imin & varTmax[k] < imax] <- 65529
       vartypen[k][varTmin[k] > bmin & varTmax[k] < bmax] <- 65530
     }
 
-    factorlength <- sapply(data[factors], nlevels)
-    for (k in names(which(factors))) {
+    factorlength <- sapply(data[factors & !empty], nlevels)
+    for (k in names(which(factors & !empty))) {
       vartypen[factors & factorlength[k] > 0x1.000000p127] <- 65528
       vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529
       vartypen[factors & factorlength[k] < 101] <- 65530
     }
+  
+    # cast empty variables as byte
+    vartypen[empty] <- 65530
   }
 
   # recode character variables

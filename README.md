@@ -61,7 +61,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
 ### Todo
 
-* cleanup of Rccp code
+* cleanup of Rcpp code
 
 ### Test
 Since our attributes differ from foreign::read.dta all.equal and identical report false. If you check the values, everything is identical.

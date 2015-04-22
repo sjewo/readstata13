@@ -29,6 +29,7 @@
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames will be added to the dta-file.
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will use all of Statas numeric-vartypes.
+#' @param version \emph{numeric.} Stata format for the resulting dta-file (e.g. 117 for Stata 13 and 118 for Stata 14.)
 #' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
@@ -153,7 +154,7 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
       vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529
       vartypen[factors & factorlength[k] < 101] <- 65530
     }
-  
+
     # cast empty variables as byte
     vartypen[empty] <- 65530
   }

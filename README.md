@@ -2,7 +2,7 @@
 
 Package to read and write the new Stata file format (dta version 117 and 118) into a R data.frame. 
 
-The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rccp.
+The function ```read.dta``` from the foreign package imports only dta files from Stata versions <= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rcpp. 
 
 Additionally the package supports many features of the Stata dta format like label sets in different languages (`?set.lang`) or business calendars (`?as.caldays`).
 
@@ -61,7 +61,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
 ### Todo
 
-* cleanup of Rccp code
+* cleanup of Rcpp code
 
 ### Test
 Since our attributes differ from foreign::read.dta all.equal and identical report false. If you check the values, everything is identical.

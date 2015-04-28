@@ -174,9 +174,7 @@ List stata(const char * filePath, const bool missing)
   int64_t n = 0;
 
   if(release==117) {
-    uint32_t N = 0;
-    N = readbin(N, file, swapit);
-    n = N;
+    n = readbin((int32_t)n, file, swapit);
   }
   if (release ==118) {
     n = readbin(n, file, swapit);
@@ -233,8 +231,7 @@ List stata(const char * filePath, const bool missing)
     timestamp = "";
   }
 
-  CharacterVector timestampCV(1);
-  timestampCV(0) = timestamp;
+  CharacterVector timestampCV = timestamp;
 
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
@@ -292,13 +289,12 @@ List stata(const char * filePath, const bool missing)
   test("<varnames>", file);
 
   /*
-  * varnames. Max length 33.
+  * varnames.
   */
-
-  CharacterVector varnames(k);
 
   std::string nvarnames(nvarnameslen, '\0');
 
+  CharacterVector varnames(k);
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nvarnames, file, nvarnames.size());
@@ -333,7 +329,6 @@ List stata(const char * filePath, const bool missing)
   * information.
   */
 
-
   std::string nformats(nformatslen, '\0');
 
   CharacterVector formats(k);
@@ -349,13 +344,12 @@ List stata(const char * filePath, const bool missing)
   /*
   * value_label_names. Stata stores variable labels by names.
   * nvalLabels: length of the value_label_name
-  * valLabels:  Char of max length 33
+  * valLabels:
   */
-
-  CharacterVector valLabels(k);
 
   std::string nvalLabels(nvalLabelslen, '\0');
 
+  CharacterVector valLabels(k);
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nvalLabels, file, nvalLabels.size());
@@ -369,10 +363,9 @@ List stata(const char * filePath, const bool missing)
   * variabel_labels
   */
 
-  CharacterVector varLabels(k);
-
   std::string nvarLabels (nvarLabelslen, '\0');
 
+  CharacterVector varLabels(k);
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nvarLabels, file, nvarLabels.size());
@@ -395,11 +388,11 @@ List stata(const char * filePath, const bool missing)
 
   std::string chtag = "<ch>";
 
-  List ch = List();
-  CharacterVector chs(3);
-
   std::string tago(4, '\0');
   readstring(tago, file, tago.size());
+
+  List ch = List();
+  CharacterVector chs(3);
 
   while (chtag.compare(tago)==0)
   {
@@ -587,12 +580,12 @@ List stata(const char * filePath, const bool missing)
   * strl:  long string.
   */
 
-  List strlstable = List(); //put strLs into this list
+  std::string gso = "GSO";
 
   std::string tags(3, '\0');
   readstring(tags, file, tags.size());
 
-  std::string gso = "GSO";
+  List strlstable = List(); //put strLs into this list
 
   while(gso.compare(tags)==0)
   {
@@ -640,12 +633,12 @@ List stata(const char * filePath, const bool missing)
   * off:      offset defines where to read a new label in txtlen.
   */
 
-  List labelList = List(); //put labels into this list
+  std::string lbltag = "<lbl>";
 
   std::string tag(5, '\0');
   readstring(tag, file, tag.size());
 
-  std::string lbltag = "<lbl>";
+  List labelList = List(); //put labels into this list
 
   while(lbltag.compare(tag)==0)
   {

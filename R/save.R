@@ -54,9 +54,16 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (!is.data.frame(data))
     message("Object is not of class data.frame.")
 
-  if (add.rownames)
-    data <- data.frame(rownames= save.encoding(rownames(data)),
+  if (add.rownames) {
+    if (version==117) {
+      rwn <- save.encoding(rownames(data))
+    } else  {
+      rwn <-rownames(data)
+    }
+
+    data <- data.frame(rownames= rwn,
                        data, stringsAsFactors = F)
+  }
 
   filepath <- path.expand(file)
 
@@ -83,7 +90,11 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     i <- 0
     for (v in factors)  {
       i <- i + 1
-      f.levels <-  save.encoding(levels(data[[v]]))
+      if (version==117) {
+        f.levels <- save.encoding(levels(data[[v]]))
+      } else {
+        f.levels <- levels(data[[v]])
+      }
       f.labels <-  as.integer(labels(levels(data[[v]])))
       attr(f.labels, "names") <- f.levels
       f.labels <- f.labels[names(f.labels) != ".."]
@@ -92,7 +103,10 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
       valLabel[v] <- f.names[i]
     }
     attr(data, "label.table") <- rev(label.table)
-    attr(data, "vallabels") <-  save.encoding(valLabel)
+    if (version==117) {
+      valLabel <- save.encoding(valLabel)
+    }
+    attr(data, "vallabels") <- valLabel
   } else {
     attr(data, "label.table") <- NULL
     attr(data, "vallabels") <- rep("",length(data))
@@ -159,14 +173,16 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     vartypen[empty] <- 65530
   }
 
-  # recode character variables
-  for(v in (1:ncol(data))[vartypen == "character"]) {
-    data[, v] <- save.encoding(data[, v])
+  # recode character variables. 118 knows utf8, no reencoding is required
+  if(version==117) {
+    for(v in (1:ncol(data))[vartypen == "character"]) {
+      data[, v] <- save.encoding(data[, v])
+    }
   }
 
   # str and strL are stored by maximum length of chars in a variable
   maxchar <- function(x) {
-    max(nchar(x)) + 1
+    max(nchar(x, type="byte")) + 1
   }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
 
@@ -200,7 +216,11 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
-    attr(data, "datalabel") <- save.encoding(data.label)
+    if (version==117) {
+      data.label <- save.encoding(data.label)
+    }
+
+    attr(data, "datalabel") <- data.label
   }
 
   # Create the 17 char long timestamp. It may contain 17 char long strings
@@ -213,7 +233,9 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   expfield <- attr(data, "expansion.fields")
-  expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
+  if (version==117) {
+    expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
+  }
   attr(data, "expansion.fields") <- rev(expfield)
 
   attr(data, "version") <- as.character(version)

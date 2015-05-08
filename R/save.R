@@ -54,9 +54,14 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (!is.data.frame(data))
     message("Object is not of class data.frame.")
 
+  # CHeck if R runs in a non UTF-8 locale 
+  nonUtf8Locale <- toupper(localeToCharset()[1])!="UTF-8"
+
   if (add.rownames) {
-    if (version==117) {
+    if (version<=117) {
       rwn <- save.encoding(rownames(data))
+    } else if (nonUtf8Locale) {
+      rwn <- save.encoding(rownames(data), encoding="UTF-8")
     } else  {
       rwn <-rownames(data)
     }
@@ -90,8 +95,10 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     i <- 0
     for (v in factors)  {
       i <- i + 1
-      if (version==117) {
+      if (version<=117) {
         f.levels <- save.encoding(levels(data[[v]]))
+      } else if (nonUtf8Locale) {
+        f.levels <- save.encoding(levels(data[[v]]), encoding="UTF-8")
       } else {
         f.levels <- levels(data[[v]])
       }
@@ -103,8 +110,10 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
       valLabel[v] <- f.names[i]
     }
     attr(data, "label.table") <- rev(label.table)
-    if (version==117) {
+    if (version<=117) {
       valLabel <- save.encoding(valLabel)
+    } else if (nonUtf8Locale) {
+      valLabel <- save.encoding(valLabel, encoding="UTF-8")
     }
     attr(data, "vallabels") <- valLabel
   } else {
@@ -173,12 +182,19 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     vartypen[empty] <- 65530
   }
 
-  # recode character variables. 118 knows utf8, no reencoding is required
-  if(version==117) {
+  # recode character variables. 118 wants utf-8, so encoding may be required
+  if(version<=117) {
     for(v in (1:ncol(data))[vartypen == "character"]) {
       data[, v] <- save.encoding(data[, v])
     }
+  } else {
+    if(nonUtf8Locale) {
+      for(v in (1:ncol(data))[vartypen == "character"]) {
+        data[, v] <- save.encoding(data[, v], encoding="UTF-8")
+        }
+    }
   }
+
 
   # str and strL are stored by maximum length of chars in a variable
   maxchar <- function(x) {
@@ -216,10 +232,11 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
-    if (version==117) {
+    if (version<=117) {
       data.label <- save.encoding(data.label)
+    } else if (nonUtf8Locale) {
+      data.label <- save.encoding(data.label, encoding="UTF-8")
     }
-
     attr(data, "datalabel") <- data.label
   }
 
@@ -233,9 +250,12 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   expfield <- attr(data, "expansion.fields")
-  if (version==117) {
+  if (version<=117) {
     expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
+  } else if (nonUtf8Locale) {
+    expfield <- lapply(expfield, function(x) iconv(x, to="UTF-8"))
   }
+
   attr(data, "expansion.fields") <- rev(expfield)
 
   attr(data, "version") <- as.character(version)

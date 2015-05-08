@@ -27,9 +27,9 @@ read.encoding <- function(x, fromEncoding, encoding) {
         sub="byte")
 }
 
-save.encoding <- function(x) {
+save.encoding <- function(x, encoding="CP1252") {
   iconv(x,
-        to="CP1252",
+        to=encoding,
         sub="byte")
 }
 

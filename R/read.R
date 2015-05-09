@@ -24,7 +24,7 @@
 #' @param convert.factors \emph{logical.} If \code{TRUE}, factors from Stata value labels are created.
 #' @param generate.factors \emph{logical.} If \code{TRUE} and convert.factors is TRUE, missing factor labels are created from integers.
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252 to system encoding.
-#'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
+#'  Options are "CP1252" or "UTF-8" to specify target encoding explicitly.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14 or newer "UTF-8" is used. In some situation the used encoding can differ for Stata 14 files and must be manually set.
 #' @param convert.underscore \emph{logical.} If \code{TRUE}, "_" in variable names will be changed to "."
 #' @param missing.type \emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z. 

@@ -54,14 +54,24 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (!is.data.frame(data))
     message("Object is not of class data.frame.")
 
-  # CHeck if R runs in a non UTF-8 locale 
-  nonUtf8Locale <- toupper(localeToCharset()[1])!="UTF-8"
+  # Is recoding necessary?
+  if (version<=117) {
+      # Reencoding is always needed
+      doRecode <- TRUE
+      toEncoding <- "CP1252"
+    } else if (toupper(localeToCharset()[1])!="UTF-8") {
+      # If R runs in a non UTF-8 locale and Stata > 13
+      doRecode <- TRUE
+      toEncoding <- "UTF-8"
+    } else {
+      # utf-8 and Stata > 13
+      doRecode <- FALSE
+    }
+
 
   if (add.rownames) {
-    if (version<=117) {
-      rwn <- save.encoding(rownames(data))
-    } else if (nonUtf8Locale) {
-      rwn <- save.encoding(rownames(data), encoding="UTF-8")
+    if (doRecode) {
+      rwn <- save.encoding(rownames(data), toEncoding)
     } else  {
       rwn <-rownames(data)
     }
@@ -95,10 +105,8 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     i <- 0
     for (v in factors)  {
       i <- i + 1
-      if (version<=117) {
-        f.levels <- save.encoding(levels(data[[v]]))
-      } else if (nonUtf8Locale) {
-        f.levels <- save.encoding(levels(data[[v]]), encoding="UTF-8")
+      if (doRecode) {
+        f.levels <- save.encoding(levels(data[[v]]), toEncoding)
       } else {
         f.levels <- levels(data[[v]])
       }
@@ -110,10 +118,8 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
       valLabel[v] <- f.names[i]
     }
     attr(data, "label.table") <- rev(label.table)
-    if (version<=117) {
-      valLabel <- save.encoding(valLabel)
-    } else if (nonUtf8Locale) {
-      valLabel <- save.encoding(valLabel, encoding="UTF-8")
+    if (doRecode) {
+      valLabel <- save.encoding(valLabel, toEncoding)
     }
     attr(data, "vallabels") <- valLabel
   } else {
@@ -183,15 +189,9 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   # recode character variables. 118 wants utf-8, so encoding may be required
-  if(version<=117) {
+  if(doRecode) {
     for(v in (1:ncol(data))[vartypen == "character"]) {
-      data[, v] <- save.encoding(data[, v])
-    }
-  } else {
-    if(nonUtf8Locale) {
-      for(v in (1:ncol(data))[vartypen == "character"]) {
-        data[, v] <- save.encoding(data[, v], encoding="UTF-8")
-        }
+      data[, v] <- save.encoding(data[, v], toEncoding)
     }
   }
 
@@ -232,10 +232,8 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
-    if (version<=117) {
-      data.label <- save.encoding(data.label)
-    } else if (nonUtf8Locale) {
-      data.label <- save.encoding(data.label, encoding="UTF-8")
+    if (doRecode) {
+      data.label <- save.encoding(data.label, toEncoding)
     }
     attr(data, "datalabel") <- data.label
   }
@@ -250,10 +248,8 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   expfield <- attr(data, "expansion.fields")
-  if (version<=117) {
-    expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
-  } else if (nonUtf8Locale) {
-    expfield <- lapply(expfield, function(x) iconv(x, to="UTF-8"))
+  if (doRecode) {
+    expfield <- lapply(expfield, function(x) iconv(x, to=toEncoding))
   }
 
   attr(data, "expansion.fields") <- rev(expfield)

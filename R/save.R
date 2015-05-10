@@ -47,7 +47,7 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
 #' @export
-save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
+save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
                        add.rownames=FALSE, compress=FALSE, version=117){
 

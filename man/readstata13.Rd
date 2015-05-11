@@ -6,7 +6,7 @@
 \alias{readstata13-package}
 \title{Import Stata 13 Data Files}
 \description{
-Function to read the Stata 13 file format into a data.frame.
+Function to read the Stata 13 (and newer) file format into a data.frame.
 }
 \note{
 If you catch a bug, please do not sue us, we do not have any money.

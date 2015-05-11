@@ -4,7 +4,7 @@
 \alias{save.dta13}
 \title{Write Stata 13 Binary Files}
 \usage{
-save.dta13(data, file = "path", data.label = NULL, time.stamp = TRUE,
+save.dta13(data, file, data.label = NULL, time.stamp = TRUE,
   convert.factors = FALSE, convert.dates = TRUE, tz = "GMT",
   add.rownames = FALSE, compress = FALSE, version = 117)
 }

@@ -35,32 +35,28 @@ template <typename T>
 T readbin( T t , FILE * file, bool swapit)
 {
   if (fread(&t, sizeof(t), 1, file) != 1)
-    perror("a binary read error occurred");
+    Rcpp::warning("num: a binary read error occurred");
   if (swapit==0)
     return(t);
   else
     return(swap_endian(t));
 }
 
-static void readstr(char *var, FILE * fp, int nchar)
+static void readstring(std::string &mystring, FILE * fp, int nchar)
 {
-  nchar = nchar-1;
-  if (!fread(var, nchar, 1, fp))
-    perror("a binary read error occurred");
-  var[nchar] = '\0';
+  if (!fread(&mystring[0], nchar, 1, fp))
+    Rcpp::warning("char: a binary read error occurred");
 }
 
 void test(std::string testme, FILE * file)
 {
-  const char *testMe = testme.c_str();
-  char *test = new char[1+testme.size()];
-  readstr(test,file, 1+testme.size());
-  if (strcmp(testMe,test)!=0)
+  std::string test(testme.size(), '\0');
+
+  readstring(test,file, test.size());
+  if (testme.compare(test)!=0)
   {
-    REprintf("When attempting to read %s:", testme.c_str());
-    throw std::range_error("Something went wrong!");
+    Rcpp::stop("When attempting to read %s: Something went wrong!", testme.c_str());
   }
-  delete[] test;
 }
 
 // Reads the binary Stata file
@@ -86,14 +82,13 @@ List stata(const char * filePath, const bool missing)
   * check the first byte. continue if "<"
   */
 
-  char fbit[2];
-  readstr(fbit, file, sizeof(fbit));
+  std::string fbit(1, '\0');
+  readstring(fbit, file, fbit.size());
 
-  char expfbit[2] = "<";
-  expfbit[1] = '\0';
+  std::string expfbit = "<";
 
-  if (strcmp(fbit,expfbit)!=0)
-    throw std::range_error("First byte: Not a version 13 dta-file.");
+  if (fbit.compare(expfbit)!=0)
+    Rcpp::stop("First byte: Not a version 13/14 dta-file.");
 
   fseek(file, 18, SEEK_CUR);// stata_dta><header>
   test("<release>", file);
@@ -102,17 +97,49 @@ List stata(const char * filePath, const bool missing)
   * version is a 4 byte character e.g. "117"
   */
 
-  int8_t gversion = 117L; //g = good
+  int8_t fversion = 117L; //f = first
+  int8_t lversion = 118L; //l = last
 
-  char version [4];
-  readstr(version, file, sizeof(version));
+  std::string version(3, '\0');
+  readstring(version, file, version.size());
+
+  int8_t const release = atoi(version.c_str());
 
   IntegerVector versionIV(1);
-  versionIV(0) = atoi(version);
+  versionIV(0) = release;
 
-  // check the release version. continue if "117"
-  if (gversion!=atoi(version))
-    throw std::range_error("Version: Not a version 13 dta-file.");
+  // check the release version.
+  if (release<fversion || release>lversion)
+  {
+    Rcpp::stop("File version is %d.\nVersion: Not a version 13/14 dta-file", release);
+  }
+
+  uint8_t nvarnameslen = 0;
+  int8_t nformatslen = 0;
+  uint8_t nvalLabelslen = 0;
+  uint16_t nvarLabelslen = 0;
+  int32_t chlen = 0;
+  uint8_t lbllen = 0;
+
+  switch(release)
+  {
+  case 117:
+    nvarnameslen = 33;
+    nformatslen = 49;
+    nvalLabelslen = 33;
+    nvarLabelslen = 81;
+    chlen = 33;
+    lbllen = 33;
+    break;
+  case 118:
+    nvarnameslen = 129;
+    nformatslen = 57;
+    nvalLabelslen = 129;
+    nvarLabelslen = 321;
+    chlen = 129;
+    lbllen = 129;
+    break;
+  }
 
   fseek(file, 10, SEEK_CUR); // </release>
   test("<byteorder>", file);
@@ -121,14 +148,14 @@ List stata(const char * filePath, const bool missing)
   * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
   */
 
-  char byteorder [4];
-  readstr(byteorder,file, sizeof(byteorder));
+  std::string byteorder(3, '\0');
+  readstring(byteorder,file, byteorder.size());
 
   fseek(file, 12, SEEK_CUR); // </byteorder>
   test("<K>", file);
 
   bool swapit = 0;
-  swapit = strcmp(byteorder, lsf);
+  swapit = strcmp(byteorder.c_str(), lsf);
 
   /*
   * Number of Variables
@@ -144,8 +171,14 @@ List stata(const char * filePath, const bool missing)
   * Number of Observations
   */
 
-  uint32_t n = 0;
-  n = readbin(n, file, swapit);
+  int64_t n = 0;
+
+  if(release==117) {
+    n = readbin((int32_t)n, file, swapit);
+  }
+  if (release ==118) {
+    n = readbin(n, file, swapit);
+  }
 
   fseek(file, 4, SEEK_CUR); //</N>
   test("<label>", file);
@@ -157,20 +190,24 @@ List stata(const char * filePath, const bool missing)
   * datalabel: string max length 80
   */
 
-  uint8_t ndlabel = 0;
-  ndlabel = readbin(ndlabel, file, swapit);
+  uint16_t ndlabel = 0;
 
-  char *datalabel = new char[ndlabel+1];
+  if (release==118)
+    ndlabel = readbin(ndlabel, file, swapit);
+  if (release==117)
+    ndlabel = readbin((int8_t)ndlabel, file, swapit);
+
+  std::string datalabel(ndlabel, '\0');
+
   if (ndlabel>0)
   {
-    readstr(datalabel, file, ndlabel+1);
+    readstring(datalabel, file, datalabel.size());
   } else {
-    datalabel[0] = '\0';
+    datalabel = "";
   }
 
   CharacterVector datalabelCV(1);
   datalabelCV(0) = datalabel;
-  delete[] datalabel;
 
   fseek(file, 8, SEEK_CUR); //</label>
   test("<timestamp>", file);
@@ -185,17 +222,16 @@ List stata(const char * filePath, const bool missing)
   uint8_t ntimestamp = 0;
   ntimestamp = readbin(ntimestamp, file, swapit);
 
-  char *timestamp = new char[ntimestamp+1];
+  std::string timestamp(17, '\0');
+
   if (ntimestamp == 17) // ntimestap is 0 or 17
   {
-    readstr(timestamp, file, ntimestamp+1);
+    readstring(timestamp, file, timestamp.size());
   } else {
-    timestamp[0] = '\0';
+    timestamp = "";
   }
 
-  CharacterVector timestampCV(1);
-  timestampCV(0) = timestamp;
-  delete[] timestamp;
+  CharacterVector timestampCV = timestamp;
 
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
   test("<map>", file);
@@ -253,14 +289,15 @@ List stata(const char * filePath, const bool missing)
   test("<varnames>", file);
 
   /*
-  * varnames. Max length 33.
+  * varnames.
   */
+
+  std::string nvarnames(nvarnameslen, '\0');
 
   CharacterVector varnames(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nvarnames [34];
-    readstr(nvarnames, file, sizeof(nvarnames));
+    readstring(nvarnames, file, nvarnames.size());
     varnames[i] = nvarnames;
   }
 
@@ -292,11 +329,12 @@ List stata(const char * filePath, const bool missing)
   * information.
   */
 
+  std::string nformats(nformatslen, '\0');
+
   CharacterVector formats(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nformats[50];
-    readstr(nformats, file, sizeof(nformats));
+    readstring(nformats, file, nformats.size());
     formats[i] = nformats;
   }
 
@@ -306,14 +344,15 @@ List stata(const char * filePath, const bool missing)
   /*
   * value_label_names. Stata stores variable labels by names.
   * nvalLabels: length of the value_label_name
-  * valLabels:  Char of max length 33
+  * valLabels:
   */
+
+  std::string nvalLabels(nvalLabelslen, '\0');
 
   CharacterVector valLabels(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nvalLabels[34];
-    readstr(nvalLabels, file, sizeof(nvalLabels));
+    readstring(nvalLabels, file, nvalLabels.size());
     valLabels[i] = nvalLabels;
   }
 
@@ -324,11 +363,12 @@ List stata(const char * filePath, const bool missing)
   * variabel_labels
   */
 
+  std::string nvarLabels (nvarLabelslen, '\0');
+
   CharacterVector varLabels(k);
   for (uint16_t i=0; i<k; ++i)
   {
-    char nvarLabels[82];
-    readstr(nvarLabels, file, sizeof(nvarLabels));
+    readstring(nvarLabels, file, nvarLabels.size());
     varLabels[i] = nvarLabels;
   }
 
@@ -346,35 +386,32 @@ List stata(const char * filePath, const bool missing)
   * nnocharacter: contes (binary 0 terminated)
   */
 
-  char chtag[5] = "<ch>";
-  chtag[4] = '\0';
+  std::string chtag = "<ch>";
+
+  std::string tago(4, '\0');
+  readstring(tago, file, tago.size());
 
   List ch = List();
   CharacterVector chs(3);
 
-  char tago[5];
-  readstr(tago, file, sizeof(tago));
-
-  while (strcmp(tago,chtag)==0)
+  while (chtag.compare(tago)==0)
   {
     uint32_t nocharacter = 0;
     nocharacter = readbin(nocharacter, file, swapit);
 
-    char chvarname[34];
-    char chcharact[34];
-    char *nnocharacter = new char[nocharacter-65]; // we need more memory here
+    std::string chvarname(chlen, '\0');
+    std::string chcharact(chlen, '\0');
+    std::string nnocharacter(nocharacter-chlen*2, '\0');
 
-    readstr(chvarname, file, sizeof(chvarname));
-    readstr(chcharact, file, sizeof(chcharact));
-    readstr(nnocharacter, file, nocharacter-66+1);
+    readstring(chvarname, file, chvarname.size());
+    readstring(chcharact, file, chcharact.size());
+    readstring(nnocharacter, file, nnocharacter.size());
 
     // chs vector
     CharacterVector chs(3);
     chs[0] = chvarname;
     chs[1] = chcharact;
     chs[2] = nnocharacter;
-
-    delete[] nnocharacter;
 
     // add characteristics to the list
     ch.push_front( chs );
@@ -383,7 +420,7 @@ List stata(const char * filePath, const bool missing)
     test("</ch>", file);
 
     // read next tag
-    readstr(tago, file, sizeof(tago));
+    readstring(tago, file, tago.size());
   }
 
   fseek(file, 14, SEEK_CUR); //[</ch]aracteristics>
@@ -434,7 +471,7 @@ List stata(const char * filePath, const bool missing)
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
 
-        if ((missing == FALSE) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
+        if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_d;
@@ -493,21 +530,30 @@ List stata(const char * filePath, const bool missing)
       {
         int32_t len = 0;
         len = vartype[i];
+        std::string val_s (len, '\0');
 
-        char *val_s = new char[len+1];
-        readstr(val_s, file, len+1);
+        readstring(val_s, file, val_s.size());
         as<CharacterVector>(df[i])[j] = val_s;
-        delete[] val_s;
         break;
       }
         // string of any length
       case 32768:
       {// strL 2 4bit
+
+        // FixMe: Strl in 118
+        // if (release==117)
         int32_t v = 0, o = 0;
+        //         if (release==118) {
+        //           int32_t v=0;
+        //           int64_t o=0;
+        //         }
         v = readbin(v, file, swapit);
         o = readbin(o, file, swapit);
 
+        // if(release==117)
         char val_strl[22];
+        //         if(release==118)
+        //           char val_strl[22];
         sprintf(val_strl, "%010d%010d", v, o);
         as<CharacterVector>(df[i])[j] = val_strl;
         break;
@@ -534,15 +580,14 @@ List stata(const char * filePath, const bool missing)
   * strl:  long string.
   */
 
+  std::string gso = "GSO";
+
+  std::string tags(3, '\0');
+  readstring(tags, file, tags.size());
+
   List strlstable = List(); //put strLs into this list
 
-  char tags[4];
-  readstr(tags, file, sizeof(tags));
-
-  char gso[4] = "GSO";
-  gso[3] = '\0';
-
-  while(strcmp(gso,tags)==0)
+  while(gso.compare(tags)==0)
   {
     CharacterVector strls(2);
 
@@ -562,26 +607,16 @@ List stata(const char * filePath, const bool missing)
     uint32_t len = 0;
     len = readbin(len, file, swapit);
 
-    if (t==129)
-    {
-      char *strl = new char[len];
-      readstr(strl, file, len);
-      strls(1) = strl;
-      delete[] strl;
-    } else
-    {
-      if (t==130)
-      {
-        char *strl = new char[len+1];
-        readstr(strl, file, len+1);
-        strls(1) = strl;
-        delete[] strl;
-      }
-    }
+    // 129 len = len; 130 len = len +'\0';
+
+    std::string strl(len, '\0');
+    readstring(strl, file, strl.size());
+
+    strls(1) = strl;
 
     strlstable.push_back( strls );
 
-    readstr(tags, file, sizeof(tags));
+    readstring(tags, file, tags.size());
   }
 
   // after strls
@@ -598,14 +633,14 @@ List stata(const char * filePath, const bool missing)
   * off:      offset defines where to read a new label in txtlen.
   */
 
+  std::string lbltag = "<lbl>";
+
+  std::string tag(5, '\0');
+  readstring(tag, file, tag.size());
+
   List labelList = List(); //put labels into this list
-  char tag[6];
-  readstr(tag, file, sizeof(tag));
 
-  char lbltag[6] = "<lbl>";
-  lbltag[5] = '\0';
-
-  while(strcmp(lbltag,tag)==0)
+  while(lbltag.compare(tag)==0)
   {
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
 
@@ -613,8 +648,10 @@ List stata(const char * filePath, const bool missing)
     nlen = readbin(nlen, file, swapit);
 
     // name of this label set
-    char nlabname[34];
-    readstr(nlabname, file, sizeof(nlabname));
+
+    std::string nlabname(lbllen, '\0');
+
+    readstring(nlabname, file, nlabname.size());
 
     //padding
     fseek(file, 3, SEEK_CUR);
@@ -660,11 +697,12 @@ List stata(const char * filePath, const bool missing)
     // label text
     CharacterVector label(labn);
     for (int i=0; i < labn; ++i) {
-      int const lablen = off[i+1]-off[i];
-      char *lab = new char[lablen+1]; //add + 1
-      readstr(lab, file, lablen+1);
+      int lablen = off[i+1]-off[i];
+
+      std::string lab (lablen, '\0');
+
+      readstring(lab, file, lablen);
       label[i] = lab;
-      delete[] lab;
     }
 
     // sort labels according to indx
@@ -681,13 +719,13 @@ List stata(const char * filePath, const bool missing)
 
     fseek(file, 6, SEEK_CUR); //</lbl>
 
-    readstr(tag, file, sizeof(tag));
+    readstring(tag, file, tag.size());
   }
 
   /*
-  * Final test if we reached the end of the file
-  * close the file
-  */
+   * Final test if we reached the end of the file
+   * close the file
+   */
 
   fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
   test("</stata_dta>", file);

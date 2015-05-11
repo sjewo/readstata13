@@ -29,6 +29,7 @@
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames will be added to the dta-file.
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will use all of Statas numeric-vartypes.
+#' @param version \emph{numeric.} Stata format for the resulting dta-file (e.g. 117 for Stata 13 and 118 for Stata 14.)
 #' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
@@ -46,16 +47,38 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
 #' @export
-save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
+save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
-                       add.rownames=FALSE, compress=FALSE){
+                       add.rownames=FALSE, compress=FALSE, version=117){
 
   if (!is.data.frame(data))
     message("Object is not of class data.frame.")
 
-  if (add.rownames)
-    data <- data.frame(rownames= save.encoding(rownames(data)),
+  # Is recoding necessary?
+  if (version<=117) {
+      # Reencoding is always needed
+      doRecode <- TRUE
+      toEncoding <- "CP1252"
+    } else if (toupper(localeToCharset()[1])!="UTF-8") {
+      # If R runs in a non UTF-8 locale and Stata > 13
+      doRecode <- TRUE
+      toEncoding <- "UTF-8"
+    } else {
+      # utf-8 and Stata > 13
+      doRecode <- FALSE
+    }
+
+
+  if (add.rownames) {
+    if (doRecode) {
+      rwn <- save.encoding(rownames(data), toEncoding)
+    } else  {
+      rwn <-rownames(data)
+    }
+
+    data <- data.frame(rownames= rwn,
                        data, stringsAsFactors = F)
+  }
 
   filepath <- path.expand(file)
 
@@ -82,7 +105,11 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     i <- 0
     for (v in factors)  {
       i <- i + 1
-      f.levels <-  save.encoding(levels(data[[v]]))
+      if (doRecode) {
+        f.levels <- save.encoding(levels(data[[v]]), toEncoding)
+      } else {
+        f.levels <- levels(data[[v]])
+      }
       f.labels <-  as.integer(labels(levels(data[[v]])))
       attr(f.labels, "names") <- f.levels
       f.labels <- f.labels[names(f.labels) != ".."]
@@ -91,7 +118,10 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
       valLabel[v] <- f.names[i]
     }
     attr(data, "label.table") <- rev(label.table)
-    attr(data, "vallabels") <-  save.encoding(valLabel)
+    if (doRecode) {
+      valLabel <- save.encoding(valLabel, toEncoding)
+    }
+    attr(data, "vallabels") <- valLabel
   } else {
     attr(data, "label.table") <- NULL
     attr(data, "vallabels") <- rep("",length(data))
@@ -121,17 +151,19 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
+  empty <- sapply(data, function(x) all(is.na(x)))
   if (!compress) {
     vartypen[ff] <- 65526
     vartypen[ii] <- 65528
     vartypen[factors] <- 65528
+    vartypen[empty] <- 65530
   } else {
-    varTmin <- sapply(data[ff], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[ff], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[ff & !empty], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[ff & !empty], function(x) max(x,na.rm=TRUE))
 
     # check if numeric is float or double
     fminmax <- 1.701e+38
-    for (k in names(which(ff))) {
+    for (k in names(which(ff & !empty))) {
       vartypen[k][varTmin[k] < (-fminmax) | varTmax[k] > fminmax] <- 65526
       vartypen[k][varTmin[k] > (-fminmax) & varTmax[k] < fminmax] <- 65527
     }
@@ -139,28 +171,34 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
     bmin <- -127; bmax <- 100
     imin <- -32767; imax <- 32740
     # check if integer is byte, int or long
-    for (k in names(which(ii))) {
+    for (k in names(which(ii & !empty))) {
       vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- 65528
       vartypen[k][varTmin[k] > imin & varTmax[k] < imax] <- 65529
       vartypen[k][varTmin[k] > bmin & varTmax[k] < bmax] <- 65530
     }
 
-    factorlength <- sapply(data[factors], nlevels)
-    for (k in names(which(factors))) {
+    factorlength <- sapply(data[factors & !empty], nlevels)
+    for (k in names(which(factors & !empty))) {
       vartypen[factors & factorlength[k] > 0x1.000000p127] <- 65528
       vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529
       vartypen[factors & factorlength[k] < 101] <- 65530
     }
+
+    # cast empty variables as byte
+    vartypen[empty] <- 65530
   }
 
-  # recode character variables
-  for(v in (1:ncol(data))[vartypen == "character"]) {
-    data[, v] <- save.encoding(data[, v])
+  # recode character variables. 118 wants utf-8, so encoding may be required
+  if(doRecode) {
+    for(v in (1:ncol(data))[vartypen == "character"]) {
+      data[, v] <- save.encoding(data[, v], toEncoding)
+    }
   }
+
 
   # str and strL are stored by maximum length of chars in a variable
   maxchar <- function(x) {
-    max(nchar(x)) + 1
+    max(nchar(x, type="byte")) + 1
   }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
 
@@ -194,7 +232,10 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
-    attr(data, "datalabel") <- save.encoding(data.label)
+    if (doRecode) {
+      data.label <- save.encoding(data.label, toEncoding)
+    }
+    attr(data, "datalabel") <- data.label
   }
 
   # Create the 17 char long timestamp. It may contain 17 char long strings
@@ -207,8 +248,13 @@ save.dta13 <- function(data, file="path", data.label=NULL, time.stamp=TRUE,
   }
 
   expfield <- attr(data, "expansion.fields")
-  expfield <- lapply(expfield, function(x) iconv(x, to="CP1252"))
+  if (doRecode) {
+    expfield <- lapply(expfield, function(x) iconv(x, to=toEncoding))
+  }
+
   attr(data, "expansion.fields") <- rev(expfield)
+
+  attr(data, "version") <- as.character(version)
 
   invisible( stataWrite(filePath = filepath, dat = data) )
 }

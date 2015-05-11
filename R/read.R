@@ -24,7 +24,8 @@
 #' @param convert.factors \emph{logical.} If \code{TRUE}, factors from Stata value labels are created.
 #' @param generate.factors \emph{logical.} If \code{TRUE} and convert.factors is TRUE, missing factor labels are created from integers.
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252 to system encoding.
-#'  Options are "latin1" or "utf-8" to specify target encoding explicitly.
+#'  Options are "CP1252" or "UTF-8" to specify target encoding explicitly.
+#' @param fromEncoding \emph{character.} We expect strings to be encoded as "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14 or newer "UTF-8" is used. In some situation the used encoding can differ for Stata 14 files and must be manually set.
 #' @param convert.underscore \emph{logical.} If \code{TRUE}, "_" in variable names will be changed to "."
 #' @param missing.type \emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z. 
 #' If \code{TRUE}, attribute \code{missing} will be created.
@@ -80,7 +81,7 @@
 #' @useDynLib readstata13
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = NULL, convert.underscore = FALSE,
+                       encoding = NULL, fromEncoding=NULL, convert.underscore = FALSE,
                        missing.type = FALSE, convert.dates = TRUE,
                        replace.strl = FALSE, add.rownames = FALSE) {
   # Check if path is a url
@@ -134,29 +135,36 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   ## Encoding
   if (!is.null(encoding)) {
 
+      # set from encoding by dta version
+    if(is.null(fromEncoding)) {
+      fromEncoding <- "CP1252"
+      if(attr(data, "version") >= 118L)
+        fromEncoding <- "UTF-8"
+    }
+
     # varnames
-    names(data) <- read.encoding(names(data), encoding)
+    names(data) <- read.encoding(names(data), fromEncoding, encoding)
 
     # var.labels
-    attr(data, "var.labels") <- read.encoding(var.labels, encoding)
+    attr(data, "var.labels") <- read.encoding(var.labels, fromEncoding, encoding)
 
     # val.labels
-    names(val.labels) <- read.encoding(val.labels, encoding)
+    names(val.labels) <- read.encoding(val.labels, fromEncoding, encoding)
     attr(data, "val.labels") <- val.labels
 
     # label
-    names(label) <- read.encoding(names(label), encoding)
+    names(label) <- read.encoding(names(label), fromEncoding, encoding)
 
     if (length(label) > 0) {
       for (i in 1:length(label))  {
-        names(label[[i]]) <- read.encoding(names(label[[i]]), encoding)
+        names(label[[i]]) <- read.encoding(names(label[[i]]), fromEncoding, encoding)
       }
       attr(data, "label.table") <- label
     }
 
     # recode character variables
     for (v in (1:ncol(data))[types <= 2045]) {
-      data[, v] <- iconv(data[, v], from="CP1252", sub="byte") # to=encoding?
+      data[, v] <- iconv(data[, v], from=fromEncoding, sub="byte") # to=encoding?
     }
 
     # expansion.field
@@ -164,7 +172,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     if (length(efi) > 0) {
       efiChar <- unlist(lapply(efi, is.character))
       for (i in (1:length(efi))[efiChar])  {
-        efi[[i]] <- read.encoding(efi[[i]], encoding)
+        efi[[i]] <- read.encoding(efi[[i]], fromEncoding, encoding)
       }
       attr(data, "expansion.fields") <- efi
     }
@@ -173,7 +181,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     strl <- attr(data, "strl")
     if (length(strl) > 0) {
       for (i in 1:length(strl))  {
-        strl[[i]] <- read.encoding(strl[[i]], encoding)
+        strl[[i]] <- read.encoding(strl[[i]], fromEncoding, encoding)
       }
       attr(data, "strl") <- strl
     }

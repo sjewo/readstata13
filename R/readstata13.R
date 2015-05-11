@@ -1,6 +1,6 @@
 #' Import Stata 13 Data Files
 #'
-#' Function to read the Stata 13 file format into a data.frame.
+#' Function to read the Stata 13 (and newer) file format into a data.frame.
 #'
 #'
 #' @author Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}

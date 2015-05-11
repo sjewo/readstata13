@@ -20,15 +20,16 @@
 # @param encoding encoding to be used.
 # @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 # @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
-read.encoding <- function(x, encoding) {
+read.encoding <- function(x, fromEncoding, encoding) {
   iconv(x,
-        from="cp1252",
+        from=fromEncoding,
         to=encoding ,
         sub="byte")
 }
-save.encoding <- function(x) {
+
+save.encoding <- function(x, encoding) {
   iconv(x,
-        to="CP1252",
+        to=encoding,
         sub="byte")
 }
 

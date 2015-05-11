@@ -1,0 +1,46 @@
+0.7
+- read and write Stata 14 files (ver 118)
+- fix save for variables without non-missing values
+- read strings from different file encodings 
+- code cleanups
+
+0.6.1
+- fix heap overflow
+
+0.6
+- various fixes
+- reading stbcal-files
+
+0.5
+- write dta-files
+- read/write LSF and MSF files
+- source testing and cleaning
+- support for multiple label languages (see http://www.stata.com/manuals13/dlabellanguage.pdf)
+- additional tools for label handling
+
+0.4
+- convert.dates from foreign::read.dta()
+- handle different NA values
+- convert strings to system encoding
+- some checks on label assignment
+
+0.3
+- reading file from url.
+  Example: `read.dta13("http://www.stata-press.com/data/r13/auto.dta")`
+- convert.underscore from foreign::read.dta(): converts _ to .
+- missing.type parts from foreign::read.dta(). If TRUE return "missing"
+- replace.strl option to replace the reference to a STRL string in the data.frame with the actual value
+
+0.2
+- read stata characteristics and save them in extension.table attribute
+- more robust handling of factor labels
+- set file encoding for all strings and convert them to system encoding
+- fixed compiler warnings
+
+0.1
+- reading data files and create a data.frame
+- assign variable names
+- read the new strL strings and save them as attribute
+- convert stata label to factors and save them as attribute
+- read some meta data (timestamp, dataset label, formats,...)
+

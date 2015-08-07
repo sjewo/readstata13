@@ -51,8 +51,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
                        add.rownames=FALSE, compress=FALSE, version=117){
 
-  if (!is.data.frame(data))
-    message("Object is not of class data.frame.")
+  if(!is.data.frame(data)) {
+    stop("Object is not of class data.frame.")
+  }
 
   # Is recoding necessary?
   if (version<=117) {

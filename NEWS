@@ -1,3 +1,6 @@
+0.7.1
+- fix saving of files > 2GB
+
 0.7
 - read and write Stata 14 files (ver 118)
 - fix save for variables without non-missing values

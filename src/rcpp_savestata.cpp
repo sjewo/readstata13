@@ -157,7 +157,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     * the end of the creation process, all 14 values are known and map will
     * be filled with the correct values.
     */
-    IntegerVector map(14);
+    NumericVector map(14);
     map(0) = dta.tellg();
 
     dta.write(head.c_str(),head.size());
@@ -549,8 +549,20 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(startmap.c_str(),startmap.size());
     for (int i=0; i <14; ++i)
     {
-      uint64_t nmap = map[i];
-      writebin(nmap, dta, swapit);
+      uint64_t nmap = 0;
+      uint32_t hi = 0, lo = 0;
+
+      nmap = map(i);
+      hi = (nmap >> 32);
+      lo = nmap;
+
+      if (swapit==0) {
+        writebin(lo, dta, swapit);
+        writebin(hi, dta, swapit);
+      } else {
+        writebin(hi, dta, swapit);
+        writebin(lo, dta, swapit);
+      }
     }
     dta.write(endmap.c_str(),endmap.size());
 

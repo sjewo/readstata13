@@ -255,7 +255,7 @@ List stata(const char * filePath, const bool missing)
   * 14. end-of-file
   */
 
-  IntegerVector map(14);
+  NumericVector map(14);
   for (int i=0; i <14; ++i)
   {
     uint64_t nmap = 0;

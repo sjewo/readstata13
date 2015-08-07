@@ -3,6 +3,7 @@
 - fix save for variables without non-missing values
 - read strings from different file encodings 
 - code cleanups
+- fix saving of files > 2GB
 
 0.6.1
 - fix heap overflow

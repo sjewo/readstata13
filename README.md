@@ -26,12 +26,12 @@ To install the current release (0.6.1) from github you need the plattform specif
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.7")
+devtools::install_github("sjewo/readstata13", ref="0.7.1")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.7")
+install_github("readstata13", username="sjewo", ref="0.7.1")
 ```
 
 To install the current development version from github:

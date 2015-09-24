@@ -323,6 +323,16 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (version < 117)
     attr(data, "version") <- version
 
+
+  # var.labels
+  varlabels <- attr(data, "var.labels")
+  if (!is.null(varlabels) & (length(varlabels)!=ncol(dd))) {
+    attr(data, "var.labels") <- NULL
+    warning("Number of variable labels does not match number of variables.
+            Variable labels dropped.")
+  }
+
+
   if (version >= 117)
     invisible( stata_save(filePath = filepath, dat = data) )
   else

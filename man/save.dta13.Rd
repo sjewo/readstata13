@@ -2,11 +2,12 @@
 % Please edit documentation in R/save.R
 \name{save.dta13}
 \alias{save.dta13}
-\title{Write Stata 13 Binary Files}
+\title{Write Stata Binary Files}
 \usage{
 save.dta13(data, file, data.label = NULL, time.stamp = TRUE,
   convert.factors = FALSE, convert.dates = TRUE, tz = "GMT",
-  add.rownames = FALSE, compress = FALSE, version = 117)
+  add.rownames = FALSE, compress = FALSE, version = 117,
+  convert.underscore = FALSE)
 }
 \arguments{
 \item{data}{\emph{data.frame.} A data.frame Object.}
@@ -15,35 +16,50 @@ save.dta13(data, file, data.label = NULL, time.stamp = TRUE,
 
 \item{data.label}{\emph{character.} Name of the dta-file.}
 
-\item{time.stamp}{\emph{logical.} If \code{TRUE}, add a time.stamp to the dta-file.}
+\item{time.stamp}{\emph{logical.} If \code{TRUE}, add a time.stamp to the
+dta-file.}
 
-\item{convert.factors}{\emph{logical.} If \code{TRUE}, factors will be converted to Stata variables with labels.
-Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.}
+\item{convert.factors}{\emph{logical.} If \code{TRUE}, factors will be
+converted to Stata variables with labels.
+Stata expects strings to be encoded as Windows-1252, so all levels will be
+recoded.  Character which can not be mapped in Windows-1252 will be saved as
+hexcode.}
 
-\item{convert.dates}{\emph{logical.} If \code{TRUE}, dates will be converted to Stata date time format. Code from \code{foreign::write.dta}}
+\item{convert.dates}{\emph{logical.} If \code{TRUE}, dates will be converted
+to Stata date time format. Code from \code{foreign::write.dta}}
 
 \item{tz}{\emph{character.} The name of the timezone convert.dates will use.}
 
-\item{add.rownames}{\emph{logical.} If \code{TRUE}, a new variable rownames will be added to the dta-file.}
+\item{add.rownames}{\emph{logical.} If \code{TRUE}, a new variable rownames
+will be added to the dta-file.}
 
-\item{compress}{\emph{logical.} If \code{TRUE}, the resulting dta-file will use all of Statas numeric-vartypes.}
+\item{compress}{\emph{logical.} If \code{TRUE}, the resulting dta-file will
+use all of Statas numeric-vartypes.}
 
-\item{version}{\emph{numeric.} Stata format for the resulting dta-file (e.g. 117 for Stata 13 and 118 for Stata 14.)}
+\item{version}{\emph{numeric.} Stata format for the resulting dta-file either
+the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.}
+
+\item{convert.underscore}{\emph{logica.} If \code{TRUE}, in variable names
+dots will be converted to underscores.}
 }
 \value{
-The function writes a dta-file to disk. The following features of the dta file format are supported:
+The function writes a dta-file to disk. The following features of the
+ dta file format are supported:
 \describe{
   \item{datalabel:}{Dataset label}
   \item{time.stamp:}{Timestamp of file creation}
-  \item{formats:}{Stata display formats. May be used with \code{\link[base]{sprintf}}}
+  \item{formats:}{Stata display formats. May be used with
+  \code{\link[base]{sprintf}}}
   \item{type:}{Stata data type (see Stata Corp 2014)}
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
-  \item{strl:}{List of character vectors for the new strL string variable type. The first element is the identifier and the second element the string.}
+  \item{strl:}{List of character vectors for the new strL string variable
+   type. The first element is the identifier and the second element the
+   string.}
 }
 }
 \description{
-\code{save.dta13} writes a Stata 13 dta file bytewise and saves the data
+\code{save.dta13} writes a Stata dta-file bytewise and saves the data
 into a dta-file.
 }
 \author{
@@ -52,10 +68,11 @@ Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 \references{
-Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
+Stata Corp (2014): Description of .dta file format
+ \url{http://www.stata.com/help.cgi?dta}
 }
 \seealso{
-\code{\link[foreign]{write.dta}} and \code{memisc} for dta files from Stata
-versions < 13.
+\code{\link[foreign]{write.dta}} and \code{memisc} for dta files
+from Stata versions < 13.
 }
 

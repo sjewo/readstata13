@@ -19,33 +19,11 @@
 #include <string>
 #include <fstream>
 #include <stdint.h>
+#include "readstata.h"
 #include "statadefines.h"
-#include "swap_endian.h"
-// #include <cstdint> //C++11
 
 using namespace Rcpp;
 using namespace std;
-
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define lsf "LSF"
-#define byteorder "LSF"
-#else
-#define lsf "MSF"
-#define byteorder "MSF"
-#endif
-
-bool swapit = strcmp(byteorder, lsf);
-
-template <typename T>
-static void writebin(T t, fstream& dta, bool swapit)
-{
-  if (swapit==1){
-    T t_s = swap_endian(t);
-    dta.write((char*)&t_s, sizeof(t_s));
-  } else {
-    dta.write((char*)&t, sizeof(t));
-  }
-}
 
 // Writes the binary Stata file
 //
@@ -57,6 +35,8 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 {
   uint16_t k = dat.size();
   uint64_t n = dat.nrows();
+  
+  bool swapit = 0;
 
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
@@ -163,7 +143,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(head.c_str(),head.size());
     dta.write(version.c_str(),3); // 117|118 (e.g. Stata 13|14)
     dta.write(byteord.c_str(),byteord.size());
-    dta.write(byteorder,3); // LSF
+    dta.write(sbyteorder,3); // LSF
     dta.write(K.c_str(),K.size());
     writebin(k, dta, swapit);
     dta.write(num.c_str(),num.size());

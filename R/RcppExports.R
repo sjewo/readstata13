@@ -5,6 +5,15 @@ stata <- function(filePath, missing) {
     .Call('readstata13_stata', PACKAGE = 'readstata13', filePath, missing)
 }
 
+#' Writes the binary Stata file
+#'
+#' @param filePath The full systempath to the dta file you want to export.
+#' @param dat an R-Object of class data.frame.
+#' @export
+stataWriteOld <- function(filePath, dat) {
+    .Call('readstata13_stataWriteOld', PACKAGE = 'readstata13', filePath, dat)
+}
+
 stataWrite <- function(filePath, dat) {
     .Call('readstata13_stataWrite', PACKAGE = 'readstata13', filePath, dat)
 }

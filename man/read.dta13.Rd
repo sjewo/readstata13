@@ -2,7 +2,7 @@
 % Please edit documentation in R/read.R
 \name{read.dta13}
 \alias{read.dta13}
-\title{Read Stata 13 Binary Files}
+\title{Read Stata Binary Files}
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = NULL, fromEncoding = NULL, convert.underscore = FALSE,
@@ -12,74 +12,101 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
 
-\item{convert.factors}{\emph{logical.} If \code{TRUE}, factors from Stata value labels are created.}
+\item{convert.factors}{\emph{logical.} If \code{TRUE}, factors from Stata
+value labels are created.}
 
-\item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is TRUE, missing factor labels are created from integers.}
+\item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is
+TRUE, missing factor labels are created from integers.}
 
-\item{encoding}{\emph{character.} Strings can be converted from Windows-1252 to system encoding.
-Options are "CP1252" or "UTF-8" to specify target encoding explicitly.}
+\item{encoding}{\emph{character.} Strings can be converted from Windows-1252
+to system encoding. Options are "CP1252" or "UTF-8" to specify target
+encoding explicitly.}
 
-\item{fromEncoding}{\emph{character.} We expect strings to be encoded as "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14 or newer "UTF-8" is used. In some situation the used encoding can differ for Stata 14 files and must be manually set.}
+\item{fromEncoding}{\emph{character.} We expect strings to be encoded as
+"CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
+or newer "UTF-8" is used. In some situation the used encoding can differ for
+Stata 14 files and must be manually set.}
 
-\item{convert.underscore}{\emph{logical.} If \code{TRUE}, "_" in variable names will be changed to "."}
+\item{convert.underscore}{\emph{logical.} If \code{TRUE}, "_" in variable
+names will be changed to "."}
 
-\item{missing.type}{\emph{logical.} Stata knows 27 different missing types: ., .a, .b, ..., .z.
-If \code{TRUE}, attribute \code{missing} will be created.}
+\item{missing.type}{\emph{logical.} Stata knows 27 different missing types:
+., .a, .b, ..., .z. If \code{TRUE}, attribute \code{missing} will be
+ created.}
 
-\item{convert.dates}{\emph{logical.} If \code{TRUE}, Stata dates are converted.}
+\item{convert.dates}{\emph{logical.} If \code{TRUE}, Stata dates are
+converted.}
 
-\item{replace.strl}{\emph{logical.} If \code{TRUE}, replace the reference to a strL string in the data.frame with the actual value. The strl attribute will be removed from the data.frame.}
+\item{replace.strl}{\emph{logical.} If \code{TRUE}, replace the reference to
+a strL string in the data.frame with the actual value. The strl attribute
+will be removed from the data.frame.}
 
-\item{add.rownames}{\emph{logical.} If \code{TRUE}, the first column will be used as rownames. Variable will be dropped afterwards.}
+\item{add.rownames}{\emph{logical.} If \code{TRUE}, the first column will be
+ used as rownames. Variable will be dropped afterwards.}
 }
 \value{
-The function returns a data.frame with attributes. The attributes include
+The function returns a data.frame with attributes. The attributes
+ include
 \describe{
   \item{datalabel:}{Dataset label}
   \item{time.stamp:}{Timestamp of file creation}
-  \item{formats:}{Stata display formats. May be used with \code{\link{sprintf}}}
+  \item{formats:}{Stata display formats. May be used with
+   \code{\link{sprintf}}}
   \item{types:}{Stata data type (see Stata Corp 2014)}
-  \item{val.labels:}{For each variable the name of the associated value labels in "label"}
+  \item{val.labels:}{For each variable the name of the associated value
+   labels in "label"}
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
   \item{label.table:}{List of value labels.}
-  \item{strl:}{List of character vectors for the new strl string variable type. The first element is the identifier and
+  \item{strl:}{List of character vectors for the new strl string variable
+   type. The first element is the identifier and
    the second element the string.}
   \item{expansion.fields:}{list providing variable name, characteristic name
    and the contents of Stata characteristic field.}
-  \item{missing:}{List of numeric vectors with Stata missing type for each variable.}
+  \item{missing:}{List of numeric vectors with Stata missing type for each
+   variable.}
 }
 }
 \description{
-\code{read.dta13} reads a Stata 13 dta file and imports the data
-into a data.frame.
+\code{read.dta13} reads a Stata dta-file and imports the data into a
+ data.frame.
 }
 \details{
-If the filename is a url, the file will be downloaded as a temporary file and read afterwards.
+If the filename is a url, the file will be downloaded as a temporary
+ file and read afterwards.
 
-Stata files are encoded in ansinew. Depending on your system default encoding certain characters may appear wrong.
-Using a correct encoding may fix these.
+Stata files are encoded in ansinew. Depending on your system default encoding
+ certain characters may appear wrong. Using a correct encoding may fix these.
 
-Variable names stored in the dta-file will be used in the resulting data.frame. Stata types char, byte,
-and int will become integer; float and double will become numerics. R only
-knows a single missing type, while Stata knows 27, so all Stata missings will become NA in R.  If you need to keep track
-of Statas original missing types, you may use \code{missing.type=TRUE}.
+Variable names stored in the dta-file will be used in the resulting
+ data.frame. Stata types char, byte, and int will become integer; float and
+ double will become numerics. R only knows a single missing type, while Stata
+ knows 27, so all Stata missings will become NA in R.  If you need to keep
+ track of Statas original missing types, you may use
+ \code{missing.type=TRUE}.
 
-Stata dates are converted to R's Date class the same way foreign handles dates.
+Stata dates are converted to R's Date class the same way foreign handles
+dates.
 
-Stata 13 introduced a new character type called strL. strLs are able to store strings of any size up to 2 billion
-characters.  While R is able to store strings of this size in a character, certain data.frames may appear messed, if long
-strings are inserted default is \code{FALSE}.
+Stata 13 introduced a new character type called strL. strLs are able to store
+ strings of any size up to 2 billion characters.  While R is able to store
+ strings of this size in a character, certain data.frames may appear messed,
+ if long strings are inserted default is \code{FALSE}.
 
-In R, you may use rownames to store characters (see for instance \code{data(swiss)}). In Stata, this is not possible and
-rownames have to be stored as a variable.  If this is the case for your file and you want to use rownames,
-\code{add.rownames=TRUE} will convert the first variable of the dta-file into rownames of the resulting data.frame.
+In R, you may use rownames to store characters (see for instance
+ \code{data(swiss)}). In Stata, this is not possible and rownames have to be
+ stored as a variable.  If this is the case for your file and you want to use
+ rownames, \code{add.rownames=TRUE} will convert the first variable of the
+ dta-file into rownames of the resulting data.frame.
 
-Beginning with Stata 13 (format 117), a new dta-format was introduced, therefore reading dta-files from earlier Stata
-versions is not implemented.
+Beginning with Stata 13 (format 117), a new dta-format was introduced, which
+ was not handled by foreign at the time. It was implemented in this package
+ therefore the package got its name. Reading dta-files from earlier Stata
+ versions was not implemented until version 0.8.
 }
 \note{
-read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members from foreign::read.dta().
+read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
+ from foreign::read.dta().
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
@@ -87,7 +114,8 @@ Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
 \references{
-Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
+Stata Corp (2014): Description of .dta file format
+ \url{http://www.stata.com/help.cgi?dta}
 }
 \seealso{
 \code{\link{read.dta}} and \code{memisc} for dta files from Stata

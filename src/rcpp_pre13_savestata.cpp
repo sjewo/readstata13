@@ -392,6 +392,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>244)
           {
+            Rcpp::warning("Character Var.to long. Resizing. Max size is 244");
             val_s.resize(244);
             len = 244;
           }

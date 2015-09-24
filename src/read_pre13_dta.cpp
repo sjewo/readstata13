@@ -264,9 +264,9 @@ List read_pre13_dta(FILE * file, const bool missing)
       nvartypec = readbin(nvartypec, file, swapit);
 
       if(nvartypec== 98) // b
-        vartype[i] = 253;
+        vartype[i] = 251;
       if(nvartypec==105) // i
-        vartype[i] = 253;
+        vartype[i] = 252;
       if(nvartypec==108) // l
         vartype[i] = 253;
       if(nvartypec==102) // f

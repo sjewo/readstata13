@@ -40,7 +40,6 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
-  datalabel[datalabel.size()] = '\0';
 
   CharacterVector valLabels = dat.attr("vallabels");
   CharacterVector nvarnames = dat.attr("names");
@@ -56,7 +55,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
   uint8_t const release = atoi(version.c_str());
 
   uint8_t nvarnameslen = 0, nformatslen = 0, nvalLabelslen = 0, lbllen = 0, ntimestamp = 0;
-  uint16_t nvarLabelslen = 0, ndlabel = 0;
+  uint16_t nvarLabelslen = 0, ndlabel = 0, maxdatalabelsize = 0;
   int32_t chlen = 0;
 
   switch (release)
@@ -66,6 +65,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     nformatslen = 49;
     nvalLabelslen = 33;
     nvarLabelslen = 81;
+    maxdatalabelsize = 80;
     chlen = 33;
     lbllen = 33;
     break;
@@ -74,6 +74,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     nformatslen = 57;
     nvalLabelslen = 129;
     nvarLabelslen = 321;
+    maxdatalabelsize = 80; // in utf8 4 * 80 byte
     chlen = 129;
     lbllen = 129;
     break;
@@ -157,6 +158,12 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* write a datalabel */
     if(!datalabel.empty())
     {
+      if (datalabel.size() > maxdatalabelsize)
+      {
+        Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
+                      maxdatalabelsize);
+        datalabel.resize(maxdatalabelsize);
+      }
       ndlabel = datalabel.size();
       if (release==117)
         writebin((uint8_t)ndlabel, dta, swapit);

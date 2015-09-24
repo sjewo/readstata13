@@ -295,6 +295,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
+    if (version == 102L)
+      warning("Format 102 does not print a data label in Stata.")
     if (doRecode) {
       data.label <- save.encoding(data.label, toEncoding)
     }

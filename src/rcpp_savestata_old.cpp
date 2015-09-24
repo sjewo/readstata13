@@ -47,7 +47,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
   string timestamp = dat.attr("timestamp");
   timestamp.resize(18);
   string datalabel = dat.attr("datalabel");
-  datalabel.resize(81);
+  datalabel[datalabel.size()] = '\0';
 
   CharacterVector valLabels = dat.attr("vallabels");
   CharacterVector nvarnames = dat.attr("names");
@@ -68,7 +68,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
 
     int formatsize = 49;
     int varnamesize = 32;
-    int maxdatalabelsize = 82;
+    int maxdatalabelsize = 81;
     int vallabelsize = 32;
     int varlabelsize = 81;
 
@@ -124,11 +124,15 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
     writebin(n, dta, swapit);
 
     /* write a datalabel */
-    if (datalabel.size()>maxdatalabelsize)
+    if (datalabel.size() >= maxdatalabelsize)
     {
-      Rcpp::warning("Datalabel to long. Resizing.");
-      datalabel.resize(maxdatalabelsize);
+      // last bit is \0 Stata does not read it.
+      Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
+                    maxdatalabelsize - 1);
     }
+    // needs to be of a specific length. warning above is only for cases where
+    // the initial size of the datalabel is to long.
+    datalabel.resize(maxdatalabelsize);
     dta.write(datalabel.c_str(),datalabel.size());
 
     /* timestamp size is 17 */

@@ -40,13 +40,13 @@ List read_pre13_dta(FILE * file, const bool missing)
   * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
   */
 
-  uint8_t nvarnameslen = 0;
-  int8_t nformatslen = 0;
-  uint8_t nvalLabelslen = 0;
-  uint16_t nvarLabelslen = 0;
+  uint8_t nvarnameslen = 33;
+  int8_t nformatslen = 49;
+  uint8_t nvalLabelslen = 33;
+  uint16_t nvarLabelslen = 81;
   int32_t chlen = 33;
-  uint8_t lbllen = 0;
-  uint16_t ndlabel = 0;
+  uint8_t lbllen = 33;
+  uint16_t ndlabel = 81;
 
   switch(release)
   {
@@ -87,68 +87,31 @@ List read_pre13_dta(FILE * file, const bool missing)
     lbllen = 9;
     break;
   case 107:
-    ndlabel = 81;
     nvarnameslen = 9;
     nformatslen = 12;
     nvalLabelslen = 9;
-    nvarLabelslen = 81;
     lbllen = 9;
     break;
   case 108:
-    ndlabel = 81;
     nvarnameslen = 9;
     nformatslen = 12;
     nvalLabelslen = 9;
-    nvarLabelslen = 81;
     lbllen = 9;
     break;
   case 110:
-    ndlabel = 81;
-    nvarnameslen = 33;
     nformatslen = 12;
-    nvalLabelslen = 33;
-    nvarLabelslen = 81;
-    lbllen = 33;
     break;
   case 111:
-    ndlabel = 81;
-    nvarnameslen = 33;
     nformatslen = 12;
-    nvalLabelslen = 33;
-    nvarLabelslen = 81;
-    lbllen = 33;
     break;
   case 112:
-    ndlabel = 81;
-    nvarnameslen = 33;
     nformatslen = 12;
-    nvalLabelslen = 33;
-    nvarLabelslen = 81;
-    lbllen = 33;
     break;
   case 113:
-    ndlabel = 81;
-    nvarnameslen = 33;
     nformatslen = 12;
-    nvalLabelslen = 33;
-    nvarLabelslen = 81;
-    lbllen = 33;
     break;
   case 114:
-    ndlabel = 81;
-    nvarnameslen = 33;
-    nformatslen = 49;
-    nvalLabelslen = 33;
-    nvarLabelslen = 81;
-    lbllen = 33;
-    break;
   case 115:
-    ndlabel = 81;
-    nvarnameslen = 33;
-    nformatslen = 49;
-    nvalLabelslen = 33;
-    nvarLabelslen = 81;
-    lbllen = 33;
     break;
   }
 

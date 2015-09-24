@@ -253,8 +253,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     }
   }
 
-  if (version >= 117L) {
-    if (replace.strl) {
+  if (replace.strl) {
+    message("replace.strl is only available for dta-format >= 117.")
+    if (version >= 117L) {
       strl <- do.call(rbind, attr(data,"strl"))
       for (j in seq(ncol(data))[types == 32768] ) {
         refs <- unique(data[, j])

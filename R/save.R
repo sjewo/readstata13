@@ -150,7 +150,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- sapply(data, class)
 
   if (convert.factors){
-    message("convert.factors=TRUE: saving factor values as integers and creating Stata labels.")
+    message("convert.factors=TRUE: saving factor values as integers and creating
+            Stata labels.")
+    if (version < 106)
+      warning("dta-format < 106 does not handle factors. Labels are not saved!")
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
     f.names <- attr(factors,"names")

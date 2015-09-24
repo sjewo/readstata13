@@ -15,12 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Rcpp.h>
-#include <string>
-#include <fstream>
-#include <stdint.h>
 #include "readstata.h"
-#include "statadefines.h"
 
 using namespace Rcpp;
 using namespace std;
@@ -40,6 +35,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
+  datalabel[datalabel.size()] = '\0';
 
   CharacterVector valLabels = dat.attr("vallabels");
   CharacterVector nvarnames = dat.attr("names");
@@ -57,7 +53,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
   uint8_t nvarnameslen = 0, nformatslen = 0, nvalLabelslen = 0, lbllen = 0,
     ntimestamp = 0;
   uint16_t nvarLabelslen = 0, ndlabel = 0, maxdatalabelsize = 0;
-  int32_t chlen = 0;
+  int32_t chlen = 0, maxlabelsize = 32000;
 
   switch (release)
   {
@@ -75,7 +71,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     nformatslen = 57;
     nvalLabelslen = 129;
     nvarLabelslen = 321;
-    maxdatalabelsize = 80; // in utf8 4 * 80 byte
+    maxdatalabelsize = 320; // in utf8 4 * 80 byte
     chlen = 129;
     lbllen = 129;
     break;
@@ -164,6 +160,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
                       maxdatalabelsize);
         datalabel.resize(maxdatalabelsize);
+        datalabel[datalabel.size()] = '\0';
       }
       ndlabel = datalabel.size();
 
@@ -218,6 +215,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     for (uint16_t i = 0; i < k; ++i )
     {
       string nvarname = as<string>(nvarnames[i]);
+      nvarname[nvarname.size()] = '\0';
 
       if (nvarname.size() > nvarnameslen)
         Rcpp::warning("Varname to long. Resizing. Max size is %d",
@@ -249,9 +247,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     {
       string nformats = as<string>(formats[i]);
 
-      if (nformats.size() > nformatslen)
+      if (nformats.size() >= nformatslen)
         Rcpp::warning("Formats to long. Resizing. Max size is %d",
-                      nformatslen - 1);
+                      nformatslen);
 
       dta.write(nformats.c_str(),nformatslen);
     }
@@ -261,9 +259,10 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
     dta.write(startvalLabel.c_str(),startvalLabel.size());
-    for (uint16_t i = 0; i < k; ++i )
+    for (uint16_t i = 0; i < k; ++i)
     {
       string nvalLabels = as<string>(valLabels[i]);
+      nvalLabels[nvalLabels.size()] = '\0';
 
       if (nvalLabels.size() > nvalLabelslen)
         Rcpp::warning("Vallabel to long. Resizing. Max size is %d",
@@ -280,16 +279,18 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     for (uint16_t i = 0; i < k; ++i)
     {
       if (!Rf_isNull(varLabels) && Rf_length(varLabels) > 1) {
-        string nvarLabels = as<std::string>(varLabels[i]);
+        string nvarLabels = as<string>(varLabels[i]);
 
         if (nvarLabels.size() > nvarLabelslen)
           Rcpp::warning("Varlabel to long. Resizing. Max size is %d",
                         nvarLabelslen - 1);
 
-        dta.write(nvarLabels.c_str(),nvarLabelslen);
+        nvarLabels[nvarLabels.size()] = '\0';
+        dta.write(nvarLabels.c_str(), nvarLabelslen);
       } else {
-        const string nvarLabels = "";
-        dta.write(nvarLabels.c_str(),nvarLabelslen);
+        string nvarLabels = "";
+        nvarLabels[nvarLabels.size()] = '\0';
+        dta.write(nvarLabels.c_str(), nvarLabelslen);
       }
     }
     dta.write(endvarlabel.c_str(),endvarlabel.size());
@@ -536,6 +537,13 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         {
           string labtext = as<string>(labelText[i]);
           labtext[labtext.size()] = '\0';
+
+          if (labtext.size() > maxlabelsize)
+          {
+            Rcpp::warning("Label to long. Resizing. Max size is 32,000.");
+            labtext.resize(maxlabelsize -1);
+          }
+
           dta.write(labtext.c_str(),labtext.size()+1);
         }
         dta.write(endlbl.c_str(),endlbl.size());

@@ -16,7 +16,6 @@
  */
 
 #include "readstata.h"
-#include "read_dta.h"
 
 using namespace Rcpp;
 using namespace std;

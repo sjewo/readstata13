@@ -15,12 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Rcpp.h>
-#include <string>
-#include <fstream>
-#include <stdint.h>
 #include "readstata.h"
-#include "statadefines.h"
 
 
 using namespace Rcpp;
@@ -72,6 +67,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
     int32_t nvalLabelslen = 33;
     int32_t nvarLabelslen = 81;
     int32_t chlen = 33;
+    int32_t maxlabelsize = 32000;
 
     switch(version)
     {
@@ -80,7 +76,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       nformatslen = 7;
       nvarnameslen = 9;
       nvalLabelslen = 9;
-      nvarLabelslen = 32;
+      nvarLabelslen = 33;
       break;
     case 103:
     case 104:
@@ -88,7 +84,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       nformatslen = 7;
       nvarnameslen = 9;
       nvalLabelslen = 9;
-      nvarLabelslen = 32;
+      nvarLabelslen = 33;
       break;
     case 105:
     case 106:// unknown version (SE?)
@@ -96,7 +92,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       nformatslen = 12;
       nvarnameslen = 9;
       nvalLabelslen = 9;
-      nvarLabelslen = 32;
+      nvarLabelslen = 33;
       break;
     case 107: // unknown version (SE?)
     case 108:
@@ -392,7 +388,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>244)
           {
-            Rcpp::warning("Character Var.to long. Resizing. Max size is 244");
+            Rcpp::warning("Character Var.to long. Resizing. Max size is 244.");
             val_s.resize(244);
             len = 244;
           }
@@ -441,12 +437,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
         writebin(nlen, dta, swapit);
 
-        if (version>108)
-          labname.resize(32);
-        else
-          labname.resize(8);
-
-        dta.write(labname.c_str(),labname.size()+1);
+        dta.write(labname.c_str(), nvarnameslen);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
@@ -466,8 +457,13 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         for (int32_t i = 0; i < N; ++i)
         {
           string labtext = as<string>(labelText[i]);
-          labtext[labtext.size()] = '\0';
-          dta.write(labtext.c_str(),labtext.size()+1);
+          if (labtext.size() > maxlabelsize)
+          {
+            Rcpp::warning("Label to long. Resizing. Max size is 32,000.");
+            labtext.resize(maxlabelsize -1);
+          }
+
+          dta.write(labtext.c_str(), labtext.size()+1);
         }
       }
 

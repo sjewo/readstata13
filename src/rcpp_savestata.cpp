@@ -35,7 +35,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 {
   uint16_t k = dat.size();
   uint64_t n = dat.nrows();
-  
+
   bool swapit = 0;
 
   const string timestamp = dat.attr("timestamp");

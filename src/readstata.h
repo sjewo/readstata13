@@ -53,7 +53,7 @@ static void readstring(std::string &mystring, FILE * fp, int nchar)
 inline void test(std::string testme, FILE * file)
 {
   std::string test(testme.size(), '\0');
-  
+
   readstring(test,file, test.size());
   if (testme.compare(test)!=0)
   {

@@ -34,44 +34,44 @@ using namespace std;
 // [[Rcpp::export]]
 int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
 {
-  
+
   // This bool was inteded to do a swap if you want to create a MSF-File on a
   // LSF-machine. By default it should be 0 (no byteswap).
   // bool swapit = strcmp(byteorder, SBYTEORDER);
   bool swapit = 0;
-  
+
   uint16_t k = dat.size();
   uint32_t n = dat.nrows();
   int8_t byteorder = SBYTEORDER;
-  
+
   string timestamp = dat.attr("timestamp");
   timestamp.resize(18);
   string datalabel = dat.attr("datalabel");
   datalabel.resize(81);
-  
+
   CharacterVector valLabels = dat.attr("vallabels");
   CharacterVector nvarnames = dat.attr("names");
-  
+
   List chs = dat.attr("expansion.fields");
   List formats = dat.attr("formats");
   List labeltable = dat.attr("label.table");
   List varLabels = dat.attr("var.labels");
   List vartypes = dat.attr("types");
-  
-  
+
+
   int8_t version = as<int>(dat.attr("version"));
-  
-  
+
+
   fstream dta (filePath, ios::out | ios::binary);
   if (dta.is_open())
   {
-    
+
     int formatsize = 49;
     int varnamesize = 32;
     int maxdatalabelsize = 82;
     int vallabelsize = 32;
     int varlabelsize = 81;
-    
+
     switch(version)
     {
     case 102:
@@ -113,7 +113,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       formatsize = 12;
       break;
     }
-    
+
     writebin(version, dta, swapit);
     writebin(byteorder, dta, swapit); // LSF
     int8_t ft = 1;
@@ -122,7 +122,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
     writebin(unused, dta, swapit);
     writebin(k, dta, swapit);
     writebin(n, dta, swapit);
-    
+
     /* write a datalabel */
     if (datalabel.size()>maxdatalabelsize)
     {
@@ -130,7 +130,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       datalabel.resize(maxdatalabelsize);
     }
     dta.write(datalabel.c_str(),datalabel.size());
-    
+
     /* timestamp size is 17 */
     if (version > 104)
     {
@@ -141,7 +141,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       }
       dta.write(timestamp.c_str(),timestamp.size());
     }
-    
+
     /* <variable_types> ... </variable_types> */
     uint8_t  nvartype;
     for (uint16_t i = 0; i < k; ++i)
@@ -150,7 +150,7 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       if(version<111 || version==112)
       {
         char c[2];
-        
+
         switch(nvartype)
         {
         case 255:
@@ -187,55 +187,55 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       else
         writebin(nvartype, dta, swapit);
     }
-    
+
     /* <varnames> ... </varnames> */
     for (uint16_t i = 0; i < k; ++i )
     {
       string nvarname = as<string>(nvarnames[i]);
       if (nvarname.size()>varnamesize)
         Rcpp::warning("Varname to long. Resizing.");
-      
+
       nvarname.resize(varnamesize);
-      
+
       dta.write(nvarname.c_str(),nvarname.size()+1);
     }
-    
+
     /* <sortlist> ... </sortlist> */
     uint32_t big_k = k+1;
-    
+
     for (uint32_t i = 0; i < big_k; ++i)
     {
       uint16_t nsortlist = 0;
       writebin(nsortlist, dta, swapit);
     }
-    
+
     /* <formats> ... </formats> */
     for (uint16_t i = 0; i < k; ++i )
     {
       string nformats = as<string>(formats[i]);
       if (nformats.size()>formatsize)
         Rcpp::warning("Formats to long. Resizing.");
-      
+
       nformats.resize(formatsize);
-      
-      
+
+
       dta.write(nformats.c_str(),nformats.size());
     }
-    
+
     /* <value_label_names> ... </value_label_names> */
     for (uint16_t i = 0; i < k; ++i )
     {
       string nvalLabels = as<string>(valLabels[i]);
       nvalLabels.resize(vallabelsize);
-      
+
       if (nvalLabels.size()>vallabelsize)
       {
         Rcpp::warning("Vallabel to long. Resizing.");
       }
-      
+
       dta.write(nvalLabels.c_str(),nvalLabels.size()+1);
     }
-    
+
     /* <variable_labels> ... </variable_labels> */
     for (uint16_t i = 0; i < k; ++i)
     {
@@ -246,43 +246,43 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       }
       dta.write(nvarLabels.c_str(),varlabelsize);
     }
-    
-    
+
+
     /* <characteristics> ... </characteristics> */
-    
+
     if (version > 104)
     {
       int8_t datatype = 0;
       uint32_t len = 0;
-      
+
       if (chs.size()>0){
         for (int32_t i = 0; i<chs.size(); ++i){
-          
+
           CharacterVector ch = as<CharacterVector>(chs[i]);
-          
+
           string ch1 = as<string>(ch[0]);
           ch1[ch1.size()] = '\0';
           string ch2 = as<string>(ch[1]);
           ch2[ch2.size()] = '\0';
           string ch3 = as<string>(ch[2]);
           ch3[ch3.size()] = '\0';
-          
+
           len = 33 + 33 + ch3.size()+1;
           datatype = 1;
-          
+
           writebin(datatype, dta, swapit);
           if(version<=108)
             writebin((int16_t)len, dta, swapit);
           else
             writebin(len, dta, swapit);
-          
+
           dta.write(ch1.c_str(),33);
           dta.write(ch2.c_str(),33);
           dta.write(ch3.c_str(),ch3.size()+1);
-          
+
         }
       }
-      
+
       // five bytes of zero end characteristics
       datatype = 0;
       len = 0;
@@ -292,9 +292,9 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
       else
         writebin(len, dta, swapit);
     }
-    
+
     /* <data> ... </data> */
-    
+
     for(uint32_t j = 0; j < n; ++j)
     {
       for (uint16_t i = 0; i < k; ++i)
@@ -306,12 +306,12 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
         case 255:
         {
           double val_d = as<NumericVector>(dat[i])[j];
-          
+
           if ( (val_d == NA_REAL) | R_IsNA(val_d) )
             val_d = STATA_DOUBLE_NA;
-          
+
           writebin(val_d, dta, swapit);
-          
+
           break;
         }
           // float
@@ -319,19 +319,19 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
         {
           double val_d = as<NumericVector>(dat[i])[j];
           float val_f = (float)(val_d);
-          
+
           if ((val_d == NA_REAL) | (R_IsNA(val_d)) )
             val_f = STATA_FLOAT_NA;
-          
+
           writebin(val_f, dta, swapit);
-          
+
           break;
         }
           // store integer as Stata long (int32_t)
         case 253:
         {
           int32_t val_l = as<IntegerVector>(dat[i])[j];
-          
+
           if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) )
           {
             if(version>111)
@@ -339,9 +339,9 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
             else
               val_l = STATA_INT_NA_108;
           }
-          
+
           writebin(val_l, dta, swapit);
-          
+
           break;
         }
           // int
@@ -351,16 +351,16 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
             int32_t   l;
             int16_t   i;
           } val;
-          
+
           val.l = as<IntegerVector>(dat[i])[j];
-          
+
           int16_t val_i = val.i;
-          
+
           if (val.l == NA_INTEGER)
             val_i = STATA_SHORTINT_NA;
-          
+
           writebin(val_i, dta, swapit);
-          
+
           break;
         }
           // byte
@@ -370,20 +370,20 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
             int32_t   l;
             int8_t    b;
           } val;
-          
+
           val.l = as<IntegerVector>(dat[i])[j];
-          
+
           int8_t val_b = val.b;
-          
+
           if (val.l == NA_INTEGER) {
             if (version>104)
               val_b = STATA_BYTE_NA;
             else
               val_b = STATA_BYTE_NA_104;
           }
-          
+
           writebin(val_b, dta, swapit);
-          
+
           break;
         }
         default:
@@ -401,33 +401,33 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
           dta.write(val_s.c_str(),len);
           break;
         }
-          
+
         }
       }
     }
-    
-    
+
+
     /* <value_labels> ... </value_labels> */
     if (labeltable.size()>0 & version>105)
     {
-      
+
       CharacterVector labnames = labeltable.attr("names");
       int8_t padding = 0;
-      
+
       for (int32_t i=0; i < labnames.size(); ++i)
       {
         int32_t txtlen = 0;
-        
+
         string labname = as<string>(labnames[i]);
         IntegerVector labvalue = labeltable[labname];
         int32_t N = labvalue.size();
         CharacterVector labelText = labvalue.attr("names");
         IntegerVector off;
-        
+
         /*
         * Fill off with offset position and create txtlen
         */
-        
+
         for (int32_t i = 0; i < labelText.size(); ++i)
         {
           string label = as<string>(labelText[i]);
@@ -435,35 +435,35 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
           txtlen += labellen;
           off.push_back ( txtlen-labellen );
         }
-        
+
         int32_t offI, labvalueI;
-        
+
         int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
-        
+
         writebin(nlen, dta, swapit);
-        
+
         if (version>108)
           labname.resize(32);
         else
           labname.resize(8);
-        
+
         dta.write(labname.c_str(),labname.size()+1);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
-        
+
         for (int32_t i = 0; i < N; ++i)
         {
           offI = off[i];
           writebin(offI, dta, swapit);
         }
-        
+
         for (int32_t i = 0; i < N; ++i)
         {
           labvalueI = labvalue[i];
           writebin(labvalueI, dta, swapit);
         }
-        
+
         for (int32_t i = 0; i < N; ++i)
         {
           string labtext = as<string>(labelText[i]);
@@ -471,9 +471,9 @@ int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
           dta.write(labtext.c_str(),labtext.size()+1);
         }
       }
-      
+
     }
-    
+
     dta.close();
     return 0;
   }

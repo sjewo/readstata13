@@ -38,17 +38,17 @@ List stata(const char * filePath, const bool missing)
   FILE *file = NULL;    // File pointer
 
   /*
-  * Open the file in binary mode using the "rb" format string
-  * This also checks if the file exists and/or can be opened for reading
-  * correctly
-  */
+   * Open the file in binary mode using the "rb" format string
+   * This also checks if the file exists and/or can be opened for reading
+   * correctly
+   */
 
   if ((file = fopen(filePath, "rb")) == NULL)
     throw std::range_error("Could not open specified file.");
 
   /*
-  * check the first byte. continue if "<"
-  */
+   * check the first byte. continue if "<"
+   */
 
   std::string fbit(1, '\0');
   readstring(fbit, file, fbit.size());

@@ -126,6 +126,26 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   data <- stata(filepath,missing.type)
 
+  version <- attr(data, "version")
+
+  sstr     <- 2045
+  sstrl    <- 32768
+  sdouble  <- 65526
+  sfloat   <- 65527
+  slong    <- 65528
+  sint     <- 65529
+  sbyte    <- 65530
+
+  if (version < 117) {
+    sstr    <- 244
+    sstrl   <- 255
+    sdouble <- 255
+    sfloat  <- 254
+    slong   <- 253
+    sint    <- 252
+    sbyte   <- 251
+  }
+
   if (convert.underscore)
     names(data) <- gsub("_", ".", names(data))
 
@@ -134,18 +154,18 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   label <- attr(data, "label.table")
 
   if (missing.type) {
-    stata.na <- data.frame(type = 65526L:65530L,
+    stata.na <- data.frame(type = sdouble:sbyte,
                            min = c(101, 32741, 2147483621, 2 ^ 127, 2 ^ 1023),
                            inc = c(1, 1, 1, 2 ^ 115, 2 ^ 1011)
     )
 
-    if (attr(data, "version") >= 117L) {
+    if (version >= 113L & version < 117L) {
       missings <- vector("list", length(data))
       names(missings) <- names(data)
-      for (v in which(types > 65525L)) {
-        this.type <- 65531L - types[v]
-        nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
-        natype <- (data[[v]][nas] - stata.na$min[this.type]) /
+      for (v in which(types > 250L)) {
+        this.type <- types[v] - 250L
+        nas <- is.na(data[[v]]) | data[[v]] >= stata.na$min[this.type]
+        natype <- (data[[v]][nas] - stata.na$min[this.type])/
           stata.na$inc[this.type]
         natype[is.na(natype)] <- 0L
         missings[[v]] <- rep(NA, NROW(data))
@@ -153,8 +173,24 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         data[[v]][nas] <- NA
       }
       attr(data, "missing") <- missings
-    } else
-      warning("'missing.type' only applicable to version >= 13 files")
+    } else {
+      if (version >= 117L) {
+        missings <- vector("list", length(data))
+        names(missings) <- names(data)
+        for (v in which(types > 65525L)) {
+          this.type <- 65531L - types[v]
+          nas <- is.na(data[[v]]) |  data[[v]] >= stata.na$min[this.type]
+          natype <- (data[[v]][nas] - stata.na$min[this.type]) /
+            stata.na$inc[this.type]
+          natype[is.na(natype)] <- 0L
+          missings[[v]] <- rep(NA, NROW(data))
+          missings[[v]][nas] <- natype
+          data[[v]][nas] <- NA
+        }
+        attr(data, "missing") <- missings
+      } else
+        warning("'missing.type' only applicable to version >= 8 files")
+    }
   }
 
   var.labels <- attr(data, "var.labels")
@@ -162,7 +198,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   ## Encoding
   if (!is.null(encoding)) {
 
-      # set from encoding by dta version
+    # set from encoding by dta version
     if(is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
       if(attr(data, "version") >= 118L)
@@ -191,7 +227,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     }
 
     # recode character variables
-    for (v in (1:ncol(data))[types <= 2045]) {
+    for (v in (1:ncol(data))[types <= sstr]) {
       data[, v] <- iconv(data[, v], from=fromEncoding, sub="byte") #to=encoding?
     }
 
@@ -205,34 +241,38 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       attr(data, "expansion.fields") <- efi
     }
 
-    #strl
-    strl <- attr(data, "strl")
-    if (length(strl) > 0) {
-      for (i in 1:length(strl))  {
-        strl[[i]] <- read.encoding(strl[[i]], fromEncoding, encoding)
+    if (version >= 117L) {
+      #strl
+      strl <- attr(data, "strl")
+      if (length(strl) > 0) {
+        for (i in 1:length(strl))  {
+          strl[[i]] <- read.encoding(strl[[i]], fromEncoding, encoding)
+        }
+        attr(data, "strl") <- strl
       }
-      attr(data, "strl") <- strl
     }
   }
 
-  if (replace.strl) {
-    strl <- do.call(rbind, attr(data,"strl"))
-    for (j in seq(ncol(data))[types == 32768] ) {
-      refs <- unique(data[, j])
-      for (ref in refs) {
-        if (length(strl[strl[,1] == ref,2]) != 0){
-          data[data[, j] == ref, j] <- strl[strl[, 1] == ref, 2]
+  if (version >= 117L) {
+    if (replace.strl) {
+      strl <- do.call(rbind, attr(data,"strl"))
+      for (j in seq(ncol(data))[types == 32768] ) {
+        refs <- unique(data[, j])
+        for (ref in refs) {
+          if (length(strl[strl[,1] == ref,2]) != 0){
+            data[data[, j] == ref, j] <- strl[strl[, 1] == ref, 2]
+          }
         }
       }
-    }
 
-    # recode strL 0 to void
-    for (v in (1:ncol(data))[types == 32768]) {
-      data[[v]] <- gsub("00000000000000000000","", data[[v]] )
-    }
+      # recode strL 0 to void
+      for (v in (1:ncol(data))[types == sstrl]) {
+        data[[v]] <- gsub("00000000000000000000","", data[[v]] )
+      }
 
-    # if strls are in data.frame remove attribute strl
-    attr(data, "strl") <- NULL
+      # if strls are in data.frame remove attribute strl
+      attr(data, "strl") <- NULL
+    }
   }
 
 
@@ -257,7 +297,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     ##  still have them. Format *%d*... is equivalent to modern
     ##  format *%td*... and *%-d*... is equivalent to *%-td*...'
 
-    dates <- if (attr(data, "version") == 117L) grep("^%(-|)(d|td)", ff)
+    dates <- if (attr(data, "version") >= 113L) grep("^%(-|)(d|td)", ff)
     else grep("%-*d", ff)
     ## avoid as.Date in case strptime is messed up
     base <- structure(-3653L, class = "Date") # Stata dates are integer vars
@@ -274,7 +314,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       vartype <- types[i]
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
-      if (labname %in% names(label) & vartype >= 65527) {
+      if (labname %in% names(label) & !(vartype == sdouble | vartype == sfloat))
+      {
         # get unique values / omit NA
         varunique <- na.omit(unique(data[, i]))
         # assign label if label set is complete

@@ -87,11 +87,6 @@ List read_pre13_dta(FILE * file, const bool missing)
     lbllen = 9;
     break;
   case 107:
-    nvarnameslen = 9;
-    nformatslen = 12;
-    nvalLabelslen = 9;
-    lbllen = 9;
-    break;
   case 108:
     nvarnameslen = 9;
     nformatslen = 12;
@@ -99,14 +94,8 @@ List read_pre13_dta(FILE * file, const bool missing)
     lbllen = 9;
     break;
   case 110:
-    nformatslen = 12;
-    break;
   case 111:
-    nformatslen = 12;
-    break;
   case 112:
-    nformatslen = 12;
-    break;
   case 113:
     nformatslen = 12;
     break;

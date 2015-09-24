@@ -33,7 +33,7 @@ using namespace std;
 // @import Rcpp
 // @export
 // [[Rcpp::export]]
-List stata(const char * filePath, const bool missing)
+List stata_read(const char * filePath, const bool missing)
 {
   FILE *file = NULL;    // File pointer
 

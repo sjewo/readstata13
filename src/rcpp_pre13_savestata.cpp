@@ -32,7 +32,7 @@ using namespace std;
 //' @param dat an R-Object of class data.frame.
 //' @export
 // [[Rcpp::export]]
-int stataWriteOld(const char * filePath, Rcpp::DataFrame dat)
+int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 {
 
   // This bool was inteded to do a swap if you want to create a MSF-File on a

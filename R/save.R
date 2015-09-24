@@ -324,7 +324,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     attr(data, "version") <- version
 
   if (version >= 117)
-    invisible( stataWrite(filePath = filepath, dat = data) )
+    invisible( stata_save(filePath = filepath, dat = data) )
   else
-    invisible( stataWriteOld(filePath = filepath, dat = data) )
+    invisible( stata_pre13_save(filePath = filepath, dat = data) )
 }

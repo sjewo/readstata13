@@ -124,7 +124,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   if (!file.exists(filepath))
     return(message("File not found."))
 
-  data <- stata(filepath,missing.type)
+  data <- stata_read(filepath,missing.type)
 
   version <- attr(data, "version")
 

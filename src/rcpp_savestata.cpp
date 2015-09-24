@@ -31,7 +31,7 @@ using namespace std;
 // @param dat an R-Object of class data.frame.
 // @export
 // [[Rcpp::export]]
-int stataWrite(const char * filePath, Rcpp::DataFrame dat)
+int stata_save(const char * filePath, Rcpp::DataFrame dat)
 {
   uint16_t k = dat.size();
   uint64_t n = dat.nrows();

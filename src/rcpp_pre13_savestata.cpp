@@ -389,10 +389,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           if(val_s.size()>244)
           {
             Rcpp::warning("Character Var.to long. Resizing. Max size is 244.");
-            val_s.resize(244);
-            len = 244;
+            // val_s.resize(244);
           }
-          dta.write(val_s.c_str(),len);
+          dta.write(val_s.c_str(), len);
           break;
         }
 
@@ -426,6 +425,8 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         {
           string label = as<string>(labelText[i]);
           int32_t labellen = label.size()+1;
+          if (labellen > maxlabelsize+1)
+            labellen = maxlabelsize+1;
           txtlen += labellen;
           off.push_back ( txtlen-labellen );
         }
@@ -459,8 +460,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           string labtext = as<string>(labelText[i]);
           if (labtext.size() > maxlabelsize)
           {
-            Rcpp::warning("Label to long. Resizing. Max size is 32,000.");
-            labtext.resize(maxlabelsize -1);
+            Rcpp::warning("Label to long. Resizing. Max size is %d",
+                          maxlabelsize);
+            labtext.resize(maxlabelsize);
+            // labtext[labtext.size()] = '\0';
           }
 
           dta.write(labtext.c_str(), labtext.size()+1);

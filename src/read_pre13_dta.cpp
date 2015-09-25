@@ -71,7 +71,7 @@ List read_pre13_dta(FILE * file, const bool missing)
     nformatslen = 12;
     nvalLabelslen = 9;
     nvarLabelslen = 32;
-    lbllen = 8;
+    lbllen = 9;
     break;
   case 107:
   case 108:
@@ -506,7 +506,6 @@ List read_pre13_dta(FILE * file, const bool missing)
 
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
     std::string tag(5, '\0');
-    std::string lbltag = "<lbl>";
 
     bool haslabel = false;
 
@@ -588,13 +587,11 @@ List read_pre13_dta(FILE * file, const bool missing)
       // add this set to output list
       labelList.push_front( code, labset);
 
-      if (release < 117) {
-        // length of value_label_table
-        nlen = readbin(nlen, file, swapit);
+      // length of value_label_table
+      nlen = readbin(nlen, file, swapit);
 
-        if (feof(file) || ferror(file))
-          break;
-      }
+      if (feof(file) || ferror(file))
+        break;
     }
   }
 

@@ -96,7 +96,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   if (version < 117) {
     sstr    <- 244
-    sstrl   <- 255
+    sstrl   <- 244
     sdouble <- 255
     sfloat  <- 254
     slong   <- 253
@@ -264,12 +264,15 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
 
-  for (v in names(vartypen[vartypen == "character"])) vartypen[[v]] <-
-    str.length[[v]]
+  for (v in names(vartypen[vartypen == "character"]))
+  {
+    str.length[str.length > sstr] <- sstrl
+
+    vartypen[[v]] <- str.length[[v]]
+  }
   vartypen <- abs(as.integer(vartypen))
   # str longer than 2045 chars are in Stata 13+ type strL.
-  if (version >= 117)
-    vartypen[vartypen > sstr & vartypen < sdouble] <- sstrl
+
 
   attr(data, "types") <- vartypen
 

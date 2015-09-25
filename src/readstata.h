@@ -18,14 +18,14 @@
 #ifndef READSTATA_H
 #define READSTATA_H
 
-
 #include <Rcpp.h>
+#include <fstream>
+#include <string>
+#include <stdint.h>
+
 #include "read_dta.h"
 #include "read_pre13_dta.h"
 
-#include "string"
-#include <stdint.h>
-#include <fstream>
 #include "statadefines.h"
 #include "swap_endian.h"
 

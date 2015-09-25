@@ -39,51 +39,39 @@ List read_pre13_dta(FILE * file, const bool missing)
   * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
   */
 
+  uint16_t ndlabel = 81;
   uint8_t nvarnameslen = 33;
   int8_t nformatslen = 49;
   uint8_t nvalLabelslen = 33;
   uint16_t nvarLabelslen = 81;
   int32_t chlen = 33;
   uint8_t lbllen = 33;
-  uint16_t ndlabel = 81;
 
   switch(release)
   {
   case 102:
-    ndlabel = 29;
+    ndlabel = 30;
     nvarnameslen = 9;
     nformatslen = 7;
     nvalLabelslen = 9;
     nvarLabelslen = 32;
     break;
   case 103:
-    ndlabel = 31;
-    nvarnameslen = 9;
-    nformatslen = 7;
-    nvalLabelslen = 9;
-    nvarLabelslen = 32;
-    break;
   case 104:
-    ndlabel = 31;
+    ndlabel = 32;
     nvarnameslen = 9;
     nformatslen = 7;
     nvalLabelslen = 9;
     nvarLabelslen = 32;
     break;
   case 105:
-    ndlabel = 32;
-    nvarnameslen = 9;
-    nformatslen = 12;
-    nvalLabelslen = 9;
-    nvarLabelslen = 32;
-    break;
   case 106:
     ndlabel = 32;
     nvarnameslen = 9;
     nformatslen = 12;
     nvalLabelslen = 9;
     nvarLabelslen = 32;
-    lbllen = 9;
+    lbllen = 8;
     break;
   case 107:
   case 108:
@@ -97,9 +85,6 @@ List read_pre13_dta(FILE * file, const bool missing)
   case 112:
   case 113:
     nformatslen = 12;
-    break;
-  case 114:
-  case 115:
     break;
   }
 
@@ -133,8 +118,8 @@ List read_pre13_dta(FILE * file, const bool missing)
   * Number of Observations
   */
 
-  uint64_t n = 0;
-  n = readbin((uint32_t)n, file, swapit);
+  uint32_t n = 0;
+  n = readbin(n, file, swapit);
 
   /*
   * A dataset may have a label e.g. "Written by R".
@@ -158,9 +143,6 @@ List read_pre13_dta(FILE * file, const bool missing)
   CharacterVector timestampCV(1);
   std::string timestamp(18, '\0');
 
-  // FixMe: trailing zero?
-  uint8_t zero = 0;
-
   switch (release)
   {
 
@@ -168,8 +150,7 @@ List read_pre13_dta(FILE * file, const bool missing)
   case 103:
   case 104:
   {
-    timestamp[0] = '\0';
-    zero = readbin(zero, file, swapit);
+    timestamp = "";
     break;
   }
 
@@ -506,7 +487,6 @@ List read_pre13_dta(FILE * file, const bool missing)
   df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
-
 
   /*
   * labels are seperated by <lbl>-tags. Labels may appear in any order e.g.

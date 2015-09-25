@@ -61,9 +61,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
   if (dta.is_open())
   {
 
+    int32_t ndlabel = 81;
     int32_t nformatslen = 49;
     int32_t nvarnameslen = 33;
-    int32_t maxdatalabelsize = 81;
     int32_t nvalLabelslen = 33;
     int32_t nvarLabelslen = 81;
     int32_t chlen = 33;
@@ -72,32 +72,32 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
     switch(version)
     {
     case 102:
-      maxdatalabelsize = 30;
-      nformatslen = 7;
+      ndlabel = 30;
       nvarnameslen = 9;
+      nformatslen = 7;
       nvalLabelslen = 9;
-      nvarLabelslen = 33;
+      nvarLabelslen = 32;
       break;
     case 103:
     case 104:
-      maxdatalabelsize = 32;
-      nformatslen = 7;
+      ndlabel = 32;
       nvarnameslen = 9;
+      nformatslen = 7;
       nvalLabelslen = 9;
-      nvarLabelslen = 33;
+      nvarLabelslen = 32;
       break;
     case 105:
     case 106:// unknown version (SE?)
-      maxdatalabelsize = 32;
-      nformatslen = 12;
+      ndlabel = 32;
       nvarnameslen = 9;
+      nformatslen = 12;
       nvalLabelslen = 9;
-      nvarLabelslen = 33;
+      nvarLabelslen = 32;
       break;
     case 107: // unknown version (SE?)
     case 108:
-      nformatslen = 12;
       nvarnameslen = 9;
+      nformatslen = 12;
       nvalLabelslen = 9;
     case 110:
     case 111:
@@ -107,21 +107,21 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       break;
     }
 
-    writebin(version, dta, swapit);
+    writebin(version, dta, swapit);   // format
     writebin(byteorder, dta, swapit); // LSF
-    int8_t ft = 1;
+    int8_t ft = 1;                    // filetype
     writebin(ft, dta, swapit);
-    int8_t unused = 0;
+    int8_t unused = 0;                // unused
     writebin(unused, dta, swapit);
-    writebin(k, dta, swapit);
-    writebin(n, dta, swapit);
+    writebin(k, dta, swapit);         // nvars
+    writebin(n, dta, swapit);         // nobs
 
     /* write a datalabel */
-    if (datalabel.size() >= maxdatalabelsize)
+    if (datalabel.size() > ndlabel)
       Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
-                    maxdatalabelsize - 1);
+                    ndlabel - 1);
 
-    dta.write(datalabel.c_str(), maxdatalabelsize);
+    dta.write(datalabel.c_str(), ndlabel);
 
     /* timestamp size is 17 */
     if (version > 104)

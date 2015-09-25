@@ -103,6 +103,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     sint    <- 252
     sbyte   <- 251
   }
+  if (version<111 | version==112)
+    sstrl   <- 80
 
 
   if(!is.data.frame(data)) {

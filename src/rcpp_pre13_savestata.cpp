@@ -68,6 +68,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
     int32_t nvarLabelslen = 81;
     int32_t chlen = 33;
     int32_t maxlabelsize = 32000;
+    int32_t maxstrsize = 244;
+    if (version<111 || version==112)
+      maxstrsize = 80;
 
     switch(version)
     {
@@ -386,9 +389,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           CharacterVector b = as<CharacterVector>(dat[i]);
           string val_s = as<string>(b[j]);
           // Stata 6-12 can only store 244 byte strings
-          if(val_s.size()>244)
+          if(val_s.size()>maxstrsize)
           {
-            Rcpp::warning("Character Var.to long. Resizing. Max size is 244.");
+            Rcpp::warning("Character Var.to long. Resizing. Max size is %d.",
+                          maxstrsize);
             // val_s.resize(244);
           }
           dta.write(val_s.c_str(), len);

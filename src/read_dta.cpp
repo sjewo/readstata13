@@ -28,7 +28,7 @@ List read_dta(FILE * file, const bool missing) {
   * version is a 4 byte character e.g. "117"
   */
 
-  int8_t fversion = 117L; //f = first
+  int8_t fversion = 116L; //f = first
   int8_t lversion = 118L; //l = last
 
   std::string version(3, '\0');
@@ -54,6 +54,7 @@ List read_dta(FILE * file, const bool missing) {
 
   switch(release)
   {
+  case 116:
   case 117:
     nvarnameslen = 33;
     nformatslen = 49;
@@ -104,7 +105,7 @@ List read_dta(FILE * file, const bool missing) {
 
   int64_t n = 0;
 
-  if(release==117) {
+  if(release==116 || release==117) {
     n = readbin((int32_t)n, file, swapit);
   }
   if (release ==118) {
@@ -125,7 +126,7 @@ List read_dta(FILE * file, const bool missing) {
 
   if (release==118)
     ndlabel = readbin(ndlabel, file, swapit);
-  if (release==117)
+  if (release==116 || release==117)
     ndlabel = readbin((int8_t)ndlabel, file, swapit);
 
   std::string datalabel(ndlabel, '\0');
@@ -164,36 +165,38 @@ List read_dta(FILE * file, const bool missing) {
 
   CharacterVector timestampCV = timestamp;
   fseek(file, 21, SEEK_CUR); //</timestamp></header>
-  test("<map>", file);
+  if (release > 116){
+    test("<map>", file);
 
-  /*
-  * Stata stores the byteposition of certain areas of the file here. Currently
-  * this is of no use to us.
-  * 1.  <stata_data>
-  * 2.  <map>
-  * 3.  <variable_types>
-  * 4.  <varnames>
-  * 5.  <sortlist>
-  * 6.  <formats>
-  * 7.  <value_label_names>
-  * 8.  <variable_labels>
-  * 9.  <characteristics>
-  * 10. <data>
-  * 11. <strls>
-  * 12. <value_labels>
-  * 13. </stata_data>
-  * 14. end-of-file
-  */
+    /*
+    * Stata stores the byteposition of certain areas of the file here. Currently
+    * this is of no use to us.
+    * 1.  <stata_data>
+    * 2.  <map>
+    * 3.  <variable_types>
+    * 4.  <varnames>
+    * 5.  <sortlist>
+    * 6.  <formats>
+    * 7.  <value_label_names>
+    * 8.  <variable_labels>
+    * 9.  <characteristics>
+    * 10. <data>
+    * 11. <strls>
+    * 12. <value_labels>
+    * 13. </stata_data>
+    * 14. end-of-file
+    */
 
-  NumericVector map(14);
-  for (int i=0; i <14; ++i)
-  {
-    uint64_t nmap = 0;
-    nmap = readbin(nmap, file, swapit);
-    map[i] = nmap;
+    NumericVector map(14);
+    for (int i=0; i <14; ++i)
+    {
+      uint64_t nmap = 0;
+      nmap = readbin(nmap, file, swapit);
+      map[i] = nmap;
+    }
+
+    fseek(file, 6, SEEK_CUR); //</map>
   }
-
-  fseek(file, 6, SEEK_CUR); //</map>
   test("<variable_types>", file);
 
   /*
@@ -499,58 +502,62 @@ List read_dta(FILE * file, const bool missing) {
   df.attr("class") = "data.frame";
 
   fseek(file, 7, SEEK_CUR); //</data>
-  test("<strls>", file);
 
-  /*
-  * strL. Stata 13 introduced long strings up to 2 billon characters. strLs are
-  * sperated by "GSO".
-  * (v,o): Position in the data.frame.
-  * t:     129/130 defines whether or not the strL is stored with a binary 0.
-  * len:   length of the strL.
-  * strl:  long string.
-  */
 
-  std::string gso = "GSO";
-
-  std::string tags(3, '\0');
-  readstring(tags, file, tags.size());
-
+  /* strls */
   List strlstable = List(); //put strLs into this list
 
-  while(gso.compare(tags)==0)
-  {
-    CharacterVector strls(2);
+  if (release > 116){  std::string gso = "GSO";
 
-    // 2x4 bit (strl[vo1,vo2])
-    int32_t v = 0, o = 0;
-    v = readbin(v, file, swapit);
-    o = readbin(o, file, swapit);
-    char erg[22];
-    sprintf(erg, "%010d%010d", v, o);
+    test("<strls>", file);
 
-    strls(0) = erg;
-
-    // (129 = binary) | (130 = ascii)
-    uint8_t t = 0;
-    t = readbin(t, file, swapit);
-
-    uint32_t len = 0;
-    len = readbin(len, file, swapit);
-
-    // 129 len = len; 130 len = len +'\0';
-
-    std::string strl(len, '\0');
-    readstring(strl, file, strl.size());
-
-    strls(1) = strl;
-
-    strlstable.push_back( strls );
-
+    std::string tags(3, '\0');
     readstring(tags, file, tags.size());
-  }
 
-  // after strls
-  fseek(file, 5, SEEK_CUR); //[</s]trls>
+    /*
+    * strL. Stata 13 introduced long strings up to 2 billon characters. strLs
+    * are sperated by "GSO".
+    * (v,o): Position in the data.frame.
+    * t:     129/130 defines whether or not the strL is stored with a binary 0.
+    * len:   length of the strL.
+    * strl:  long string.
+    */
+
+    while(gso.compare(tags)==0)
+    {
+      CharacterVector strls(2);
+
+      // 2x4 bit (strl[vo1,vo2])
+      int32_t v = 0, o = 0;
+      v = readbin(v, file, swapit);
+      o = readbin(o, file, swapit);
+      char erg[22];
+      sprintf(erg, "%010d%010d", v, o);
+
+      strls(0) = erg;
+
+      // (129 = binary) | (130 = ascii)
+      uint8_t t = 0;
+      t = readbin(t, file, swapit);
+
+      uint32_t len = 0;
+      len = readbin(len, file, swapit);
+
+      // 129 len = len; 130 len = len +'\0';
+
+      std::string strl(len, '\0');
+      readstring(strl, file, strl.size());
+
+      strls(1) = strl;
+
+      strlstable.push_back( strls );
+
+      readstring(tags, file, tags.size());
+    }
+
+    // after strls
+    fseek(file, 5, SEEK_CUR); //[</s]trls>
+  }
   test("<value_labels>", file);
 
   /*
@@ -653,11 +660,17 @@ List read_dta(FILE * file, const bool missing) {
   }
 
   /*
-   * Final test if we reached the end of the file
-   * close the file
-   */
+  * Final test if we reached the end of the file
+  * close the file
+  */
 
   fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
+
+  if (release==116) {
+    test("<blobs>", file);
+    test("</blobs>", file);
+  }
+
   test("</stata_dta>", file);
 
 
@@ -675,7 +688,8 @@ List read_dta(FILE * file, const bool missing) {
   df.attr("version") = versionIV;
   df.attr("label.table") = labelList;
   df.attr("expansion.fields") = ch;
-  df.attr("strl") = strlstable;
+  if (release > 116)
+    df.attr("strl") = strlstable;
   df.attr("byteorder") = wrap(byteorder);
 
   return df;

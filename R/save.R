@@ -324,13 +324,17 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     attr(data, "version") <- version
 
 
-  # var.labels
-  varlabels <- attr(data, "var.labels")
-  if (!is.null(varlabels) & (length(varlabels)!=ncol(dd))) {
-    attr(data, "var.labels") <- NULL
-    warning("Number of variable labels does not match number of variables.
-            Variable labels dropped.")
+  # get var.labels from attributes of variables a data.frame. If no var.label
+  # is found write "".
+
+  varlabels <- NULL
+  for (i in 1:ncol(data)) {
+    varlabelsi <- attr(data[[i]], "var.label")
+    if(is.null(varlabelsi))
+      varlabelsi <- ""
+    varlabels <- c(varlabels, varlabelsi)
   }
+  attr(data, "var.labels") <- varlabels
 
 
   if (version >= 117)

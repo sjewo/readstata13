@@ -211,6 +211,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # var.labels
     attr(data, "var.labels") <- read.encoding(var.labels, fromEncoding,
                                               encoding)
+
     # val.labels
     names(val.labels) <- read.encoding(val.labels, fromEncoding, encoding)
     attr(data, "val.labels") <- val.labels
@@ -251,6 +252,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         attr(data, "strl") <- strl
       }
     }
+  }
+
+  var.labels <- attr(data, "var.labels")
+  for (i in 1:ncol(data)) {
+    attr(data[[i]], "var.label") <- var.labels[i]
   }
 
   if (replace.strl) {

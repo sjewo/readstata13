@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "readstata.h"
+#include <readstata.h>
 
 using namespace Rcpp;
 using namespace std;

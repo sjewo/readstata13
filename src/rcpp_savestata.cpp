@@ -15,7 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "readstata.h"
+#include <readstata.h>
 
 using namespace Rcpp;
 using namespace std;
@@ -50,10 +50,10 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
   uint8_t const release = atoi(version.c_str());
 
-  uint8_t nvarnameslen = 0, nformatslen = 0, nvalLabelslen = 0, lbllen = 0,
-    ntimestamp = 0;
-  uint16_t nvarLabelslen = 0, ndlabel = 0, maxdatalabelsize = 0;
-  int32_t chlen = 0, maxlabelsize = 32000;
+  uint8_t nformatslen = 0, ntimestamp = 0;
+  uint16_t nvarnameslen = 0, nvarLabelslen = 0, nvalLabelslen = 0, ndlabel = 0,
+    lbllen = 0;
+  uint32_t chlen = 0, maxdatalabelsize = 0, maxlabelsize = 32000;
 
   switch (release)
   {

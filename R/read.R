@@ -260,7 +260,6 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
 
   if (replace.strl) {
-    message("replace.strl is only available for dta-format >= 117.")
     if (version >= 117L) {
       strl <- do.call(rbind, attr(data,"strl"))
       for (j in seq(ncol(data))[types == 32768] ) {
@@ -279,6 +278,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
       # if strls are in data.frame remove attribute strl
       attr(data, "strl") <- NULL
+    } else {
+      message("replace.strl is only available for dta-format >= 117.")
     }
   }
 

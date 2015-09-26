@@ -457,23 +457,21 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
             uint32_t hi = 0, lo = 0;
 
-            // watch the byteorder!
+            // z is 'oooo oooo'
             z = o;
-
-            // z is 'vvoo oooo'
-            // 1. move z to make space for v
-            // 2. combine z and v
-            z <<= 16;
+            if (SBYTEORDER == 2) {
+              // if LSF move z to make space for v
+              z <<= 16;
+            }
             z |=v;
+            // z is 'vvoo oooo'
 
+            // store z as two int32_t
             lo = (uint32_t)z;
             hi = (z >> 32);
 
-            v = (uint16_t)z;
-            o = (z >> 16);
-
-            writebin(lo, dta, swapit);
-            writebin(hi, dta, swapit);
+            writebin(lo, dta, 0);
+            writebin(hi, dta, 0);
 
             // push back every v, o and val_strl
             V.push_back(v);

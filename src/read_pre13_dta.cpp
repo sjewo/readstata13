@@ -251,7 +251,7 @@ List read_pre13_dta(FILE * file, const bool missing)
   * Vector size is k+1.
   */
 
-  uint32_t big_k = k+1;
+  uint64_t big_k = k+1;
 
   IntegerVector sortlist(big_k);
   for (uint32_t i=0; i<big_k; ++i)
@@ -453,18 +453,6 @@ List read_pre13_dta(FILE * file, const bool missing)
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_b;
-        break;
-      }
-        // string of any length
-      case STATA_STRL:
-      {// strL 2 4bit
-        int32_t v = 0, o = 0;
-        v = readbin(v, file, swapit);
-        o = readbin(o, file, swapit);
-
-        char val_strl[22];
-        sprintf(val_strl, "%010d%010d", v, o);
-        as<CharacterVector>(df[i])[j] = val_strl;
         break;
       }
         // strings with 2045 or fewer characters

@@ -18,7 +18,6 @@
 #include <readstata.h>
 
 using namespace Rcpp;
-using namespace std;
 
 // Reads the binary Stata file
 //
@@ -41,7 +40,7 @@ List stata_read(const char * filePath, const bool missing)
     throw std::range_error("Could not open specified file.");
 
   /*
-   * check the first byte. continue if "<"
+   * check the first byte.
    */
 
   std::string fbit(1, '\0');

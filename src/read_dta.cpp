@@ -42,7 +42,8 @@ List read_dta(FILE * file, const bool missing) {
   // check the release version.
   if (release<fversion || release>lversion)
   {
-    Rcpp::stop("File version is %d.\nVersion: Not a version 13/14 dta-file", release);
+    Rcpp::warning("File version is %d.\nVersion: Not a version 13/14 dta-file", release);
+    return -1;
   }
 
   uint8_t nvarnameslen = 0;
@@ -468,25 +469,41 @@ List read_dta(FILE * file, const bool missing) {
       }
         // string of any length
       case 32768:
-      {// strL 2 4bit
+      {// strL 2*4bit or 2 + 6 bit
+        char val_strl[22];
 
         // FixMe: Strl in 118
-        // if (release==117)
-        int32_t v = 0, o = 0;
-        //         if (release==118) {
-        //           int32_t v=0;
-        //           int64_t o=0;
-        //         }
-        v = readbin(v, file, swapit);
-        o = readbin(o, file, swapit);
+        switch (release)
+        {
 
-        // if(release==117)
-        char val_strl[22];
-        //         if(release==118)
-        //           char val_strl[22];
-        sprintf(val_strl, "%010d%010d", v, o);
-        as<CharacterVector>(df[i])[j] = val_strl;
-        break;
+        case 117:
+          {
+            uint32_t v = 0, o = 0;
+
+            v = readbin(v, file, swapit);
+            o = readbin(o, file, swapit);
+
+            sprintf(val_strl, "%010d%010d", v, o);
+            as<CharacterVector>(df[i])[j] = val_strl;
+            break;
+          }
+        case 118:
+          {
+            uint16_t v = 0;
+            uint64_t o = 0;
+            uint64_t z = 0;
+
+            z = readbin(z, file, swapit);
+
+            v = (uint16_t)z;
+            o = (z >> 16);
+
+            sprintf(val_strl, "%010d%010ld", v, o);
+
+            as<CharacterVector>(df[i])[j] = val_strl;
+            break;
+          }
+        }
       }
       }
     }
@@ -520,14 +537,35 @@ List read_dta(FILE * file, const bool missing) {
   while(gso.compare(tags)==0)
   {
     CharacterVector strls(2);
-
-    // 2x4 bit (strl[vo1,vo2])
-    int32_t v = 0, o = 0;
-    v = readbin(v, file, swapit);
-    o = readbin(o, file, swapit);
     char erg[22];
-    sprintf(erg, "%010d%010d", v, o);
 
+    // FixMe: Strl in 118
+    switch (release)
+    {
+    case 117:
+    {
+      uint32_t v = 0, o = 0;
+
+      v = readbin(v, file, swapit);
+      o = readbin(o, file, swapit);
+
+      sprintf(erg, "%010d%010d", v, o);
+      break;
+    }
+    case 118:
+    {
+      uint32_t v = 0;
+      uint64_t o = 0;
+      // uint64_t z = 0;
+      v = readbin(v, file, swapit);
+      o = readbin(o, file, swapit);
+      // z = readbin(z, file, swapit);
+
+      sprintf(erg, "%010d%010ld", v, o);
+      // sprintf(erg, "%010ld", z);
+      break;
+    }
+    }
     strls(0) = erg;
 
     // (129 = binary) | (130 = ascii)

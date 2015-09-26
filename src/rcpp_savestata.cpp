@@ -430,18 +430,57 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         case 32768:
         {
           /* Stata uses +1 */
-          int32_t v = i+1, o = j+1;
           int64_t z = 0;
 
           CharacterVector b = as<CharacterVector>(dat[i]);
           const string val_strl = as<string>(b[j]);
           if (!val_strl.empty())
           {
+            switch (release)
+            {
+            case 117:
+          {
+            uint32_t v = i+1, o = j+1;
+
             writebin(v, dta, swapit);
             writebin(o, dta, swapit);
+
             // push back every v, o and val_strl
             V.push_back(v);
             O.push_back(o);
+            break;
+          }
+            case 118:
+          {
+            uint16_t v = i+1;
+            uint64_t o = j+1;
+
+            uint32_t hi = 0, lo = 0;
+
+            // watch the byteorder!
+            z = o;
+
+            // z is 'vvoo oooo'
+            // 1. move z to make space for v
+            // 2. combine z and v
+            z <<= 16;
+            z |=v;
+
+            lo = (uint32_t)z;
+            hi = (z >> 32);
+
+            v = (uint16_t)z;
+            o = (z >> 16);
+
+            writebin(lo, dta, swapit);
+            writebin(hi, dta, swapit);
+
+            // push back every v, o and val_strl
+            V.push_back(v);
+            O.push_back(o);
+            break;
+          }
+            }
             STRL.push_back(val_strl);
           } else {
             dta.write((char*)&z,sizeof(z));
@@ -462,14 +501,18 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     for(int i =0; i < strlsize; ++i )
     {
       const string gso = "GSO";
-      int32_t v = V[i], o = O[i];
+      int32_t v = V[i];
+      int64_t o = O[i];
       uint8_t t = 129; //Stata binary type, no trailing zero.
       const string strL = as<string>(STRL[i]);
       uint32_t len = strL.size();
 
       dta.write(gso.c_str(),gso.size());
       writebin(v, dta, swapit);
-      writebin(o, dta, swapit);
+      if (release==117)
+        writebin((uint32_t)o, dta, swapit);
+      if (release==118)
+        writebin(o, dta, swapit);
       writebin(t, dta, swapit);
       writebin(len, dta, swapit);
       dta.write(strL.c_str(),strL.size());

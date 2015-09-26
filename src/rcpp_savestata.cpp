@@ -504,9 +504,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         for (int32_t i = 0; i < labelText.size(); ++i)
         {
           string label = as<string>(labelText[i]);
-          int32_t labellen = label.size()+1;
+          uint32_t labellen = label.size()+1;
           if (labellen > maxlabelsize+1)
-             labellen = maxlabelsize+1;
+            labellen = maxlabelsize+1;
 
           txtlen += labellen;
           off.push_back ( txtlen-labellen );
@@ -543,7 +543,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           if (labtext.size() > maxlabelsize)
           {
             Rcpp::warning("Label to long. Resizing. Max size is %d",
-                            maxlabelsize);
+                          maxlabelsize);
             labtext.resize(maxlabelsize);
             // labtext[labtext.size()] = '\0';
           }

@@ -61,14 +61,14 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
   if (dta.is_open())
   {
 
-    int32_t ndlabel = 81;
-    int32_t nformatslen = 49;
-    int32_t nvarnameslen = 33;
-    int32_t nvalLabelslen = 33;
-    int32_t nvarLabelslen = 81;
-    int32_t chlen = 33;
-    int32_t maxlabelsize = 32000;
-    int32_t maxstrsize = 244;
+    uint32_t ndlabel = 81;
+    uint32_t nformatslen = 49;
+    uint32_t nvarnameslen = 33;
+    uint32_t nvalLabelslen = 33;
+    uint32_t nvarLabelslen = 81;
+    uint32_t chlen = 33;
+    uint32_t maxlabelsize = 32000;
+    uint32_t maxstrsize = 244;
     if (version<111 || version==112)
       maxstrsize = 80;
 
@@ -405,7 +405,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
 
     /* <value_labels> ... </value_labels> */
-    if (labeltable.size()>0 & version>105)
+    if ((labeltable.size()>0) & (version>105))
     {
 
       CharacterVector labnames = labeltable.attr("names");
@@ -428,7 +428,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         for (int32_t i = 0; i < labelText.size(); ++i)
         {
           string label = as<string>(labelText[i]);
-          int32_t labellen = label.size()+1;
+          uint32_t labellen = label.size()+1;
           if (labellen > maxlabelsize+1)
             labellen = maxlabelsize+1;
           txtlen += labellen;

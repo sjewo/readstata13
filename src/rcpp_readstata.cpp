@@ -15,13 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "string"
-#include <stdint.h>
-#include <fstream>
-#include "statadefines.h"
-#include "swap_endian.h"
 #include "readstata.h"
-#include "read_dta.h"
 
 using namespace Rcpp;
 using namespace std;

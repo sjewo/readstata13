@@ -30,8 +30,6 @@ List read_pre13_dta(FILE * file, const bool missing)
   if (release<102 || release == 109 || release>115)
     Rcpp::stop("First byte: Not a dta-file we can read.");
 
-  std::string version(3, '\0');
-
   IntegerVector versionIV(1);
   versionIV(0) = release;
 
@@ -312,9 +310,9 @@ List read_pre13_dta(FILE * file, const bool missing)
     uint32_t len = 0;
 
     datatype = readbin(datatype, file, swapit);
-    if (release >= 105 && release <= 108)
+    if (release <= 108)
       len = readbin((uint16_t)len, file, swapit);
-    if (release >= 110 && release <= 115)
+    else
       len = readbin(len, file, swapit);
 
 
@@ -339,9 +337,9 @@ List read_pre13_dta(FILE * file, const bool missing)
 
       datatype = readbin(datatype, file, swapit);
 
-      if (release >= 105 && release <= 108)
+      if (release <= 108)
         len = readbin((uint16_t)len, file, swapit);
-      if (release >= 110 && release <= 115)
+      else
         len = readbin(len, file, swapit);
     }
   }
@@ -455,7 +453,7 @@ List read_pre13_dta(FILE * file, const bool missing)
           INTEGER(VECTOR_ELT(df,i))[j] = val_b;
         break;
       }
-        // strings with 2045 or fewer characters
+        // strings with 244 or fewer characters
       default:
       {
         int32_t len = 0;

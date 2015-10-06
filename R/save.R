@@ -335,17 +335,18 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     attr(data, "version") <- version
 
 
-  # get var.labels from attributes of variables a data.frame. If no var.label
-  # is found write "".
 
-  varlabels <- NULL
-  for (i in 1:ncol(data)) {
-    varlabelsi <- attr(data[[i]], "var.label")
-    if(is.null(varlabelsi))
-      varlabelsi <- ""
-    varlabels <- c(varlabels, varlabelsi)
+  # If length of varlabels differs from ncols drop varlabels. This can happen,
+  # when the initial data.frame was read by read.dta13 and another variable was
+  # attached. In this case the last variable label has a non existing variable
+  # label which will crash our Rcpp code. Since varlabels do not respect the
+  # ordering inside the data frame, we simply drop them.
+  varlabels <- attr(data, "var.labels")
+  if (!is.null(varlabels) & (length(varlabels)!=ncol(data))) {
+    attr(data, "var.labels") <- NULL
+    warning("Number of variable labels does not match number of variables.
+            Variable labels dropped.")
   }
-  attr(data, "var.labels") <- varlabels
 
 
   if (version >= 117)

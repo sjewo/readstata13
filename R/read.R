@@ -255,9 +255,6 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
 
   var.labels <- attr(data, "var.labels")
-  for (i in 1:ncol(data)) {
-    attr(data[[i]], "var.label") <- var.labels[i]
-  }
 
   if (replace.strl) {
     if (version >= 117L) {

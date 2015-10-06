@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.7.1")
+devtools::install_github("sjewo/readstata13", ref="0.8")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.7.1")
+install_github("readstata13", username="sjewo", ref="0.8")
 ```
 
 To install the current development version from github:

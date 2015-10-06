@@ -5,27 +5,39 @@
 
 using namespace Rcpp;
 
-// stata
-List stata(const char * filePath, const bool missing);
-RcppExport SEXP readstata13_stata(SEXP filePathSEXP, SEXP missingSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
-    Rcpp::traits::input_parameter< const bool >::type missing(missingSEXP);
-    __result = Rcpp::wrap(stata(filePath, missing));
-    return __result;
-END_RCPP
-}
-// stataWrite
-int stataWrite(const char * filePath, Rcpp::DataFrame dat);
-RcppExport SEXP readstata13_stataWrite(SEXP filePathSEXP, SEXP datSEXP) {
+// stata_pre13_save
+int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat);
+RcppExport SEXP readstata13_stata_pre13_save(SEXP filePathSEXP, SEXP datSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
     Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
     Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP);
-    __result = Rcpp::wrap(stataWrite(filePath, dat));
+    __result = Rcpp::wrap(stata_pre13_save(filePath, dat));
+    return __result;
+END_RCPP
+}
+// stata_read
+List stata_read(const char * filePath, const bool missing);
+RcppExport SEXP readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
+    Rcpp::traits::input_parameter< const bool >::type missing(missingSEXP);
+    __result = Rcpp::wrap(stata_read(filePath, missing));
+    return __result;
+END_RCPP
+}
+// stata_save
+int stata_save(const char * filePath, Rcpp::DataFrame dat);
+RcppExport SEXP readstata13_stata_save(SEXP filePathSEXP, SEXP datSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP);
+    __result = Rcpp::wrap(stata_save(filePath, dat));
     return __result;
 END_RCPP
 }

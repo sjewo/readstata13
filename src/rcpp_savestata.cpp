@@ -15,37 +15,10 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Rcpp.h>
-#include <string>
-#include <fstream>
-#include <stdint.h>
-#include "statadefines.h"
-#include "swap_endian.h"
-// #include <cstdint> //C++11
+#include <readstata.h>
 
 using namespace Rcpp;
 using namespace std;
-
-#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
-#define lsf "LSF"
-#define byteorder "LSF"
-#else
-#define lsf "MSF"
-#define byteorder "MSF"
-#endif
-
-bool swapit = strcmp(byteorder, lsf);
-
-template <typename T>
-static void writebin(T t, fstream& dta, bool swapit)
-{
-  if (swapit==1){
-    T t_s = swap_endian(t);
-    dta.write((char*)&t_s, sizeof(t_s));
-  } else {
-    dta.write((char*)&t, sizeof(t));
-  }
-}
 
 // Writes the binary Stata file
 //
@@ -53,10 +26,12 @@ static void writebin(T t, fstream& dta, bool swapit)
 // @param dat an R-Object of class data.frame.
 // @export
 // [[Rcpp::export]]
-int stataWrite(const char * filePath, Rcpp::DataFrame dat)
+int stata_save(const char * filePath, Rcpp::DataFrame dat)
 {
   uint16_t k = dat.size();
   uint64_t n = dat.nrows();
+
+  bool swapit = 0;
 
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
@@ -75,9 +50,10 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
 
   uint8_t const release = atoi(version.c_str());
 
-  uint8_t nvarnameslen = 0, nformatslen = 0, nvalLabelslen = 0, lbllen = 0, ntimestamp = 0;
-  uint16_t nvarLabelslen = 0, ndlabel = 0;
-  int32_t chlen = 0;
+  uint8_t nformatslen = 0, ntimestamp = 0;
+  uint16_t nvarnameslen = 0, nvarLabelslen = 0, nvalLabelslen = 0, ndlabel = 0,
+    lbllen = 0;
+  uint32_t chlen = 0, maxdatalabelsize = 0, maxlabelsize = 32000;
 
   switch (release)
   {
@@ -86,6 +62,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     nformatslen = 49;
     nvalLabelslen = 33;
     nvarLabelslen = 81;
+    maxdatalabelsize = 80;
     chlen = 33;
     lbllen = 33;
     break;
@@ -94,6 +71,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     nformatslen = 57;
     nvalLabelslen = 129;
     nvarLabelslen = 321;
+    maxdatalabelsize = 320; // in utf8 4 * 80 byte
     chlen = 129;
     lbllen = 129;
     break;
@@ -163,7 +141,7 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(head.c_str(),head.size());
     dta.write(version.c_str(),3); // 117|118 (e.g. Stata 13|14)
     dta.write(byteord.c_str(),byteord.size());
-    dta.write(byteorder,3); // LSF
+    dta.write(sbyteorder,3); // LSF
     dta.write(K.c_str(),K.size());
     writebin(k, dta, swapit);
     dta.write(num.c_str(),num.size());
@@ -177,11 +155,20 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* write a datalabel */
     if(!datalabel.empty())
     {
+      if (datalabel.size() > maxdatalabelsize)
+      {
+        Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
+                      maxdatalabelsize);
+        datalabel.resize(maxdatalabelsize);
+        datalabel[datalabel.size()] = '\0';
+      }
       ndlabel = datalabel.size();
+
       if (release==117)
         writebin((uint8_t)ndlabel, dta, swapit);
       if (release==118)
         writebin(ndlabel, dta, swapit);
+
       dta.write(datalabel.c_str(),datalabel.size());
     } else {
       dta.write((char*)&ndlabel,sizeof(ndlabel));
@@ -227,7 +214,13 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(startvarn.c_str(), startvarn.size());
     for (uint16_t i = 0; i < k; ++i )
     {
-      const string nvarname = as<string>(nvarnames[i]);
+      string nvarname = as<string>(nvarnames[i]);
+      nvarname[nvarname.size()] = '\0';
+
+      if (nvarname.size() > nvarnameslen)
+        Rcpp::warning("Varname to long. Resizing. Max size is %d",
+                      nvarnameslen - 1);
+
       dta.write(nvarname.c_str(),nvarnameslen);
     }
     dta.write(endvarn.c_str(), endvarn.size());
@@ -252,7 +245,12 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     dta.write(startform.c_str(),startform.size());
     for (uint16_t i = 0; i < k; ++i )
     {
-      const string nformats = as<string>(formats[i]);
+      string nformats = as<string>(formats[i]);
+
+      if (nformats.size() >= nformatslen)
+        Rcpp::warning("Formats to long. Resizing. Max size is %d",
+                      nformatslen);
+
       dta.write(nformats.c_str(),nformatslen);
     }
     dta.write(endform.c_str(),endform.size());
@@ -261,9 +259,15 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
     dta.write(startvalLabel.c_str(),startvalLabel.size());
-    for (uint16_t i = 0; i < k; ++i )
+    for (uint16_t i = 0; i < k; ++i)
     {
-      const string nvalLabels = as<string>(valLabels[i]);
+      string nvalLabels = as<string>(valLabels[i]);
+      nvalLabels[nvalLabels.size()] = '\0';
+
+      if (nvalLabels.size() > nvalLabelslen)
+        Rcpp::warning("Vallabel to long. Resizing. Max size is %d",
+                      nvalLabelslen - 1);
+
       dta.write(nvalLabels.c_str(), nvalLabelslen);
     }
     dta.write(endvalLabel.c_str(),endvalLabel.size());
@@ -275,11 +279,18 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     for (uint16_t i = 0; i < k; ++i)
     {
       if (!Rf_isNull(varLabels) && Rf_length(varLabels) > 1) {
-        const string nvarLabels = as<std::string>(varLabels[i]);
-        dta.write(nvarLabels.c_str(),nvarLabelslen);
+        string nvarLabels = as<string>(varLabels[i]);
+
+        if (nvarLabels.size() > nvarLabelslen)
+          Rcpp::warning("Varlabel to long. Resizing. Max size is %d",
+                        nvarLabelslen - 1);
+
+        nvarLabels[nvarLabels.size()] = '\0';
+        dta.write(nvarLabels.c_str(), nvarLabelslen);
       } else {
-        const string nvarLabels = "";
-        dta.write(nvarLabels.c_str(),nvarLabelslen);
+        string nvarLabels = "";
+        nvarLabels[nvarLabels.size()] = '\0';
+        dta.write(nvarLabels.c_str(), nvarLabelslen);
       }
     }
     dta.write(endvarlabel.c_str(),endvarlabel.size());
@@ -419,18 +430,55 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         case 32768:
         {
           /* Stata uses +1 */
-          int32_t v = i+1, o = j+1;
           int64_t z = 0;
 
           CharacterVector b = as<CharacterVector>(dat[i]);
           const string val_strl = as<string>(b[j]);
           if (!val_strl.empty())
           {
+            switch (release)
+            {
+            case 117:
+          {
+            uint32_t v = i+1, o = j+1;
+
             writebin(v, dta, swapit);
             writebin(o, dta, swapit);
+
             // push back every v, o and val_strl
             V.push_back(v);
             O.push_back(o);
+            break;
+          }
+            case 118:
+          {
+            uint16_t v = i+1;
+            uint64_t o = j+1;
+
+            uint32_t hi = 0, lo = 0;
+
+            // z is 'oooo oooo'
+            z = o;
+            if (SBYTEORDER == 2) {
+              // if LSF move z to make space for v
+              z <<= 16;
+            }
+            z |=v;
+            // z is 'vvoo oooo'
+
+            // store z as two int32_t
+            lo = (uint32_t)z;
+            hi = (z >> 32);
+
+            writebin(lo, dta, 0);
+            writebin(hi, dta, 0);
+
+            // push back every v, o and val_strl
+            V.push_back(v);
+            O.push_back(o);
+            break;
+          }
+            }
             STRL.push_back(val_strl);
           } else {
             dta.write((char*)&z,sizeof(z));
@@ -451,14 +499,18 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
     for(int i =0; i < strlsize; ++i )
     {
       const string gso = "GSO";
-      int32_t v = V[i], o = O[i];
+      int32_t v = V[i];
+      int64_t o = O[i];
       uint8_t t = 129; //Stata binary type, no trailing zero.
       const string strL = as<string>(STRL[i]);
       uint32_t len = strL.size();
 
       dta.write(gso.c_str(),gso.size());
       writebin(v, dta, swapit);
-      writebin(o, dta, swapit);
+      if (release==117)
+        writebin((uint32_t)o, dta, swapit);
+      if (release==118)
+        writebin(o, dta, swapit);
       writebin(t, dta, swapit);
       writebin(len, dta, swapit);
       dta.write(strL.c_str(),strL.size());
@@ -493,14 +545,18 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         for (int32_t i = 0; i < labelText.size(); ++i)
         {
           string label = as<string>(labelText[i]);
-          int32_t labellen = label.size()+1;
+          uint32_t labellen = label.size()+1;
+          if (labellen > maxlabelsize+1)
+            labellen = maxlabelsize+1;
+
           txtlen += labellen;
           off.push_back ( txtlen-labellen );
         }
 
         int32_t offI, labvalueI;
 
-        int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N + sizeof(labvalueI)*N + txtlen;
+        int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N +
+          sizeof(labvalueI)*N + txtlen;
 
         dta.write(startlbl.c_str(),startlbl.size());
         writebin(nlen, dta, swapit);
@@ -524,8 +580,16 @@ int stataWrite(const char * filePath, Rcpp::DataFrame dat)
         for (int32_t i = 0; i < N; ++i)
         {
           string labtext = as<string>(labelText[i]);
-          labtext[labtext.size()] = '\0';
-          dta.write(labtext.c_str(),labtext.size()+1);
+
+          if (labtext.size() > maxlabelsize)
+          {
+            Rcpp::warning("Label to long. Resizing. Max size is %d",
+                          maxlabelsize);
+            labtext.resize(maxlabelsize);
+            // labtext[labtext.size()] = '\0';
+          }
+
+          dta.write(labtext.c_str(), labtext.size()+1);
         }
         dta.write(endlbl.c_str(),endlbl.size());
       }

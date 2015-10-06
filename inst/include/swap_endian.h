@@ -2,10 +2,11 @@
 #define SWAP_ENDIAN
 
 #include <stdint.h>
+#include <typeinfo>
 
 #define GCC_VERSION (__GNUC__ * 10000 \
-  + __GNUC_MINOR__ * 100              \
-  + __GNUC_PATCHLEVEL__)
++ __GNUC_MINOR__ * 100                \
++ __GNUC_PATCHLEVEL__)
 
 /* Test for GCC < 4.8.0 */
 #if GCC_VERSION < 40800 & !__clang__

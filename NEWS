@@ -1,10 +1,16 @@
+0.8
+- implement reading all version prior 13.
+- clean up code.
+- fix a crash when varlables do not match ncols.
+- update leap seconds R code with foreign.
+
 0.7.1
 - fix saving of files > 2GB
 
 0.7
 - read and write Stata 14 files (ver 118)
 - fix save for variables without non-missing values
-- read strings from different file encodings 
+- read strings from different file encodings
 - code cleanups
 
 0.6.1

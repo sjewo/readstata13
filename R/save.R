@@ -14,42 +14,104 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
-#' Write Stata 13 Binary Files
+#' Write Stata Binary Files
 #'
-#' \code{save.dta13} writes a Stata 13 dta file bytewise and saves the data
+#' \code{save.dta13} writes a Stata dta-file bytewise and saves the data
 #' into a dta-file.
 #'
 #' @param file \emph{character.} Path to the dta file you want to export.
 #' @param data \emph{data.frame.} A data.frame Object.
 #' @param data.label \emph{character.} Name of the dta-file.
-#' @param time.stamp \emph{logical.} If \code{TRUE}, add a time.stamp to the dta-file.
-#' @param convert.factors \emph{logical.} If \code{TRUE}, factors will be converted to Stata variables with labels.
-#' Stata expects strings to be encoded as Windows-1252, so all levels will be recoded.  Character which can not be mapped in Windows-1252 will be saved as hexcode.
-#' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted to Stata date time format. Code from \code{foreign::write.dta}
+#' @param time.stamp \emph{logical.} If \code{TRUE}, add a time.stamp to the
+#'  dta-file.
+#' @param convert.factors \emph{logical.} If \code{TRUE}, factors will be
+#'  converted to Stata variables with labels.
+#'  Stata expects strings to be encoded as Windows-1252, so all levels will be
+#'  recoded.  Character which can not be mapped in Windows-1252 will be saved as
+#'  hexcode.
+#' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted
+#'  to Stata date time format. Code from \code{foreign::write.dta}
+#' @param convert.underscore \emph{logica.} If \code{TRUE}, in variable names
+#'  dots will be converted to underscores.
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
-#' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames will be added to the dta-file.
-#' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will use all of Statas numeric-vartypes.
-#' @param version \emph{numeric.} Stata format for the resulting dta-file (e.g. 117 for Stata 13 and 118 for Stata 14.)
-#' @return The function writes a dta-file to disk. The following features of the dta file format are supported:
+#' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames
+#'  will be added to the dta-file.
+#' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will
+#'  use all of Statas numeric-vartypes.
+#' @param version \emph{numeric.} Stata format for the resulting dta-file either
+#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.
+#' @return The function writes a dta-file to disk. The following features of the
+#'  dta file format are supported:
 #' \describe{
 #'   \item{datalabel:}{Dataset label}
 #'   \item{time.stamp:}{Timestamp of file creation}
-#'   \item{formats:}{Stata display formats. May be used with \code{\link[base]{sprintf}}}
+#'   \item{formats:}{Stata display formats. May be used with
+#'   \code{\link[base]{sprintf}}}
 #'   \item{type:}{Stata data type (see Stata Corp 2014)}
 #'   \item{var.labels:}{Variable labels}
 #'   \item{version:}{dta file format version}
-#'   \item{strl:}{List of character vectors for the new strL string variable type. The first element is the identifier and the second element the string.}
+#'   \item{strl:}{List of character vectors for the new strL string variable
+#'    type. The first element is the identifier and the second element the
+#'    string.}
 #' }
-#' @seealso \code{\link[foreign]{write.dta}} and \code{memisc} for dta files from Stata
-#' versions < 13.
-#' @references Stata Corp (2014): Description of .dta file format \url{http://www.stata.com/help.cgi?dta}
+#' @seealso \code{\link[foreign]{write.dta}} and \code{memisc} for dta files
+#' from Stata versions < 13.
+#' @references Stata Corp (2014): Description of .dta file format
+#'  \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
 #' @export
 save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
-                       add.rownames=FALSE, compress=FALSE, version=117){
+                       add.rownames=FALSE, compress=FALSE, version=117,
+                       convert.underscore=FALSE){
+
+
+  if (!is.data.frame(data))
+    stop("The object \"data\" must have class data.frame")
+  if (!dir.exists(dirname(file)))
+    stop("Path is invalid. Possibly a non existend directory.")
+
+  # Allow writing version as Stata version not Stata format
+  if (version==14L)
+    version <- 118
+  if (version==13L)
+    version <- 117
+  if (version==12L)
+    version <- 115
+  if (version==11L | version==10L)
+    version <- 114
+  if (version==9L | version==8L)
+    version <- 113
+  if (version==7)
+    version <- 110
+  if (version==6)
+    version <- 108
+
+  if (version<102 | version == 109 | version == 116 | version>118)
+    stop("Version missmatch abort execution. No Data was saved.")
+
+  sstr     <- 2045
+  sstrl    <- 32768
+  sdouble  <- 65526
+  sfloat   <- 65527
+  slong    <- 65528
+  sint     <- 65529
+  sbyte    <- 65530
+
+  if (version < 117) {
+    sstr    <- 244
+    sstrl   <- 244
+    sdouble <- 255
+    sfloat  <- 254
+    slong   <- 253
+    sint    <- 252
+    sbyte   <- 251
+  }
+  if (version<111 | version==112)
+    sstrl   <- 80
+
 
   if(!is.data.frame(data)) {
     stop("Object is not of class data.frame.")
@@ -57,17 +119,17 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   # Is recoding necessary?
   if (version<=117) {
-      # Reencoding is always needed
-      doRecode <- TRUE
-      toEncoding <- "CP1252"
-    } else if (toupper(localeToCharset()[1])!="UTF-8") {
-      # If R runs in a non UTF-8 locale and Stata > 13
-      doRecode <- TRUE
-      toEncoding <- "UTF-8"
-    } else {
-      # utf-8 and Stata > 13
-      doRecode <- FALSE
-    }
+    # Reencoding is always needed
+    doRecode <- TRUE
+    toEncoding <- "CP1252"
+  } else if (toupper(localeToCharset()[1])!="UTF-8") {
+    # If R runs in a non UTF-8 locale and Stata > 13
+    doRecode <- TRUE
+    toEncoding <- "UTF-8"
+  } else {
+    # utf-8 and Stata > 13
+    doRecode <- FALSE
+  }
 
 
   if (add.rownames) {
@@ -81,6 +143,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        data, stringsAsFactors = F)
   }
 
+  if (convert.underscore)
+    names(data) <- gsub("[.]", "_", names(data))
+
   filepath <- path.expand(file)
 
   # For now we handle numeric and integers
@@ -93,7 +158,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- sapply(data, class)
 
   if (convert.factors){
-    message("convert.factors=TRUE: saving factor values as integers and creating Stata labels.")
+    message("convert.factors=TRUE: saving factor values as integers and creating
+            Stata labels.")
+    if (version < 106)
+      warning("dta-format < 106 does not handle factors. Labels are not saved!")
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
     f.names <- attr(factors,"names")
@@ -147,7 +215,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   }
 
   # FixMe: what about AsIs ?
-  vartypen[vartypen == "Date"] <- -65526
+  vartypen[vartypen == "Date"] <- -sdouble
 
   # is.numeric is TRUE for integers
   ff <- sapply(data, is.numeric)
@@ -155,10 +223,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   factors <- sapply(data, is.factor)
   empty <- sapply(data, function(x) all(is.na(x)))
   if (!compress) {
-    vartypen[ff] <- 65526
-    vartypen[ii] <- 65528
-    vartypen[factors] <- 65528
-    vartypen[empty] <- 65530
+    vartypen[ff] <- sdouble
+    vartypen[ii] <- slong
+    vartypen[factors] <- slong
+    vartypen[empty] <- sbyte
   } else {
     varTmin <- sapply(data[ff & !empty], function(x) min(x,na.rm=TRUE))
     varTmax <- sapply(data[ff & !empty], function(x) max(x,na.rm=TRUE))
@@ -166,28 +234,28 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     # check if numeric is float or double
     fminmax <- 1.701e+38
     for (k in names(which(ff & !empty))) {
-      vartypen[k][varTmin[k] < (-fminmax) | varTmax[k] > fminmax] <- 65526
-      vartypen[k][varTmin[k] > (-fminmax) & varTmax[k] < fminmax] <- 65527
+      vartypen[k][varTmin[k] < (-fminmax) | varTmax[k] > fminmax] <- sdouble
+      vartypen[k][varTmin[k] > (-fminmax) & varTmax[k] < fminmax] <- sfloat
     }
 
     bmin <- -127; bmax <- 100
     imin <- -32767; imax <- 32740
     # check if integer is byte, int or long
     for (k in names(which(ii & !empty))) {
-      vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- 65528
-      vartypen[k][varTmin[k] > imin & varTmax[k] < imax] <- 65529
-      vartypen[k][varTmin[k] > bmin & varTmax[k] < bmax] <- 65530
+      vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- slong
+      vartypen[k][varTmin[k] > imin & varTmax[k] < imax] <- sint
+      vartypen[k][varTmin[k] > bmin & varTmax[k] < bmax] <- sbyte
     }
 
     factorlength <- sapply(data[factors & !empty], nlevels)
     for (k in names(which(factors & !empty))) {
-      vartypen[factors & factorlength[k] > 0x1.000000p127] <- 65528
-      vartypen[factors & factorlength[k] < 0x1.000000p127] <- 65529
-      vartypen[factors & factorlength[k] < 101] <- 65530
+      vartypen[factors & factorlength[k] > 0x1.000000p127] <- slong
+      vartypen[factors & factorlength[k] < 0x1.000000p127] <- sint
+      vartypen[factors & factorlength[k] < 101] <- sbyte
     }
 
     # cast empty variables as byte
-    vartypen[empty] <- 65530
+    vartypen[empty] <- sbyte
   }
 
   # recode character variables. 118 wants utf-8, so encoding may be required
@@ -204,11 +272,15 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
 
-  for (v in names(vartypen[vartypen == "character"])) vartypen[[v]] <-
-      str.length[[v]]
+  for (v in names(vartypen[vartypen == "character"]))
+  {
+    str.length[str.length > sstr] <- sstrl
+
+    vartypen[[v]] <- str.length[[v]]
+  }
   vartypen <- abs(as.integer(vartypen))
-  # str longer than 2045 chars are in Stata type strL.
-  vartypen[vartypen > 2045 & vartypen < 65526] <- 32768
+  # str longer than 2045 chars are in Stata 13+ type strL.
+
 
   attr(data, "types") <- vartypen
 
@@ -219,14 +291,14 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   # Stata format "%9,0g" means european format
   formats <- vartypen
-  formats[formats == -65526] <- "%td"
-  formats[formats == 65526] <- "%9.0g"
-  formats[formats == 65527] <- "%9.0g"
-  formats[formats == 65528] <- "%9.0g"
-  formats[formats == 65529] <- "%9.0g"
-  formats[formats == 65530] <- "%9.0g"
-  formats[vartypen >= 0 & vartypen < 2046] <-
-    paste0("%-", formats[vartypen >= 0 & vartypen < 2046], "s")
+  formats[formats == -sdouble] <- "%td"
+  formats[formats == sdouble]  <- "%9.0g"
+  formats[formats == sfloat]   <- "%9.0g"
+  formats[formats == slong]    <- "%9.0g"
+  formats[formats == sint]     <- "%9.0g"
+  formats[formats == sbyte]    <- "%9.0g"
+  formats[vartypen >= 0 & vartypen <= sstr] <-
+    paste0("%-", formats[vartypen >= 0 & vartypen <= sstr], "s")
 
   attr(data, "formats") <- formats
 
@@ -234,6 +306,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (is.null(data.label)) {
     attr(data, "datalabel") <- "Written by R"
   } else {
+    if (version == 102L)
+      warning("Format 102 does not print a data label in Stata.")
     if (doRecode) {
       data.label <- save.encoding(data.label, toEncoding)
     }
@@ -257,6 +331,26 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   attr(data, "expansion.fields") <- rev(expfield)
 
   attr(data, "version") <- as.character(version)
+  if (version < 117)
+    attr(data, "version") <- version
 
-  invisible( stataWrite(filePath = filepath, dat = data) )
+
+
+  # If length of varlabels differs from ncols drop varlabels. This can happen,
+  # when the initial data.frame was read by read.dta13 and another variable was
+  # attached. In this case the last variable label has a non existing variable
+  # label which will crash our Rcpp code. Since varlabels do not respect the
+  # ordering inside the data frame, we simply drop them.
+  varlabels <- attr(data, "var.labels")
+  if (!is.null(varlabels) & (length(varlabels)!=ncol(data))) {
+    attr(data, "var.labels") <- NULL
+    warning("Number of variable labels does not match number of variables.
+            Variable labels dropped.")
+  }
+
+
+  if (version >= 117)
+    invisible( stata_save(filePath = filepath, dat = data) )
+  else
+    invisible( stata_pre13_save(filePath = filepath, dat = data) )
 }

@@ -249,7 +249,7 @@ List read_pre13_dta(FILE * file, const bool missing)
   * Vector size is k+1.
   */
 
-  uint64_t big_k = k+1;
+  uint32_t big_k = k+1;
 
   IntegerVector sortlist(big_k);
   for (uint32_t i=0; i<big_k; ++i)

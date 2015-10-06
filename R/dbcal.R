@@ -43,6 +43,7 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @examples
 #' sp500 <- stbcal(system.file("extdata/sp500.stbcal", package="readstata13"))
+#' @importFrom stats complete.cases
 #' @export
 stbcal <- function(stbcalfile) {
 

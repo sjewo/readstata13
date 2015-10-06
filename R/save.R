@@ -61,6 +61,7 @@
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
+#' @importFrom utils localeToCharset
 #' @export
 save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        convert.factors=FALSE, convert.dates=TRUE, tz="GMT",

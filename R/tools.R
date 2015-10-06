@@ -258,6 +258,8 @@ get.varlabel <- function(dat, var.name=NULL, lang=NA) {
 #' get.varlabel(datDE)
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
+#' @importFrom stats na.omit
+#' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
   if (is.na(lang) | lang == get.lang(dat, F)$default) {

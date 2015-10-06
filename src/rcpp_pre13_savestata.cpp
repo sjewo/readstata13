@@ -189,7 +189,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       string nvarname = as<string>(nvarnames[i]);
 
       if (nvarname.size() > nvarnameslen)
-        Rcpp::warning("Varname to long. Resizing. Max size is %d",
+        Rcpp::warning("Varname too long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
       dta.write(nvarname.c_str(),nvarnameslen);
@@ -210,7 +210,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       string nformats = as<string>(formats[i]);
 
       if (nformats.size() > nformatslen)
-        Rcpp::warning("Formats to long. Resizing. Max size is %d",
+        Rcpp::warning("Formats too long. Resizing. Max size is %d",
                       nformatslen - 1);
 
       dta.write(nformats.c_str(),nformatslen);
@@ -222,7 +222,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       string nvalLabels = as<string>(valLabels[i]);
 
       if (nvalLabels.size() > nvalLabelslen)
-        Rcpp::warning("Vallabel to long. Resizing. Max size is %d",
+        Rcpp::warning("Vallabel too long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
       dta.write(nvalLabels.c_str(), nvalLabelslen);
@@ -237,7 +237,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         nvarLabels = as<std::string>(varLabels[i]);
 
         if (nvarLabels.size() > nvarLabelslen)
-          Rcpp::warning("Varlabel to long. Resizing. Max size is %d",
+          Rcpp::warning("Varlabel too long. Resizing. Max size is %d",
                         nvarLabelslen - 1);
       }
       dta.write(nvarLabels.c_str(),nvarLabelslen);
@@ -391,7 +391,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>maxstrsize)
           {
-            Rcpp::warning("Character Var.to long. Resizing. Max size is %d.",
+            Rcpp::warning("Character value too long. Resizing. Max size is %d.",
                           maxstrsize);
             // val_s.resize(244);
           }
@@ -464,7 +464,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           string labtext = as<string>(labelText[i]);
           if (labtext.size() > maxlabelsize)
           {
-            Rcpp::warning("Label to long. Resizing. Max size is %d",
+            Rcpp::warning("Label too long. Resizing. Max size is %d",
                           maxlabelsize);
             labtext.resize(maxlabelsize);
             // labtext[labtext.size()] = '\0';

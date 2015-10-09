@@ -47,7 +47,7 @@
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
 #'
-#' Stata files are encoded in ansinew. Depending on your system default encoding
+#' Stata files are encoded in ansinew. Depending on your system's default encoding
 #'  certain characters may appear wrong. Using a correct encoding may fix these.
 #'
 #' Variable names stored in the dta-file will be used in the resulting
@@ -67,14 +67,12 @@
 #'
 #' In R, you may use rownames to store characters (see for instance
 #'  \code{data(swiss)}). In Stata, this is not possible and rownames have to be
-#'  stored as a variable.  If this is the case for your file and you want to use
-#'  rownames, \code{add.rownames=TRUE} will convert the first variable of the
-#'  dta-file into rownames of the resulting data.frame.
+#'  stored as a variable. If you want to use rownames, set add.rownames to TRUE. 
+#'  Then the first variable of the dta-file will hold the rownames of the resulting 
+#'  data.frame.
 #'
-#' Beginning with Stata 13 (format 117), a new dta-format was introduced, which
-#'  was not handled by foreign at the time. It was implemented in this package
-#'  therefore the package got its name. Reading dta-files from earlier Stata
-#'  versions was not implemented until version 0.8.
+#' Reading dta-files of older and newer versions than 13 was introduced 
+#'  with version 0.8.
 #' @return The function returns a data.frame with attributes. The attributes
 #'  include
 #' \describe{

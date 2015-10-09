@@ -33,6 +33,12 @@ save.encoding <- function(x, encoding) {
         sub="byte")
 }
 
+# Function to check if directory exists
+# @param x file path
+dir.exists13 <-function(x) {
+  path <- dirname(x)
+  return(file.exists(path))
+}
 
 # Construct File Path
 #

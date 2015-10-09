@@ -71,7 +71,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   if (!is.data.frame(data))
     stop("The object \"data\" must have class data.frame")
-  if (!dir.exists(dirname(file)))
+  if (!dir.exists13(dirname(file)))
     stop("Path is invalid. Possibly a non existend directory.")
 
   # Allow writing version as Stata version not Stata format

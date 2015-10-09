@@ -7,7 +7,7 @@
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = NULL, fromEncoding = NULL, convert.underscore = FALSE,
   missing.type = FALSE, convert.dates = TRUE, replace.strl = FALSE,
-  add.rownames = FALSE)
+  add.rownames = FALSE, nonint.factors = FALSE)
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
@@ -42,7 +42,10 @@ a strL string in the data.frame with the actual value. The strl attribute
 will be removed from the data.frame.}
 
 \item{add.rownames}{\emph{logical.} If \code{TRUE}, the first column will be
- used as rownames. Variable will be dropped afterwards.}
+used as rownames. Variable will be dropped afterwards.}
+
+\item{nonint.factors}{\emph{logical.} If \code{TRUE}, factors labels
+ will be assigned to variables of type float and double.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes
@@ -89,9 +92,10 @@ Stata dates are converted to R's Date class the same way foreign handles
 dates.
 
 Stata 13 introduced a new character type called strL. strLs are able to store
- strings of any size up to 2 billion characters.  While R is able to store
- strings of this size in a character, certain data.frames may appear messed,
- if long strings are inserted default is \code{FALSE}.
+ strings up to 2 billion characters.  While R is able to store
+ strings of this size in a character vector, the printed representation of such
+ vectors looks rather cluttered, so by default only a reference is saved in the
+ data.frame (\code{replace.strl=FALSE}).
 
 In R, you may use rownames to store characters (see for instance
  \code{data(swiss)}). In Stata, this is not possible and rownames have to be

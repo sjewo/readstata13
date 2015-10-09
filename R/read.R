@@ -43,6 +43,8 @@
 #'  converted.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, the first column will be
 #'  used as rownames. Variable will be dropped afterwards.
+#' @param nonint.factors \emph{logical.} If \code{TRUE}, factors labels 
+#'  will be assigned to variables of type float and double.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -61,9 +63,10 @@
 #' dates.
 #'
 #' Stata 13 introduced a new character type called strL. strLs are able to store
-#'  strings of any size up to 2 billion characters.  While R is able to store
-#'  strings of this size in a character, certain data.frames may appear messed,
-#'  if long strings are inserted default is \code{FALSE}.
+#'  strings up to 2 billion characters.  While R is able to store
+#'  strings of this size in a character vector, the printed representation of such 
+#'  vectors looks rather cluttered, so by default only a reference is saved in the 
+#'  data.frame (\code{replace.strl=FALSE}). 
 #'
 #' In R, you may use rownames to store characters (see for instance
 #'  \code{data(swiss)}). In Stata, this is not possible and rownames have to be
@@ -110,7 +113,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        encoding = NULL, fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = FALSE,
-                       add.rownames = FALSE) {
+                       add.rownames = FALSE, nonint.factors=FALSE) {
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -319,8 +322,13 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       vartype <- types[i]
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
-      if (labname %in% names(label) & !(vartype == sdouble | vartype == sfloat))
-      {
+      if (labname %in% names(label)) {
+        if((vartype == sdouble | vartype == sfloat)) {
+          if(!nonint.factors) {
+            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double or float detected - no labels assigned.\n  Set option nonint.factors to TRUE to assign labels anyway."))
+            next
+          }
+        }
         # get unique values / omit NA
         varunique <- na.omit(unique(data[, i]))
         # assign label if label set is complete
@@ -335,13 +343,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           data[, i] <- factor(data[, i], levels=gen.lab,
                               labels=names(gen.lab))
         } else {
-          warning(paste(vnames[i], "Missing factor labels - no labels assigned.
-                        Set option generate.factors=T to generate labels."))
+          warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no labels assigned.\n  Set option generate.factors=T to generate labels."))
         }
       }
     }
   }
-
+  
   if (add.rownames) {
     rownames(data) <- data[[1]]
     data[[1]] <- NULL

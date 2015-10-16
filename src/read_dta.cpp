@@ -339,8 +339,6 @@ List read_dta(FILE * file, const bool missing) {
   List ch = List();
   CharacterVector chs(3);
   
-  if(chtag.compare(tago)==0)
-  {
     while (chtag.compare(tago)==0)
     {
       uint32_t nocharacter = 0;
@@ -371,7 +369,7 @@ List read_dta(FILE * file, const bool missing) {
   }
 
   //fseek(file, 14, SEEK_CUR); //[</ch]aracteristics>
-  }
+  
   test("aracteristics>", file);
   test("<data>", file);
 
@@ -552,8 +550,7 @@ List read_dta(FILE * file, const bool missing) {
   readstring(tags, file, tags.size());
 
   List strlstable = List(); //put strLs into this list
-if(gso.compare(tags)==0)
-{
+
   while(gso.compare(tags)==0)
   {
     CharacterVector strls(2);
@@ -610,7 +607,7 @@ if(gso.compare(tags)==0)
   // after strls
   //fseek(file, 5, SEEK_CUR); //[</s]trls>
   //test("</strls>", file);
-} 
+ 
   test("trls>", file);
 
   test("<value_labels>", file);
@@ -631,7 +628,7 @@ if(gso.compare(tags)==0)
   readstring(tag, file, tag.size());
 
   List labelList = List(); //put labels into this list
-if(lbltag.compare(tag)==0) {
+  
   while(lbltag.compare(tag)==0)
   {
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
@@ -721,7 +718,7 @@ if(lbltag.compare(tag)==0) {
 
   //fseek(file, 10, SEEK_CUR); // [</val]ue_labels>#
   //test("</value_labels>", file);
-} 
+ 
   test("ue_labels>", file);
   test("</stata_dta>", file);
 

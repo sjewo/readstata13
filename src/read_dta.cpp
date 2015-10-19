@@ -21,7 +21,8 @@ using namespace Rcpp;
 using namespace std;
 
 List read_dta(FILE * file, const bool missing) {
-  fseek(file, 18, SEEK_CUR);// stata_dta><header>
+  //fseek(file, 18, SEEK_CUR);// stata_dta><header>
+  test("stata_dta><header>", file);
   test("<release>", file);
 
   /*
@@ -73,7 +74,8 @@ List read_dta(FILE * file, const bool missing) {
     break;
   }
 
-  fseek(file, 10, SEEK_CUR); // </release>
+  //fseek(file, 10, SEEK_CUR); // </release>
+  test("</release>", file);
   test("<byteorder>", file);
 
   /*
@@ -83,7 +85,8 @@ List read_dta(FILE * file, const bool missing) {
   std::string byteorder(3, '\0');
   readstring(byteorder,file, byteorder.size());
 
-  fseek(file, 12, SEEK_CUR); // </byteorder>
+  //fseek(file, 12, SEEK_CUR); // </byteorder>
+  test("</byteorder>", file);
   test("<K>", file);
 
   bool swapit = 0;
@@ -96,7 +99,8 @@ List read_dta(FILE * file, const bool missing) {
   uint16_t k = 0;
   k = readbin(k, file, swapit);
 
-  fseek(file, 4, SEEK_CUR); //</K>
+  //fseek(file, 4, SEEK_CUR); //</K>
+  test("</K>", file);
   test("<N>", file);
 
   /*
@@ -112,7 +116,8 @@ List read_dta(FILE * file, const bool missing) {
     n = readbin(n, file, swapit);
   }
 
-  fseek(file, 4, SEEK_CUR); //</N>
+  //fseek(file, 4, SEEK_CUR); //</N>
+  test("</N>", file);
   test("<label>", file);
 
   /*
@@ -141,7 +146,8 @@ List read_dta(FILE * file, const bool missing) {
   CharacterVector datalabelCV(1);
   datalabelCV(0) = datalabel;
 
-  fseek(file, 8, SEEK_CUR); //</label>
+  //fseek(file, 8, SEEK_CUR); //</label>
+  test("</label>", file);
   test("<timestamp>", file);
 
   /*
@@ -164,7 +170,8 @@ List read_dta(FILE * file, const bool missing) {
   }
 
   CharacterVector timestampCV = timestamp;
-  fseek(file, 21, SEEK_CUR); //</timestamp></header>
+  //fseek(file, 21, SEEK_CUR); //</timestamp></header>
+  test("</timestamp></header>", file);
   test("<map>", file);
 
   /*
@@ -194,7 +201,8 @@ List read_dta(FILE * file, const bool missing) {
     map[i] = nmap;
   }
 
-  fseek(file, 6, SEEK_CUR); //</map>
+  //fseek(file, 6, SEEK_CUR); //</map>
+  test("</map>", file);
   test("<variable_types>", file);
 
   /*
@@ -216,7 +224,8 @@ List read_dta(FILE * file, const bool missing) {
     vartype[i] = nvartype;
   }
 
-  fseek(file, 17, SEEK_CUR); //</variable_types>
+  //fseek(file, 17, SEEK_CUR); //</variable_types>
+  test("</variable_types>", file);
   test("<varnames>", file);
 
   /*
@@ -232,7 +241,8 @@ List read_dta(FILE * file, const bool missing) {
     varnames[i] = nvarnames;
   }
 
-  fseek(file, 11, SEEK_CUR); //</varnames>
+  //fseek(file, 11, SEEK_CUR); //</varnames>
+  test("</varnames>", file);
   test("<sortlist>", file);
 
   /*
@@ -252,7 +262,8 @@ List read_dta(FILE * file, const bool missing) {
     sortlist[i] = nsortlist;
   }
 
-  fseek(file, 11, SEEK_CUR); //</sortlist>
+  //fseek(file, 11, SEEK_CUR); //</sortlist>
+  test("</sortlist>", file);
   test("<formats>", file);
 
   /*
@@ -269,7 +280,8 @@ List read_dta(FILE * file, const bool missing) {
     formats[i] = nformats;
   }
 
-  fseek(file, 10, SEEK_CUR); //</formats>
+  //fseek(file, 10, SEEK_CUR); //</formats>
+  test("</formats>", file);
   test("<value_label_names>",file);
 
   /*
@@ -287,7 +299,8 @@ List read_dta(FILE * file, const bool missing) {
     valLabels[i] = nvalLabels;
   }
 
-  fseek(file, 20, SEEK_CUR); //</value_label_names>
+  //fseek(file, 20, SEEK_CUR); //</value_label_names>
+  test("</value_label_names>", file);
   test("<variable_labels>", file);
 
   /*
@@ -303,7 +316,8 @@ List read_dta(FILE * file, const bool missing) {
     varLabels[i] = nvarLabels;
   }
 
-  fseek(file, 18, SEEK_CUR); //</variable_labels>
+  //fseek(file, 18, SEEK_CUR); //</variable_labels>
+  test("</variable_labels>", file);
   test("<characteristics>", file);
 
   /*
@@ -324,11 +338,11 @@ List read_dta(FILE * file, const bool missing) {
 
   List ch = List();
   CharacterVector chs(3);
-
-  while (chtag.compare(tago)==0)
-  {
-    uint32_t nocharacter = 0;
-    nocharacter = readbin(nocharacter, file, swapit);
+  
+    while (chtag.compare(tago)==0)
+    {
+      uint32_t nocharacter = 0;
+      nocharacter = readbin(nocharacter, file, swapit);
 
     std::string chvarname(chlen, '\0');
     std::string chcharact(chlen, '\0');
@@ -354,7 +368,9 @@ List read_dta(FILE * file, const bool missing) {
     readstring(tago, file, tago.size());
   }
 
-  fseek(file, 14, SEEK_CUR); //[</ch]aracteristics>
+  //fseek(file, 14, SEEK_CUR); //[</ch]aracteristics>
+  
+  test("aracteristics>", file);
   test("<data>", file);
 
   /*
@@ -515,7 +531,8 @@ List read_dta(FILE * file, const bool missing) {
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
 
-  fseek(file, 7, SEEK_CUR); //</data>
+  //fseek(file, 7, SEEK_CUR); //</data>
+  test("</data>", file);
   test("<strls>", file);
 
   /*
@@ -588,7 +605,11 @@ List read_dta(FILE * file, const bool missing) {
   }
 
   // after strls
-  fseek(file, 5, SEEK_CUR); //[</s]trls>
+  //fseek(file, 5, SEEK_CUR); //[</s]trls>
+  //test("</strls>", file);
+ 
+  test("trls>", file);
+
   test("<value_labels>", file);
 
   /*
@@ -607,7 +628,7 @@ List read_dta(FILE * file, const bool missing) {
   readstring(tag, file, tag.size());
 
   List labelList = List(); //put labels into this list
-
+  
   while(lbltag.compare(tag)==0)
   {
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
@@ -695,7 +716,10 @@ List read_dta(FILE * file, const bool missing) {
    * close the file
    */
 
-  fseek(file, 10, SEEK_CUR); // [</val]ue_labels>
+  //fseek(file, 10, SEEK_CUR); // [</val]ue_labels>#
+  //test("</value_labels>", file);
+ 
+  test("ue_labels>", file);
   test("</stata_dta>", file);
 
 

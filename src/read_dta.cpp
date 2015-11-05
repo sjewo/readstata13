@@ -639,7 +639,7 @@ List read_dta(FILE * file, const bool missing) {
     readstring(nlabname, file, nlabname.size());
 
     //padding
-    fseek(file, 3, SEEK_CUR);
+    skip(3, file);
 
     // value_label_table for actual label set
     labn = readbin(labn, file, swapit);
@@ -702,7 +702,7 @@ List read_dta(FILE * file, const bool missing) {
     // add this set to output list
     labelList.push_front( code, labset);
 
-    fseek(file, 6, SEEK_CUR); //</lbl>
+    skip(6, file); //</lbl>
 
     readstring(tag, file, tag.size());
   }

@@ -103,6 +103,7 @@ inline void test(std::string testme, FILE * file)
   readstring(test,file, test.size());
   if (testme.compare(test)!=0)
   {
+    fclose(file);
     Rcpp::warning("\n testme:%s \n test: %s\n", testme.c_str(), test.c_str());
     Rcpp::stop("When attempting to read %s: Something went wrong!", testme.c_str());
   }

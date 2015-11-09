@@ -260,21 +260,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   if (replace.strl) {
     if (version >= 117L) {
-      strl <- do.call(rbind, attr(data,"strl"))
+      strl <- c("")
+      names(strl) <- "00000000000000000000"
+      strl <- c(strl, attr(data,"strl"))
       for (j in seq(ncol(data))[types == 32768] ) {
-        refs <- unique(data[, j])
-        for (ref in refs) {
-          if (length(strl[strl[,1] == ref,2]) != 0){
-            data[data[, j] == ref, j] <- strl[strl[, 1] == ref, 2]
-          }
-        }
+        data[, j] <- strl[data[,j]]
       }
-
-      # recode strL 0 to void
-      for (v in (1:ncol(data))[types == sstrl]) {
-        data[[v]] <- gsub("00000000000000000000","", data[[v]] )
-      }
-
       # if strls are in data.frame remove attribute strl
       attr(data, "strl") <- NULL
     } else {

@@ -548,12 +548,14 @@ List read_dta(FILE * file, const bool missing) {
   std::string tags(3, '\0');
   readstring(tags, file, tags.size());
 
-  List strlstable = List(); //put strLs into this list
+  //put strLs into a named vector
+  CharacterVector strlvalues(0);
+  CharacterVector strlnames(0);
 
   while(gso.compare(tags)==0)
   {
     CharacterVector strls(2);
-    char erg[22];
+    char ref[22];
 
     // FixMe: Strl in 118
     switch (release)
@@ -565,7 +567,7 @@ List read_dta(FILE * file, const bool missing) {
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
-      sprintf(erg, "%010d%010d", v, o);
+      sprintf(ref, "%010d%010d", v, o);
       break;
     }
     case 118:
@@ -577,12 +579,11 @@ List read_dta(FILE * file, const bool missing) {
       o = readbin(o, file, swapit);
       // z = readbin(z, file, swapit);
 
-      sprintf(erg, "%010d%010ld", v, o);
-      // sprintf(erg, "%010ld", z);
+      sprintf(ref, "%010d%010ld", v, o);
+      // sprintf(ref, "%010ld", z);
       break;
     }
     }
-    strls(0) = erg;
 
     // (129 = binary) | (130 = ascii)
     uint8_t t = 0;
@@ -596,12 +597,14 @@ List read_dta(FILE * file, const bool missing) {
     std::string strl(len, '\0');
     readstring(strl, file, strl.size());
 
-    strls(1) = strl;
-
-    strlstable.push_back( strls );
+    strlvalues.push_back( strl );
+    strlnames.push_back( ref );
 
     readstring(tags, file, tags.size());
   }
+
+  // set identifier as name
+  strlvalues.attr("names") = strlnames;
 
   // after strls
   //[</s]trls>
@@ -731,7 +734,7 @@ List read_dta(FILE * file, const bool missing) {
   df.attr("version") = versionIV;
   df.attr("label.table") = labelList;
   df.attr("expansion.fields") = ch;
-  df.attr("strl") = strlstable;
+  df.attr("strl") = strlvalues;
   df.attr("byteorder") = wrap(byteorder);
 
   return df;

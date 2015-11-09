@@ -510,7 +510,7 @@ List read_pre13_dta(FILE * file, const bool missing)
       readstring(nlabname, file, nlabname.size());
 
       //padding
-      skip(3, file);
+      fseek(file, 3, SEEK_CUR);
 
       // value_label_table for actual label set
       labn = readbin(labn, file, swapit);

@@ -85,17 +85,6 @@ static void readstring(std::string &mystring, FILE * fp, int nchar)
     Rcpp::warning("char: a binary read error occurred");
 }
 
-static void skip(uint32_t sbit, FILE * file)
-{
-  uint8_t bit = 0;
-
-  if (fread(&bit, sbit, 1, file) != 1){
-    if (ferror(file)){
-      Rcpp::warning("num: a binary read error occurred.");
-    }
-  }
-}
-
 inline void test(std::string testme, FILE * file)
 {
   std::string test(testme.size(), '\0');

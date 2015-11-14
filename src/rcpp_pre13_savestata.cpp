@@ -121,7 +121,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
     /* write a datalabel */
     if (datalabel.size() > ndlabel)
-      Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
+      Rcpp::warning("Datalabel too long. Resizing. Max size is %d.",
                     ndlabel - 1);
 
     dta.write(datalabel.c_str(), ndlabel);
@@ -131,7 +131,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
     {
       if (timestamp.size() > 18)
       {
-        Rcpp::warning("Timestamp to long. Dropping.");
+        Rcpp::warning("Timestamp too long. Dropping.");
         timestamp = "";
       }
       dta.write(timestamp.c_str(),timestamp.size());

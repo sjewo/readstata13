@@ -1,7 +1,7 @@
 #ifndef SWAP_ENDIAN
 #define SWAP_ENDIAN
 
-#include <stdint.h>
+/*#include <stdint.h>*/
 #include <typeinfo>
 
 #define GCC_VERSION (__GNUC__ * 10000 \

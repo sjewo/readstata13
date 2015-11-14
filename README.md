@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.8")
+devtools::install_github("sjewo/readstata13", ref="0.8.1")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.8")
+install_github("readstata13", username="sjewo", ref="0.8.1")
 ```
 
 To install the current development version from github:
@@ -53,13 +53,18 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 ## Current Status
 
 [![Build Status](https://travis-ci.org/sjewo/readstata13.svg?branch=master)](https://travis-ci.org/sjewo/readstata13)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/web/packages/readstata13/index.html)
 
 ### Working features
+
+* [new in 0.8.1] convert non-integer variables to factors (```nonint.factors=T```) 
+* [new in 0.8.1] handle large datasets
+* [new in 0.8.1] working with strL variables is now a lot faster
 
 * reading data files from disk or url and create a data.frame
 * saving dta files to disk - most features of the dta file format are supported
 * assign variable names
-* read the new strL strings and save them as attribute
+* read the new strL strings and save them as attribute 
 * convert stata label to factors and save them as attribute
 * read some meta data (timestamp, dataset label, formats,...)
 * convert strings to system encoding

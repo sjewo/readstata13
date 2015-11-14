@@ -21,7 +21,23 @@
 #include <Rcpp.h>
 #include <fstream>
 #include <string>
+
+#define GCC_VERSION (__GNUC__ * 10000 \
++ __GNUC_MINOR__ * 100                \
++ __GNUC_PATCHLEVEL__)
+
+/* Test for GCC < 4.9.0 */
+#if GCC_VERSION < 40900 & !__clang__
+    typedef signed char int8_t;
+    typedef unsigned char uint8_t;
+    typedef signed short int16_t;
+    typedef unsigned short uint16_t;
+    typedef signed int int32_t;
+    typedef unsigned int uint32_t;
+#else
 #include <stdint.h>
+#endif
+
 
 #include "read_dta.h"
 #include "read_pre13_dta.h"
@@ -76,6 +92,8 @@ inline void test(std::string testme, FILE * file)
   readstring(test,file, test.size());
   if (testme.compare(test)!=0)
   {
+    fclose(file);
+    Rcpp::warning("\n testme:%s \n test: %s\n", testme.c_str(), test.c_str());
     Rcpp::stop("When attempting to read %s: Something went wrong!", testme.c_str());
   }
 }

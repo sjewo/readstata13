@@ -61,9 +61,8 @@ The function returns a data.frame with attributes. The attributes
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
   \item{label.table:}{List of value labels.}
-  \item{strl:}{List of character vectors for the new strl string variable
-   type. The first element is the identifier and
-   the second element the string.}
+  \item{strl:}{Character vector with long strings for the new strl string variable
+   type. The name of every element is the identifier.}
   \item{expansion.fields:}{list providing variable name, characteristic name
    and the contents of Stata characteristic field.}
   \item{missing:}{List of numeric vectors with Stata missing type for each

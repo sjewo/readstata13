@@ -61,7 +61,6 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 * [new in 0.8.1] handle large datasets
 * [new in 0.8.1] working with strL variables is now a lot faster
 
-
 * reading data files from disk or url and create a data.frame
 * saving dta files to disk - most features of the dta file format are supported
 * assign variable names

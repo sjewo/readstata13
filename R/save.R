@@ -215,18 +215,17 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
       )
   }
 
-  # FixMe: what about AsIs ?
-  vartypen[vartypen == "Date"] <- -sdouble
-
   # is.numeric is TRUE for integers
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
   empty <- sapply(data, function(x) all(is.na(x)))
+  ddates <- vartypen == "Date"
   if (!compress) {
     vartypen[ff] <- sdouble
     vartypen[ii] <- slong
     vartypen[factors] <- slong
+    vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
     varTmin <- sapply(data[ff & !empty], function(x) min(x,na.rm=TRUE))
@@ -255,6 +254,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
       vartypen[factors & factorlength[k] < 101] <- sbyte
     }
 
+    # keep dates as is
+    vartypen[ddates] <- -sdouble    
     # cast empty variables as byte
     vartypen[empty] <- sbyte
   }
@@ -279,10 +280,11 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
     vartypen[[v]] <- str.length[[v]]
   }
+  
+  # save type bevor abs()
+  formats <- vartypen
+
   vartypen <- abs(as.integer(vartypen))
-  # str longer than 2045 chars are in Stata 13+ type strL.
-
-
   attr(data, "types") <- vartypen
 
   # ToDo: Add propper check.
@@ -291,7 +293,6 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   #     message ("at least one variable name is to long.")
 
   # Stata format "%9,0g" means european format
-  formats <- vartypen
   formats[formats == -sdouble] <- "%td"
   formats[formats == sdouble]  <- "%9.0g"
   formats[formats == sfloat]   <- "%9.0g"

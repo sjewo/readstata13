@@ -14,7 +14,8 @@ Description: Function to read and write the Stata file format.
 URL: https://github.com/sjewo/readstata13
 BugReports: https://github.com/sjewo/readstata13/issues
 License: GPL-2 | file LICENSE
-Imports:
+Imports: 
     Rcpp (>= 0.11.5)
 LinkingTo: Rcpp
 ByteCompile: yes
+Suggests: testthat

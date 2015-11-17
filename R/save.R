@@ -64,7 +64,7 @@
 #' @importFrom utils localeToCharset
 #' @export
 save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
-                       convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
+                       convert.factors=TRUE, convert.dates=TRUE, tz="GMT",
                        add.rownames=FALSE, compress=FALSE, version=117,
                        convert.underscore=FALSE){
 

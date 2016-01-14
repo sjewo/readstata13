@@ -348,7 +348,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         {
           double val_d = as<NumericVector>(dat[i])[j];
 
-          if ( (val_d == NA_REAL) | R_IsNA(val_d) )
+          if ( (val_d == NA_REAL) | R_IsNA(val_d)| R_IsNaN(val_d) | std::isinf(val_d))
             val_d = STATA_DOUBLE_NA;
 
           writebin(val_d, dta, swapit);
@@ -361,7 +361,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           double val_d = as<NumericVector>(dat[i])[j];
           float val_f = (double)(val_d);
 
-          if ( (val_d == NA_REAL) | (R_IsNA(val_d)) )
+          if ( (val_d == NA_REAL) | (R_IsNA(val_d)) R_IsNaN(val_d) | std::isinf(val_d) )
             val_f = STATA_FLOAT_NA;
 
           writebin(val_f, dta, swapit);
@@ -373,7 +373,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         {
           int32_t val_l = as<IntegerVector>(dat[i])[j];
 
-          if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) )
+          if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) R_IsNaN(val_d) | std::isinf(val_d) )
             val_l = STATA_INT_NA;
 
           writebin(val_l, dta, swapit);

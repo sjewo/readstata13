@@ -373,7 +373,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         {
           int32_t val_l = as<IntegerVector>(dat[i])[j];
 
-          if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) | R_IsNaN(val_d) | std::isinf(val_d) )
+          if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) | R_IsNaN(val_l) | std::isinf(val_l) )
             val_l = STATA_INT_NA;
 
           writebin(val_l, dta, swapit);

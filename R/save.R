@@ -156,7 +156,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   # Convert logicals to integers
   for (v in names(vartypen[vartypen == "logical"]))
     data[[v]] <- as.integer(data[[v]])
-  vartypen <- sapply(data, class)
+  vartypen <- vtyp <- sapply(data, class)
 
   if (convert.factors){
     message("convert.factors=TRUE: saving factor values as integers and creating
@@ -292,7 +292,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   # Stata format "%9,0g" means european format
   formats <- vartypen
-  formats[formats == -sdouble] <- "%td"
+  formats[vtyp == "Date"]      <- "%td"
   formats[formats == sdouble]  <- "%9.0g"
   formats[formats == sfloat]   <- "%9.0g"
   formats[formats == slong]    <- "%9.0g"

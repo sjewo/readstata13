@@ -57,10 +57,13 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
 ### Working features
 
-* [new in 0.8.1] convert non-integer variables to factors (```nonint.factors=T```) 
-* [new in 0.8.1] handle large datasets
-* [new in 0.8.1] working with strL variables is now a lot faster
-
+* [0.8.2] fix saving of Dates
+* [0.8.2] save with convert.factors by default
+* [0.8.2] test for NaN and inf values while writing missing values and replace with NA
+* [0.8.2] remove message about saving factors
+* [0.8.1] convert non-integer variables to factors (```nonint.factors=T```) 
+* [0.8.1] handle large datasets
+* [0.8.1] working with strL variables is now a lot faster
 * reading data files from disk or url and create a data.frame
 * saving dta files to disk - most features of the dta file format are supported
 * assign variable names

@@ -1,3 +1,9 @@
+0.8.1
+- fix saving of Dates
+- save with convert.factors by default
+- test for NaN and inf values while writing missing values and replace with NA
+- remove message about saving factors
+
 0.8
 - implement reading all version prior 13.
 - clean up code.

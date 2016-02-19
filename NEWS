@@ -1,4 +1,6 @@
 0.8.2
+- save NA values in character vector as empty string
+- convert.underscore=T will convert all non-literal characters to underscores
 - fix saving of Dates
 - save with convert.factors by default
 - test for NaN and inf values while writing missing values and replace with NA

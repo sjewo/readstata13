@@ -144,9 +144,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        data, stringsAsFactors = F)
   }
 
-  if (convert.underscore)
-    names(data) <- gsub("[.]", "_", names(data))
-
+  if (convert.underscore) {
+    names(data) <- gsub("[^a-zA-Z\\d:]", "_", names(data))
+  }
+  
   filepath <- path.expand(file)
 
   # For now we handle numeric and integers

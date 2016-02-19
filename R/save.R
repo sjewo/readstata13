@@ -64,7 +64,7 @@
 #' @importFrom utils localeToCharset
 #' @export
 save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
-                       convert.factors=FALSE, convert.dates=TRUE, tz="GMT",
+                       convert.factors=TRUE, convert.dates=TRUE, tz="GMT",
                        add.rownames=FALSE, compress=FALSE, version=117,
                        convert.underscore=FALSE){
 
@@ -144,9 +144,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        data, stringsAsFactors = F)
   }
 
-  if (convert.underscore)
-    names(data) <- gsub("[.]", "_", names(data))
-
+  if (convert.underscore) {
+    names(data) <- gsub("[^a-zA-Z\\d:]", "_", names(data))
+  }
+  
   filepath <- path.expand(file)
 
   # For now we handle numeric and integers
@@ -159,8 +160,6 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- sapply(data, class)
 
   if (convert.factors){
-    message("convert.factors=TRUE: saving factor values as integers and creating
-            Stata labels.")
     if (version < 106)
       warning("dta-format < 106 does not handle factors. Labels are not saved!")
     # If our data.frame contains factors, we create a label.table
@@ -215,18 +214,17 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
       )
   }
 
-  # FixMe: what about AsIs ?
-  vartypen[vartypen == "Date"] <- -sdouble
-
   # is.numeric is TRUE for integers
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
   empty <- sapply(data, function(x) all(is.na(x)))
+  ddates <- vartypen == "Date"
   if (!compress) {
     vartypen[ff] <- sdouble
     vartypen[ii] <- slong
     vartypen[factors] <- slong
+    vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
     varTmin <- sapply(data[ff & !empty], function(x) min(x,na.rm=TRUE))
@@ -255,6 +253,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
       vartypen[factors & factorlength[k] < 101] <- sbyte
     }
 
+    # keep dates as is
+    vartypen[ddates] <- -sdouble    
     # cast empty variables as byte
     vartypen[empty] <- sbyte
   }
@@ -279,10 +279,11 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
     vartypen[[v]] <- str.length[[v]]
   }
+  
+  # save type bevor abs()
+  formats <- vartypen
+
   vartypen <- abs(as.integer(vartypen))
-  # str longer than 2045 chars are in Stata 13+ type strL.
-
-
   attr(data, "types") <- vartypen
 
   # ToDo: Add propper check.
@@ -291,7 +292,6 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   #     message ("at least one variable name is to long.")
 
   # Stata format "%9,0g" means european format
-  formats <- vartypen
   formats[formats == -sdouble] <- "%td"
   formats[formats == sdouble]  <- "%9.0g"
   formats[formats == sfloat]   <- "%9.0g"

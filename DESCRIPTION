@@ -18,3 +18,4 @@ Imports:
     Rcpp (>= 0.11.5)
 LinkingTo: Rcpp
 ByteCompile: yes
+RoxygenNote: 5.0.1

@@ -291,6 +291,17 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   #   if (sapply(valLabel,FUN=maxchar) >= 33)
   #     message ("at least one variable name is to long.")
 
+  # Resize varnames to 32. Stata requires this. It allows storing 32*4 bytes,
+  # but can not work with longer variable names. Chars can be 1 - 4 bytes we
+  # count the varnames in R. Get nchars and trim them.
+  varnames <- names(data)
+  lenvarnames <- sapply(varnames, nchar)
+
+  if (any (lenvarnames > 32) & version >= 117) {
+    message ("Varname to long. Resizing. Max size is 32.")
+    names(data) <- sapply(varnames, strtrim, width = 32)
+  }
+
   # Stata format "%9,0g" means european format
   formats[formats == -sdouble] <- "%td"
   formats[formats == sdouble]  <- "%9.0g"

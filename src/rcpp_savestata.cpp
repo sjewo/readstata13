@@ -221,6 +221,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Varname to long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
+      nvarname.resize(nvarnameslen - 1);
       dta.write(nvarname.c_str(),nvarnameslen);
     }
     dta.write(endvarn.c_str(), endvarn.size());

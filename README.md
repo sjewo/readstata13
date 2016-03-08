@@ -56,6 +56,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 ### Working features
+* [0.8.3] restrict length of varnames to 32 chars for compatibility with Stata 14
 * [0.8.2] save NA values in character vector as empty string
 * [0.8.2] convert.underscore=T will convert all non-literal characters to underscores
 * [0.8.2] fix saving of Dates

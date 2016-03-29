@@ -310,7 +310,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   formats[formats == sint]     <- "%9.0g"
   formats[formats == sbyte]    <- "%9.0g"
   formats[vartypen >= 0 & vartypen <= sstr] <-
-    paste0("%-", formats[vartypen >= 0 & vartypen <= sstr], "s")
+    paste0("%", formats[vartypen >= 0 & vartypen <= sstr], "s")
 
   attr(data, "formats") <- formats
 

@@ -1,3 +1,17 @@
+0.8.2
+- save NA values in character vector as empty string
+- convert.underscore=T will convert all non-literal characters to underscores
+- fix saving of Dates
+- save with convert.factors by default
+- test for NaN and inf values while writing missing values and replace with NA
+- remove message about saving factors
+
+0.8.1
+- convert non-integer variables to factors (nonint.factors=T)
+- working with strL variables is now a lot faster (thank to Magnus Thor Torfason)
+- fix handling of large datasets
+- some code cleanups
+
 0.8
 - implement reading all version prior 13.
 - clean up code.

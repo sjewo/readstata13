@@ -388,6 +388,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           /* FixMe: Storing the vector in b for each string. */
           CharacterVector b = as<CharacterVector>(dat[i]);
           string val_s = as<string>(b[j]);
+          
+          if(val_s == "NA")
+            val_s = "";
+
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>maxstrsize)
           {

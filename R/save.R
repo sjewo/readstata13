@@ -160,8 +160,13 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- vtyp <- sapply(data, class)
 
   if (convert.factors){
-    if (version < 106)
-      warning("dta-format < 106 does not handle factors. Labels are not saved!")
+    if (version < 106) {
+
+      hasfactors <- sapply(data, is.factor)
+
+      if (any(hasfactors))
+        warning("dta-format < 106 does not handle factors. Labels are not saved!")
+    }
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
     f.names <- attr(factors,"names")
@@ -239,6 +244,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     # replace numerics as intergers
     data[ff & numToCompress] <- sapply(data[ff & numToCompress], as.integer)
 
+    # recheck after update
     ff <- sapply(data, is.numeric)
     ii <- sapply(data, is.integer)
 

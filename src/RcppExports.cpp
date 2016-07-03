@@ -41,14 +41,3 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
-// strl_replace
-SEXP strl_replace(Rcpp::DataFrame& dat);
-RcppExport SEXP readstata13_strl_replace(SEXP datSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject __result;
-    Rcpp::RNGScope __rngScope;
-    Rcpp::traits::input_parameter< Rcpp::DataFrame& >::type dat(datSEXP);
-    __result = Rcpp::wrap(strl_replace(dat));
-    return __result;
-END_RCPP
-}

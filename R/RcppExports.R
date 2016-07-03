@@ -18,7 +18,3 @@ stata_save <- function(filePath, dat) {
     .Call('readstata13_stata_save', PACKAGE = 'readstata13', filePath, dat)
 }
 
-strl_replace <- function(dat) {
-    .Call('readstata13_strl_replace', PACKAGE = 'readstata13', dat)
-}
-

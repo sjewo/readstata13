@@ -147,7 +147,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (convert.underscore) {
     names(data) <- gsub("[^a-zA-Z\\d:]", "_", names(data))
   }
-  
+
   filepath <- path.expand(file)
 
   # For now we handle numeric and integers
@@ -220,6 +220,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   factors <- sapply(data, is.factor)
   empty <- sapply(data, function(x) all(is.na(x)))
   ddates <- vartypen == "Date"
+
+  # default no compression: numeric as double; integer as long; date as date;
+  # empty as byte
   if (!compress) {
     vartypen[ff] <- sdouble
     vartypen[ii] <- slong
@@ -227,15 +230,21 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
-    varTmin <- sapply(data[ff & !empty], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[ff & !empty], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[!empty], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[!empty], function(x) max(x,na.rm=TRUE))
 
-    # check if numeric is float or double
-    fminmax <- 1.701e+38
-    for (k in names(which(ff & !empty))) {
-      vartypen[k][varTmin[k] < (-fminmax) | varTmax[k] > fminmax] <- sdouble
-      vartypen[k][varTmin[k] > (-fminmax) & varTmax[k] < fminmax] <- sfloat
-    }
+    # check if numerics can be stored as integers
+    numToCompress <- sapply(data[ff], saveToExport)
+    numToCompress <<- numToCompress
+
+    # replace numerics as intergers
+    data[ff & numToCompress] <- sapply(data[ff & numToCompress], as.integer)
+    print(data)
+
+    ff <- sapply(data, is.numeric)
+    ii <- sapply(data, is.integer)
+
+    vartypen[ff] <- sdouble
 
     bmin <- -127; bmax <- 100
     imin <- -32767; imax <- 32740

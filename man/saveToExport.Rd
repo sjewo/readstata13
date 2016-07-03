@@ -2,9 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{saveToExport}
 \alias{saveToExport}
-\title{Check if numeric vector can be expressed as interger vector
-Compression can reduce numeric vectors as integers if the vector does only
-contain integer type data.}
+\title{Check if numeric vector can be expressed as interger vector}
 \usage{
 saveToExport(x)
 }
@@ -12,7 +10,6 @@ saveToExport(x)
 \item{x}{vector of data frame}
 }
 \description{
-Check if numeric vector can be expressed as interger vector
 Compression can reduce numeric vectors as integers if the vector does only
 contain integer type data.
 }

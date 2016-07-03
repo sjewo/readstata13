@@ -1,7 +1,7 @@
 Package: readstata13
 Type: Package
 Title: Import Stata Data Files
-Version: 0.8.1
+Version: 0.8.3
 Authors@R: c(
     person("Jan Marvin", "Garbuszus",
     email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut")),
@@ -18,3 +18,4 @@ Imports:
     Rcpp (>= 0.11.5)
 LinkingTo: Rcpp
 ByteCompile: yes
+RoxygenNote: 5.0.1

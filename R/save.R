@@ -144,9 +144,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        data, stringsAsFactors = F)
   }
 
-  if (convert.underscore)
-    names(data) <- gsub("[.]", "_", names(data))
-
+  if (convert.underscore) {
+    names(data) <- gsub("[^a-zA-Z\\d:]", "_", names(data))
+  }
+  
   filepath <- path.expand(file)
 
   # For now we handle numeric and integers
@@ -159,8 +160,6 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- vtyp <- sapply(data, class)
 
   if (convert.factors){
-    message("convert.factors=TRUE: saving factor values as integers and creating
-            Stata labels.")
     if (version < 106)
       warning("dta-format < 106 does not handle factors. Labels are not saved!")
     # If our data.frame contains factors, we create a label.table
@@ -292,6 +291,17 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   #   if (sapply(valLabel,FUN=maxchar) >= 33)
   #     message ("at least one variable name is to long.")
 
+  # Resize varnames to 32. Stata requires this. It allows storing 32*4 bytes,
+  # but can not work with longer variable names. Chars can be 1 - 4 bytes we
+  # count the varnames in R. Get nchars and trim them.
+  varnames <- names(data)
+  lenvarnames <- sapply(varnames, nchar)
+
+  if (any (lenvarnames > 32) & version >= 117) {
+    message ("Varname to long. Resizing. Max size is 32.")
+    names(data) <- sapply(varnames, strtrim, width = 32)
+  }
+
   # Stata format "%9,0g" means european format
   formats <- vartypen
   formats[vtyp == "Date"]      <- "%td"
@@ -301,7 +311,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   formats[formats == sint]     <- "%9.0g"
   formats[formats == sbyte]    <- "%9.0g"
   formats[vartypen >= 0 & vartypen <= sstr] <-
-    paste0("%-", formats[vartypen >= 0 & vartypen <= sstr], "s")
+    paste0("%", formats[vartypen >= 0 & vartypen <= sstr], "s")
 
   attr(data, "formats") <- formats
 

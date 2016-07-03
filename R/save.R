@@ -235,8 +235,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
-    varTmin <- sapply(data[!empty], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[!empty], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[(ff | ii) & !empty], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[(ff | ii) & !empty], function(x) max(x,na.rm=TRUE))
 
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)

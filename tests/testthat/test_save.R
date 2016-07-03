@@ -18,7 +18,7 @@ context("Saving datasets")
 
 
 datacompare <- function(x, y) {
-  all(unlist(Map(identical, x, y)))
+  all(unlist(Map(all.equal, x, y)))
 }
 
 

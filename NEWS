@@ -1,3 +1,10 @@
+testing
+- Stop compression of doubles as floats. Now test if compression of doubles as
+  interger types is possible.
+
+0.8.3
+- restrict length of varnames to 32 chars for compatibility with Stata 14
+
 0.8.2
 - save NA values in character vector as empty string
 - convert.underscore=T will convert all non-literal characters to underscores

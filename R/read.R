@@ -295,7 +295,6 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     ##  still have them. Format *%d*... is equivalent to modern
     ##  format *%td*... and *%-d*... is equivalent to *%-td*...'
 
-    # dates <- if (attr(data, "version") >= 113L) grep("^%(-|)(d|td)", ff) else grep("%-*d", ff)
     dates <- grep("^%(-|)(d|td)", ff)
     ## avoid as.Date in case strptime is messed up
     base <- structure(-3653L, class = "Date") # Stata dates are integer vars

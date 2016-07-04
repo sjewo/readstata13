@@ -436,3 +436,67 @@ test_that("data label", {
 })
 
 rm(files)
+
+
+#### convert dates TRUE ####
+
+if (dir.exists13("data"))
+  unlink("data")
+dir.create("data")
+
+dd <- data.frame( dat = Sys.Date() )
+
+save.dta13(dd, "data/dta_118.dta", version = 118, convert.dates = TRUE)
+save.dta13(dd, "data/dta_117.dta", version = 117, convert.dates = TRUE)
+save.dta13(dd, "data/dta_115.dta", version = 115, convert.dates = TRUE)
+save.dta13(dd, "data/dta_114.dta", version = 114, convert.dates = TRUE)
+save.dta13(dd, "data/dta_113.dta", version = 113, convert.dates = TRUE)
+save.dta13(dd, "data/dta_112.dta", version = 112, convert.dates = TRUE)
+save.dta13(dd, "data/dta_111.dta", version = 111, convert.dates = TRUE)
+save.dta13(dd, "data/dta_110.dta", version = 110, convert.dates = TRUE)
+save.dta13(dd, "data/dta_108.dta", version = 108, convert.dates = TRUE)
+save.dta13(dd, "data/dta_107.dta", version = 107, convert.dates = TRUE)
+save.dta13(dd, "data/dta_106.dta", version = 106, convert.dates = TRUE)
+save.dta13(dd, "data/dta_105.dta", version = 105, convert.dates = TRUE)
+save.dta13(dd, "data/dta_104.dta", version = 104, convert.dates = TRUE)
+save.dta13(dd, "data/dta_103.dta", version = 103, convert.dates = TRUE)
+save.dta13(dd, "data/dta_102.dta", version = 102, convert.dates = TRUE)
+
+
+dd118 <- read.dta13("data/dta_118.dta")
+dd117 <- read.dta13("data/dta_117.dta")
+dd115 <- read.dta13("data/dta_115.dta")
+dd114 <- read.dta13("data/dta_114.dta")
+dd113 <- read.dta13("data/dta_113.dta")
+dd112 <- read.dta13("data/dta_112.dta")
+dd111 <- read.dta13("data/dta_111.dta")
+dd110 <- read.dta13("data/dta_110.dta")
+dd108 <- read.dta13("data/dta_108.dta")
+dd107 <- read.dta13("data/dta_107.dta")
+dd106 <- read.dta13("data/dta_106.dta")
+dd105 <- read.dta13("data/dta_105.dta")
+dd104 <- read.dta13("data/dta_104.dta")
+dd103 <- read.dta13("data/dta_103.dta")
+dd102 <- read.dta13("data/dta_102.dta")
+
+unlink("data")
+
+test_that("convert.dates TRUE", {
+  # Check that rownames are identical
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  expect_true(datacompare(dd, dd115))
+  expect_true(datacompare(dd, dd114))
+  expect_true(datacompare(dd, dd113))
+  expect_true(datacompare(dd, dd112))
+  expect_true(datacompare(dd, dd111))
+  expect_true(datacompare(dd, dd110))
+  expect_true(datacompare(dd, dd108))
+  expect_true(datacompare(dd, dd107))
+  expect_true(datacompare(dd, dd106))
+  expect_true(datacompare(dd, dd105))
+  expect_true(datacompare(dd, dd104))
+  expect_true(datacompare(dd, dd103))
+  expect_true(datacompare(dd, dd102))
+})
+

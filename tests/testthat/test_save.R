@@ -31,7 +31,7 @@ data(mtcars)
 #### version ####
 
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- mtcars
@@ -69,7 +69,7 @@ dd103 <- read.dta13("data/dta_103.dta")
 dd102 <- read.dta13("data/dta_102.dta")
 
 # rm -r
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("version", {
   expect_true(datacompare(dd, dd118))
@@ -89,12 +89,12 @@ test_that("version", {
   expect_true(datacompare(dd, dd102))
 })
 
-rm(files)
+# rm(list = files)
 
 #### compress ####
 
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- mtcars
@@ -132,7 +132,7 @@ dd103 <- read.dta13("data/dta_103.dta")
 dd102 <- read.dta13("data/dta_102.dta")
 
 # rm -r
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("compress", {
   expect_true(datacompare(dd, dd118))
@@ -152,12 +152,12 @@ test_that("compress", {
   expect_true(datacompare(dd, dd102))
 })
 
-rm(files)
+# rm(list = files)
 
 #### convert.factors TRUE ####
 
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- mtcars
@@ -198,7 +198,7 @@ dd107 <- read.dta13("data/dta_107.dta")
 # dd102 <- read.dta13("data/dta_102.dta")
 
 # rm -r
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("convert.factors TRUE", {
   expect_true(datacompare(dd, dd118))
@@ -218,12 +218,12 @@ test_that("convert.factors TRUE", {
   # expect_true(datacompare(dd, dd102))
 })
 
-rm(files)
+# rm(list = files)
 
 #### convert.factors FALSE ####
 
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- mtcars
@@ -268,7 +268,7 @@ dd <- mtcars
 dd$am <- dd$am + 1
 
 # rm -r
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("convert.factors TRUE", {
   expect_true(datacompare(dd, dd118))
@@ -288,11 +288,11 @@ test_that("convert.factors TRUE", {
   # expect_true(datacompare(dd, dd102))
 })
 
-rm(files)
+# rm(list = files)
 
 #### add rownames TRUE ####
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- mtcars
@@ -331,7 +331,7 @@ dd103 <- read.dta13("data/dta_103.dta", add.rownames = TRUE)
 dd102 <- read.dta13("data/dta_102.dta", add.rownames = TRUE)
 
 # rm -r
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("add.rownames TRUE", {
   # Check that rownames are identical
@@ -369,14 +369,14 @@ test_that("add.rownames TRUE", {
   expect_true(datacompare(dd, dd102))
 })
 
-rm(files)
+# rm(list = files)
 
 
 #### data label TRUE ####
 dl <- "mtcars data file"
 
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- mtcars
@@ -414,7 +414,7 @@ dd104 <- read.dta13("data/dta_104.dta")
 dd103 <- read.dta13("data/dta_103.dta")
 # dd102 <- read.dta13("data/dta_102.dta")
 
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("data label", {
   # Check that rownames are identical
@@ -435,13 +435,13 @@ test_that("data label", {
   # expect_equal(dl, attr(dd102, "datalabel"))
 })
 
-rm(files)
+# rm(list = files)
 
 
 #### convert dates TRUE ####
 
 if (dir.exists13("data"))
-  unlink("data")
+  unlink("data", recursive = TRUE)
 dir.create("data")
 
 dd <- data.frame( dat = Sys.Date() )
@@ -479,7 +479,7 @@ dd104 <- read.dta13("data/dta_104.dta")
 dd103 <- read.dta13("data/dta_103.dta")
 dd102 <- read.dta13("data/dta_102.dta")
 
-unlink("data")
+unlink("data", recursive = TRUE)
 
 test_that("convert.dates TRUE", {
   # Check that rownames are identical
@@ -566,3 +566,4 @@ test_that("replace.strl TRUE", {
   # expect_true(datacompare(dd, dd102))
 })
 
+# rm(list = files)

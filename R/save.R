@@ -241,8 +241,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
 
+    saveToConvert <- names(ff[numToCompress])
     # replace numerics as intergers
-    data[ff & numToCompress] <- sapply(data[ff & numToCompress], as.integer)
+    data[saveToConvert] <- sapply(data[saveToConvert], as.integer)
 
     # recheck after update
     ff <- sapply(data, is.numeric)

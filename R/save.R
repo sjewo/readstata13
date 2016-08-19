@@ -241,13 +241,15 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
 
-    saveToConvert <- names(ff[numToCompress])
-    # replace numerics as intergers
-    data[saveToConvert] <- sapply(data[saveToConvert], as.integer)
+    if (any(numToCompress)) {
+      saveToConvert <- names(ff[numToCompress])
+      # replace numerics as intergers
+      data[saveToConvert] <- sapply(data[saveToConvert], as.integer)
 
-    # recheck after update
-    ff <- sapply(data, is.numeric)
-    ii <- sapply(data, is.integer)
+      # recheck after update
+      ff <- sapply(data, is.numeric)
+      ii <- sapply(data, is.integer)
+    }
 
     vartypen[ff] <- sdouble
 

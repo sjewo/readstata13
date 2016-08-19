@@ -1,7 +1,7 @@
 clear all
 
 set obs 4
-gen num = _n
+gen int num = _n
 label variable num дцья
 
 label define numlabel 1 "д" 2 "ц" 3 "ь" 4 "я"

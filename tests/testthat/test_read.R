@@ -4,7 +4,12 @@ context("Reading datasets")
 
 
 datacompare <- function(x, y) {
-  all(unlist(Map(all.equal, x, y)))
+  res <- unlist(Map(all.equal, x, y))
+
+  # with all(unlist(res)) if not TRUE, a warning is thrown
+  res <- all(unlist(lapply(res, isTRUE)))
+
+  res
 }
 
 
@@ -68,6 +73,28 @@ dd118 <- read.dta13(nonint, convert.factors = TRUE, generate.factors = TRUE,
 
 test_that("nonint.factors TRUE", {
   expect_true(datacompare(dd, dd118))
+})
+
+
+# rm(list = files)
+
+#### encoding TRUE ####
+
+umlauts <- c("ä","ö","ü","ß")
+
+dd <- data.frame(num = factor(1:4, levels = 1:4, labels = umlauts),
+                 chr = umlauts, stringsAsFactors = FALSE)
+
+encode <- system.file("extdata", "encode.dta", package="readstata13")
+
+# no Encoding and with Encoding
+dd_nE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE)
+dd_wE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
+                    encoding = "CP1252")
+
+test_that("encoding CP1252", {
+  expect_false(datacompare(dd, dd_nE))
+  expect_true(datacompare(dd, dd_wE))
 })
 
 

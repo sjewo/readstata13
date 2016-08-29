@@ -31,7 +31,7 @@
 #'  hexcode.
 #' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted
 #'  to Stata date time format. Code from \code{foreign::write.dta}
-#' @param convert.underscore \emph{logica.} If \code{TRUE}, in variable names
+#' @param convert.underscore \emph{logical.} If \code{TRUE}, in variable names
 #'  dots will be converted to underscores.
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames

@@ -140,45 +140,19 @@ encode <- system.file("extdata", "encode.dta", package="readstata13")
 # Stata 12
 encodecp <- system.file("extdata", "encodecp.dta", package="readstata13")
 
-# no Encoding and with Encoding
-# works on modern linux because stata 14 uses utf-8
-dd_nE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
-                    encoding = NULL)
-# This should work on windows
-ddcp_nE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE,
-                    encoding = NULL)
-
-# This should work on windows and modern linux
-dd_fE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
-                    fromEncoding = "UtF-8")
-ddcp_fE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE,
-                     fromEncoding = "CP1252")
+ddutf_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE, 
+                       encoding="UTF-8")
 dd_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE)
+
 ddcp_aE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE)
 
-# This should not work on windows and linux
-dd_nfE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
-                    fromEncoding = "CP1252")
-ddcp_nfE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE,
-                      fromEncoding = "UtF-8")
-
-
 test_that("encoding CP1252", {
-  if(.Platform$OS.type == "unix") {
-  expect_false(datacompare(ddcp, ddcp_nE))
-  } else {
-    expect_true(datacompare(ddcp, ddcp_nE))
-  }
-  expect_true(datacompare(ddcp, ddcp_fE))
   expect_true(datacompare(ddcp, ddcp_aE))
-  expect_false(datacompare(ddcp, ddcp_nfE))
 })
 
 test_that("encoding UTF-8 (Stata 14)", {
-  expect_true(datacompare(dd, dd_nE))
-  expect_true(datacompare(dd, dd_fE))
   expect_true(datacompare(dd, dd_aE))
-  expect_false(datacompare(dd, dd_nfE))
+  expect_true(datacompare(ddutf, ddutf_aE))
 })
 
 # rm(list = files)

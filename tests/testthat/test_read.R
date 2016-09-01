@@ -57,6 +57,18 @@ test_that("generate.factors TRUE", {
 
 # rm(list = files)
 
+#### generate factors FALSE ####
+
+dd <- data.frame(v1 = as.numeric(1:2))
+
+gen_fac <- system.file("extdata", "gen_fac.dta", package="readstata13")
+
+suppressWarnings(dd118 <- read.dta13(gen_fac, convert.factors = TRUE, generate.factors = FALSE))
+
+test_that("generate.factors TRUE", {
+  expect_true(datacompare(dd, dd118))
+})
+
 
 #### convert.underscore = TRUE ####
 

@@ -150,7 +150,7 @@ test_that("encoding CP1252", {
 
 test_that("encoding UTF-8 (Stata 14)", {
   expect_true(datacompare(dd$chr[1:4], dd_aE$chr[1:4]))
-  expect_true(datacompare(ddutf, ddutf_aE))
+  expect_true(datacompare(dd, ddutf_aE))
 })
 
 # rm(list = files)

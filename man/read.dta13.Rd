@@ -18,9 +18,11 @@ value labels are created.}
 \item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is
 TRUE, missing factor labels are created from integers.}
 
-\item{encoding}{\emph{character.} Strings can be converted from Windows-1252
-to system encoding. Options are "CP1252" or "UTF-8" to specify target
-encoding explicitly. Set encoding=NULL to stop reencoding.}
+\item{encoding}{\emph{character.} Strings can be converted from Windows-1252 or UTF-8
+to system encoding. Options are "latin1" or "UTF-8" to specify target
+encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
+ which can't be displayed in the current locale. 
+ Set encoding=NULL to stop reencoding.}
 
 \item{fromEncoding}{\emph{character.} We expect strings to be encoded as
 "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14

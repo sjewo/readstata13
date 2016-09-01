@@ -120,22 +120,65 @@ test_that("nonint.factors TRUE", {
 
 #### encoding TRUE ####
 
-umlauts <- c("ä","ö","ü","ß")
+umlauts <- c("ä","ö","ü","ß","€","Œ")
 
-dd <- data.frame(num = factor(1:4, levels = 1:4, labels = umlauts),
+ddutf <- ddcp <- dd <- data.frame(num = factor(1:6, levels = 1:6, labels = umlauts),
                  chr = umlauts, stringsAsFactors = FALSE)
 
+# Dataset in CP1252
+ddcp$chr <- iconv(dd$chr, to="CP1252")
+ddcp$chr[5:6] <- iconv(c("EUR","OE"), to="CP1252")
+levels(ddcp$num) <- iconv(levels(dd$num), to="CP1252")
+levels(ddcp$num)[5:6] <- iconv(c("EUR","OE"), to="CP1252")
+
+# Dataset in UTF-8
+ddutf$chr <- iconv(dd$chr, to="UTF-8")
+levels(ddutf$num) <- iconv(levels(dd$num), to="UTF-8")
+
+# Stata 14
 encode <- system.file("extdata", "encode.dta", package="readstata13")
+# Stata 12
+encodecp <- system.file("extdata", "encodecp.dta", package="readstata13")
 
 # no Encoding and with Encoding
-dd_nE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE)
-dd_wE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
-                    encoding = "CP1252")
+# works on modern linux because stata 14 uses utf-8
+dd_nE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
+                    encoding = NULL)
+# This should work on windows
+ddcp_nE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE,
+                    encoding = NULL)
+
+# This should work on windows and modern linux
+dd_fE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
+                    fromEncoding = "UtF-8")
+ddcp_fE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE,
+                     fromEncoding = "CP1252")
+dd_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE)
+ddcp_aE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE)
+
+# This should not work on windows and linux
+dd_nfE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
+                    fromEncoding = "CP1252")
+ddcp_nfE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE,
+                      fromEncoding = "UtF-8")
+
 
 test_that("encoding CP1252", {
-  expect_false(datacompare(dd, dd_nE))
-  expect_true(datacompare(dd, dd_wE))
+  if(.Platform$OS.type == "unix") {
+  expect_false(datacompare(ddcp, ddcp_nE))
+  } else {
+    expect_true(datacompare(ddcp, ddcp_nE))
+  }
+  expect_true(datacompare(ddcp, ddcp_fE))
+  expect_true(datacompare(ddcp, ddcp_aE))
+  expect_false(datacompare(ddcp, ddcp_nfE))
 })
 
+test_that("encoding UTF-8 (Stata 14)", {
+  expect_true(datacompare(dd, dd_nE))
+  expect_true(datacompare(dd, dd_fE))
+  expect_true(datacompare(dd, dd_aE))
+  expect_false(datacompare(dd, dd_nfE))
+})
 
 # rm(list = files)

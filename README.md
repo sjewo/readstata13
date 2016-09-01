@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.8.2")
+devtools::install_github("sjewo/readstata13", ref="0.8.3")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.8.2")
+install_github("readstata13", username="sjewo", ref="0.8.3")
 ```
 
 To install the current development version from github:
@@ -57,6 +57,8 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
 ### Working features
 * [0.8.3] restrict length of varnames to 32 chars for compatibility with Stata 14
+* [0.8.3] add many function tests
+* [0.8.3] avoid converting of double to floats while writing compressed files
 * [0.8.2] save NA values in character vector as empty string
 * [0.8.2] convert.underscore=T will convert all non-literal characters to underscores
 * [0.8.2] fix saving of Dates

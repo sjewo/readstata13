@@ -31,7 +31,7 @@
 #'  hexcode.
 #' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted
 #'  to Stata date time format. Code from \code{foreign::write.dta}
-#' @param convert.underscore \emph{logica.} If \code{TRUE}, in variable names
+#' @param convert.underscore \emph{logical.} If \code{TRUE}, in variable names
 #'  dots will be converted to underscores.
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames
@@ -160,8 +160,13 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- vtyp <- sapply(data, class)
 
   if (convert.factors){
-    if (version < 106)
-      warning("dta-format < 106 does not handle factors. Labels are not saved!")
+    if (version < 106) {
+
+      hasfactors <- sapply(data, is.factor)
+
+      if (any(hasfactors))
+        warning("dta-format < 106 does not handle factors. Labels are not saved!")
+    }
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
     f.names <- attr(factors,"names")
@@ -230,19 +235,21 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
-    varTmin <- sapply(data[!empty], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[!empty], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[(ff | ii) & !empty], function(x) min(x,na.rm=TRUE))
+    varTmax <- sapply(data[(ff | ii) & !empty], function(x) max(x,na.rm=TRUE))
 
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
-    numToCompress <<- numToCompress
 
-    # replace numerics as intergers
-    data[ff & numToCompress] <- sapply(data[ff & numToCompress], as.integer)
-    print(data)
+    if (any(numToCompress)) {
+      saveToConvert <- names(ff[numToCompress])
+      # replace numerics as intergers
+      data[saveToConvert] <- sapply(data[saveToConvert], as.integer)
 
-    ff <- sapply(data, is.numeric)
-    ii <- sapply(data, is.integer)
+      # recheck after update
+      ff <- sapply(data, is.numeric)
+      ii <- sapply(data, is.integer)
+    }
 
     vartypen[ff] <- sdouble
 

@@ -6,4 +6,6 @@ src/*.o
 src/*.so
 src/*.dll
 .directory
+.swp
+.*.Rnb.cached
 tests/*

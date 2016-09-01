@@ -26,7 +26,7 @@
 #'  TRUE, missing factor labels are created from integers.
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252
 #'  to system encoding. Options are "CP1252" or "UTF-8" to specify target
-#'  encoding explicitly.
+#'  encoding explicitly. Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
 #'  "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
 #'  or newer "UTF-8" is used. In some situation the used encoding can differ for
@@ -109,7 +109,7 @@
 #' @importFrom stats na.omit 
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = NULL, fromEncoding=NULL,
+                       encoding = localeToCharset()[1], fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = FALSE,
                        add.rownames = FALSE, nonint.factors=FALSE) {
@@ -198,8 +198,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   var.labels <- attr(data, "var.labels")
 
   ## Encoding
-  if (!is.null(encoding)) {
-
+  if(!is.null(encoding)) {
+    
     # set from encoding by dta version
     if(is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
@@ -231,7 +231,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
     # recode character variables
     for (v in (1:ncol(data))[types <= sstr]) {
-      data[, v] <- iconv(data[, v], from=fromEncoding, sub="byte") #to=encoding?
+      data[, v] <- iconv(data[, v], from=fromEncoding, to=encoding, sub="byte")
     }
 
     # expansion.field
@@ -254,7 +254,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         attr(data, "strl") <- strl
       }
     }
-  }
+}
 
   var.labels <- attr(data, "var.labels")
 

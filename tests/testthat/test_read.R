@@ -86,8 +86,8 @@ test_that("generate.factors TRUE", {
 
 #### convert.underscore = FALSE ####
 
-dd <- data.frame(v.1 = as_numeric(1:2), 
-                 v.2  = as_numeric(1:2),
+dd <- data.frame(v.1 = as.numeric(1:2), 
+                 v.2  = as.numeric(1:2),
                  long_name_multiple_underscores = as.numeric(1:2))
 
 underscore <- system.file("extdata", "underscore.dta", package="readstata13")

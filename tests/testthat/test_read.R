@@ -126,10 +126,8 @@ ddutf <- ddcp <- dd <- data.frame(num = factor(1:6, levels = 1:6, labels = umlau
                  chr = umlauts, stringsAsFactors = FALSE)
 
 # Dataset in CP1252
-ddcp$chr <- iconv(dd$chr, to="CP1252")
-ddcp$chr[5:6] <- iconv(c("EUR","OE"), to="CP1252")
-levels(ddcp$num) <- iconv(levels(dd$num), to="CP1252")
-levels(ddcp$num)[5:6] <- iconv(c("EUR","OE"), to="CP1252")
+levels(ddcp$num)[5:6] <- c("EUR","OE")
+ddcp$chr[5:6] <- c("EUR","OE")
 
 # Dataset in UTF-8
 ddutf$chr <- iconv(dd$chr, to="UTF-8")
@@ -151,7 +149,7 @@ test_that("encoding CP1252", {
 })
 
 test_that("encoding UTF-8 (Stata 14)", {
-  expect_true(datacompare(dd, dd_aE))
+  expect_true(datacompare(dd$chr[1:4], dd_aE$chr[1:4]))
   expect_true(datacompare(ddutf, ddutf_aE))
 })
 

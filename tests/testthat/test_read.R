@@ -121,17 +121,15 @@ test_that("nonint.factors TRUE", {
 #### encoding TRUE ####
 
 umlauts <- c("ä","ö","ü","ß","€","Œ")
+Encoding(umlauts) <- "UTF-8"
 
-ddutf <- ddcp <- dd <- data.frame(num = factor(1:6, levels = 1:6, labels = umlauts),
+ddcp <- dd <- data.frame(num = factor(1:6, levels = 1:6, labels = umlauts),
                  chr = umlauts, stringsAsFactors = FALSE)
 
 # Dataset in CP1252
 levels(ddcp$num)[5:6] <- c("EUR","OE")
 ddcp$chr[5:6] <- c("EUR","OE")
 
-# Dataset in UTF-8
-ddutf$chr <- iconv(dd$chr, to="UTF-8")
-levels(ddutf$num) <- iconv(levels(dd$num), to="UTF-8")
 
 # Stata 14
 encode <- system.file("extdata", "encode.dta", package="readstata13")
@@ -140,6 +138,8 @@ encodecp <- system.file("extdata", "encodecp.dta", package="readstata13")
 
 ddutf_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE, 
                        encoding="UTF-8")
+
+# On windows the last two characters will fail on default (not in latin1)
 dd_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE)
 
 ddcp_aE <- read.dta13(encodecp, convert.factors = TRUE, generate.factors = TRUE)

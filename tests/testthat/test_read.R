@@ -55,8 +55,36 @@ test_that("generate.factors TRUE", {
   expect_true(datacompare(dd, dd118))
 })
 
-
 # rm(list = files)
+
+
+#### convert.underscore = TRUE ####
+
+dd <- data.frame(v.1 = as.numeric(1:2), 
+                 v.2  = as.numeric(1:2),
+                 long.name.multiple.underscores = as.numeric(1:2))
+
+underscore <- system.file("extdata", "underscore.dta", package="readstata13")
+
+dd118 <- read.dta13(underscore, convert.underscore = T)
+
+test_that("generate.factors TRUE", {
+  expect_true(datacompare(dd, dd118))
+})
+
+#### convert.underscore = FALSE ####
+
+dd <- data.frame(v.1 = as_numeric(1:2), 
+                 v.2  = as_numeric(1:2),
+                 long_name_multiple_underscores = as.numeric(1:2))
+
+underscore <- system.file("extdata", "underscore.dta", package="readstata13")
+
+dd118 <- read.dta13(underscore, convert.underscore = F)
+
+test_that("generate.factors TRUE", {
+  expect_true(datacompare(dd, dd118))
+})
 
 
 #### noint.factors TRUE ####

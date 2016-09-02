@@ -485,7 +485,7 @@ List read_dta(FILE * file, const bool missing) {
         // string of any length
       case 32768:
       {// strL 2*4bit or 2 + 6 bit
-        char val_strl[22];
+        //char val_strl[22];
 
         // FixMe: Strl in 118
         switch (release)
@@ -498,7 +498,10 @@ List read_dta(FILE * file, const bool missing) {
             v = readbin(v, file, swapit);
             o = readbin(o, file, swapit);
 
-            sprintf(val_strl, "%010d%010d", v, o);
+            stringstream ss; 
+            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+            string val_strl = ss.str();
+            //sprintf(val_strl, "%010d%010d", v, o);
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
           }
@@ -513,7 +516,10 @@ List read_dta(FILE * file, const bool missing) {
             v = (uint16_t)z;
             o = (z >> 16);
 
-            sprintf(val_strl, "%010d%010ld", v, o);
+            stringstream ss; 
+            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+            string val_strl = ss.str();
+            //sprintf(val_strl, "%010d%010llu", v, o);
 
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
@@ -555,7 +561,7 @@ List read_dta(FILE * file, const bool missing) {
   while(gso.compare(tags)==0)
   {
     CharacterVector strls(2);
-    char ref[22];
+    string ref;
 
     // FixMe: Strl in 118
     switch (release)
@@ -567,7 +573,10 @@ List read_dta(FILE * file, const bool missing) {
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
-      sprintf(ref, "%010d%010d", v, o);
+      stringstream ss; 
+      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+      ref.assign(ss.str());
+      //sprintf(ref, "%010d%010d", v, o);
       break;
     }
     case 118:
@@ -579,8 +588,11 @@ List read_dta(FILE * file, const bool missing) {
       o = readbin(o, file, swapit);
       // z = readbin(z, file, swapit);
 
-      sprintf(ref, "%010d%010ld", v, o);
-      // sprintf(ref, "%010ld", z);
+      stringstream ss; 
+      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+      ref.assign(ss.str());
+      //sprintf(ref, "%010d%010ld", v, o);
+      
       break;
     }
     }

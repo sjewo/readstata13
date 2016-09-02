@@ -55,7 +55,7 @@
 #'    string.}
 #' }
 #' @seealso \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-#' versions < 13 and \code{\link[haven]{read_dta}} in package \code{haven} for Stata version >= 13.
+#' versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}

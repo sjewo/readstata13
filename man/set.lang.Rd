@@ -22,12 +22,12 @@ Changes default label language for a dataset.
 \examples{
 dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))
 get.lang(dat)
-get.varlabel(dat)
+varlabel(dat)
 
 # set German label
 datDE <- set.lang(dat, "de")
 get.lang(datDE)
-get.varlabel(datDE)
+varlabel(datDE)
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

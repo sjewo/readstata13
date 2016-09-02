@@ -18,4 +18,5 @@ Imports:
     Rcpp (>= 0.11.5)
 LinkingTo: Rcpp
 ByteCompile: yes
+Suggests: testthat
 RoxygenNote: 5.0.1

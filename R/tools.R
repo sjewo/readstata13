@@ -215,18 +215,25 @@ set.label <- function(dat, var.name, lang=NA) {
   )
 }
 
-#' Get Stata Variable Labels
+#' Get and assign Stata Variable Labels
 #'
-#' Retrieve variable labels from dataset attributes.
+#' Retrieve or set variable labels for a dataset.
 #'
+#' @name varlabel
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param var.name \emph{character vector.} Variable names. If NULL, get label for all variables.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
+#' @param value \emph{character vector.} Vector of variable names.
 #' @return Returns an named vector of variable labels
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
+#' @aliases 'varlabel<-'
 #' @export
-get.varlabel <- function(dat, var.name=NULL, lang=NA) {
+NULL
+
+#' @rdname varlabel
+#' @export
+varlabel <- function(dat, var.name=NULL, lang=NA) {
   vnames <- names(dat)
   if (is.na(lang) | lang == get.lang(dat, F)$default) {
     varlabel <- attr(dat, "var.labels")
@@ -245,6 +252,19 @@ get.varlabel <- function(dat, var.name=NULL, lang=NA) {
   }
 }
 
+#' @rdname varlabel
+#' @export
+'varlabel<-' <- function(dat, value) {
+  nlabs <- length(attr(dat, "var.labels"))
+  if(length(value)==nlabs) {
+    attr(x, "var.labels") <- value
+  } else {
+      warning(paste("Vector of new labels must have",nlabs,"entries."))
+    }
+  dat
+}
+
+
 #' Assign Stata Language Labels
 #'
 #' Changes default label language for a dataset.
@@ -256,12 +276,12 @@ get.varlabel <- function(dat, var.name=NULL, lang=NA) {
 #' @examples
 #' dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))
 #' get.lang(dat)
-#' get.varlabel(dat)
+#' varlabel(dat)
 #'
 #' # set German label
 #' datDE <- set.lang(dat, "de")
 #' get.lang(datDE)
-#' get.varlabel(datDE)
+#' varlabel(datDE)
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @importFrom stats na.omit

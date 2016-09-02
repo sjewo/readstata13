@@ -220,6 +220,7 @@ set.label <- function(dat, var.name, lang=NA) {
 #' Retrieve or set variable labels for a dataset.
 #'
 #' @name varlabel
+#' @rdname varlabel
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param var.name \emph{character vector.} Variable names. If NULL, get label for all variables.
 #' @param lang \emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA
@@ -227,8 +228,8 @@ set.label <- function(dat, var.name, lang=NA) {
 #' @return Returns an named vector of variable labels
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
+#' @aliases varlabel 
 #' @aliases 'varlabel<-'
-#' @export
 NULL
 
 #' @rdname varlabel

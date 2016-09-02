@@ -229,7 +229,7 @@ set.label <- function(dat, var.name, lang=NA) {
 get.varlabel <- function(dat, var.name=NULL, lang=NA) {
   vnames <- names(dat)
   if (is.na(lang) | lang == get.lang(dat, F)$default) {
-    varlabel <- attr(dat, "var.lab")
+    varlabel <- attr(dat, "var.labels")
     names(varlabel) <- vnames
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
@@ -334,7 +334,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     attr(dat, "expansion.fields") <- c(attr(dat, "expansion.fields"),tmp)
 
     # variable label
-    old.varlabel <- attr(dat, "var.lab")
+    old.varlabel <- attr(dat, "var.labels")
     tmp <- list()
     for (i in seq_along(old.varlabel)){
       tmp[[i]] <- c(vnames[i],paste0("_lang_v_", oldlang), old.varlabel[i])
@@ -347,7 +347,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     names(varlabel) <- varname
     varlabel.out <- as.character(varlabel[vnames])
     varlabel.out[is.na(varlabel.out)] <- ""
-    attr(dat, "var.lab") <- varlabel.out
+    attr(dat, "var.labels") <- varlabel.out
 
     # set new default lang and store string as default attributes
     names(val.labels) <- NULL

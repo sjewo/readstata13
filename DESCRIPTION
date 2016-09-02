@@ -10,7 +10,7 @@ Authors@R: c(
     person("R Core Team", role="cph"),
     person("Magnus Thor", "Torfason", role="ctb")
     )
-Description: Function to read and write the Stata file format.
+Description: Function to read and write the 'Stata' file format.
 URL: https://github.com/sjewo/readstata13
 BugReports: https://github.com/sjewo/readstata13/issues
 License: GPL-2 | file LICENSE

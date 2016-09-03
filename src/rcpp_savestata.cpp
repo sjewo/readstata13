@@ -474,8 +474,13 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             lo = (uint32_t)z;
             hi = (z >> 32);
 
-            writebin(lo, dta, 0);
-            writebin(hi, dta, 0);
+            if (swapit==0) {
+              writebin(lo, dta, swapit);
+              writebin(hi, dta, swapit);
+            } else {
+              writebin(hi, dta, swapit);
+              writebin(lo, dta, swapit);
+            }
 
             // push back every v, o and val_strl
             V.push_back(v);

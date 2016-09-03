@@ -34,7 +34,7 @@ T swap_endian(T t) {
     return __builtin_bswap64(t);
 
   union v {
-    double       d;
+    double      d;
     float       f;
     uint64_t    i;
   } val;

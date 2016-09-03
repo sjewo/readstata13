@@ -30,7 +30,7 @@ data(mtcars)
 
 #### version ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -93,7 +93,7 @@ test_that("version", {
 
 #### compress ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -156,7 +156,7 @@ test_that("compress", {
 
 #### convert.factors TRUE ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -222,7 +222,7 @@ test_that("convert.factors TRUE", {
 
 #### convert.factors FALSE ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -291,7 +291,7 @@ test_that("convert.factors TRUE", {
 # rm(list = files)
 
 #### add rownames TRUE ####
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -375,7 +375,7 @@ test_that("add.rownames TRUE", {
 #### data label TRUE ####
 dl <- "mtcars data file"
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -440,7 +440,7 @@ test_that("data label", {
 
 #### convert dates TRUE ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -503,7 +503,7 @@ test_that("convert.dates TRUE", {
 # rm(list = files)
 
 #### strl save ####
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -569,7 +569,7 @@ test_that("replace.strl TRUE", {
 # rm(list = files)
 
 #### convert.underscore save ####
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 

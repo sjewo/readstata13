@@ -339,10 +339,10 @@ List read_dta(FILE * file, const bool missing) {
   List ch = List();
   CharacterVector chs(3);
 
-    while (chtag.compare(tago)==0)
-    {
-      uint32_t nocharacter = 0;
-      nocharacter = readbin(nocharacter, file, swapit);
+  while (chtag.compare(tago)==0)
+  {
+    uint32_t nocharacter = 0;
+    nocharacter = readbin(nocharacter, file, swapit);
 
     std::string chvarname(chlen, '\0');
     std::string chcharact(chlen, '\0');
@@ -573,7 +573,7 @@ List read_dta(FILE * file, const bool missing) {
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
-      stringstream ss; 
+      stringstream ss;
       ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
       ref.assign(ss.str());
       //sprintf(ref, "%010d%010d", v, o);
@@ -588,11 +588,11 @@ List read_dta(FILE * file, const bool missing) {
       o = readbin(o, file, swapit);
       // z = readbin(z, file, swapit);
 
-      stringstream ss; 
+      stringstream ss;
       ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
       ref.assign(ss.str());
       //sprintf(ref, "%010d%010ld", v, o);
-      
+
       break;
     }
     }

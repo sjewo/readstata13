@@ -380,9 +380,8 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         default:
         {
           int32_t len = vartypes[i];
-          /* FixMe: Storing the vector in b for each string. */
-          CharacterVector b = as<CharacterVector>(dat[i]);
-          string val_s = as<string>(b[j]);
+          
+          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
 
           if(val_s == "NA")
             val_s = "";
@@ -394,7 +393,13 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
                           maxstrsize);
             // val_s.resize(244);
           }
-          dta.write(val_s.c_str(), len);
+
+          // make sure string is of lenth len and fill with \0 
+          stringstream val_stream; 
+          val_stream << left << setw(len) << setfill('\0') << val_s;
+          string val_strl = val_stream.str();
+          
+          dta.write(val_strl.c_str(),val_strl.length());
           break;
         }
 

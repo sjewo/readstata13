@@ -277,6 +277,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   # recode character variables. 118 wants utf-8, so encoding may be required
   if(doRecode) {
+    #TODO: use seq_len ?
     for(v in (1:ncol(data))[vartypen == "character"]) {
       data[, v] <- save.encoding(data[, v], toEncoding)
     }
@@ -288,10 +289,11 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     max(nchar(x, type="byte")) + 1
   }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
+  str.length[str.length > sstr] <- sstrl
 
   for (v in names(vartypen[vartypen == "character"]))
   {
-    str.length[str.length > sstr] <- sstrl
+   # str.length[str.length > sstr] <- sstrl # no loop necessary!
 
     vartypen[[v]] <- str.length[[v]]
   }

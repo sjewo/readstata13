@@ -416,6 +416,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
           break;
         }
+        // str
         case 2045:
         {
           int32_t const len = vartypes[i];
@@ -426,9 +427,15 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           if(val_s == "NA")
             val_s = "";
 
-          dta.write(val_s.c_str(),len);
+          // make sure string is of lenth len and fill with " ", hex 00
+          stringstream ss; 
+          ss << val_s << '\0' << setfill(' ') << setw(len);
+          string val_strl = ss.str();
+
+          dta.write(val_strl.c_str(),len);
           break;
         }
+        // strL
         case 32768:
         {
           /* Stata uses +1 */

@@ -424,7 +424,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           string val_s = as<string>(b[j]);
 
           if(val_s == "NA")
-            val_s = "";
+            val_s.clear();
 
           dta.write(val_s.c_str(),len);
           break;

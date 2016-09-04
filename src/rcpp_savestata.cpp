@@ -425,7 +425,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           string val_s = as<string>(b[j]);
 
           if(val_s == "NA")
-            val_s = "";
+            val_s.clear();
 
           // make sure string is of lenth len and fill with " ", hex 00
           stringstream ss; 

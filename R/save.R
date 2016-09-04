@@ -143,6 +143,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     data <- data.frame(rownames= rwn,
                        data, stringsAsFactors = F)
   }
+  rownames(data) <- NULL
 
   if (convert.underscore) {
     names(data) <- gsub("[^a-zA-Z0-9:]", "_", names(data))

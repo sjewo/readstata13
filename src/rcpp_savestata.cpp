@@ -427,9 +427,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             val_s.clear();
 
           // make sure string is of lenth len and fill with \0 
-          stringstream ss; 
-          ss << left << setw(len) << setfill('\0') << val_s;
-          string val_strl = ss.str();
+          stringstream val_stream; 
+          val_stream << left << setw(len) << setfill('\0') << val_s;
+          string val_strl = val_stream.str();
           
           dta.write(val_strl.c_str(),val_strl.length());
           break;

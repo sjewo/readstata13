@@ -31,8 +31,6 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
   uint16_t k = dat.size();
   uint64_t n = dat.nrows();
 
-  bool swapit = 0;
-
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
   datalabel[datalabel.size()] = '\0';
@@ -474,13 +472,8 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             lo = (uint32_t)z;
             hi = (z >> 32);
 
-            if (swapit==0) {
-              writebin(lo, dta, swapit);
-              writebin(hi, dta, swapit);
-            } else {
-              writebin(hi, dta, swapit);
-              writebin(lo, dta, swapit);
-            }
+            writebin(lo, dta, swapit);
+            writebin(hi, dta, swapit);
 
             // push back every v, o and val_strl
             V.push_back(v);

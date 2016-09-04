@@ -30,11 +30,6 @@ using namespace std;
 int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 {
 
-  // This bool was inteded to do a swap if you want to create a MSF-File on a
-  // LSF-machine. By default it should be 0 (no byteswap).
-  // bool swapit = strcmp(byteorder, SBYTEORDER);
-  bool swapit = 0;
-
   uint16_t k = dat.size();
   uint32_t n = dat.nrows();
   int8_t byteorder = SBYTEORDER;
@@ -388,7 +383,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           /* FixMe: Storing the vector in b for each string. */
           CharacterVector b = as<CharacterVector>(dat[i]);
           string val_s = as<string>(b[j]);
-          
+
           if(val_s == "NA")
             val_s = "";
 

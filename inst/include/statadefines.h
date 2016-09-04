@@ -27,6 +27,8 @@
 #define SBYTEORDER 1
 #endif
 
+#define swapit FALSE
+
 /*Define missings*/
 #define STATA_BYTE_NA_MIN -127
 #define STATA_BYTE_NA_MAX +100

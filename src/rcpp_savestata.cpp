@@ -420,19 +420,18 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         case 2045:
         {
           int32_t const len = vartypes[i];
-          /* FixMe: Storing the vector in b for each string. */
-          CharacterVector b = as<CharacterVector>(dat[i]);
-          string val_s = as<string>(b[j]);
 
+          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
+           
           if(val_s == "NA")
             val_s.clear();
 
-          // make sure string is of lenth len and fill with " ", hex 00
+          // make sure string is of lenth len and fill with \0 
           stringstream ss; 
-          ss << val_s << '\0' << setfill(' ') << setw(len);
+          ss << left << setw(len) << setfill('\0') << val_s;
           string val_strl = ss.str();
-
-          dta.write(val_strl.c_str(),len);
+          
+          dta.write(val_strl.c_str(),val_strl.length());
           break;
         }
         // strL

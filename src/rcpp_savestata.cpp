@@ -167,9 +167,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       if (release==118)
         writebin(ndlabel, dta, swapit);
 
-      dta.write(datalabel.c_str(),datalabel.size());
+      writestr(datalabel.c_str(),datalabel.size(), dta);
     } else {
-      dta.write((char*)&ndlabel,sizeof(ndlabel));
+      writestr((char*)&ndlabel, sizeof(ndlabel), dta);
     }
 
 
@@ -178,7 +178,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     if (!timestamp.empty()) {
       ntimestamp = 17;
       writebin(ntimestamp, dta, swapit);
-      dta.write(timestamp.c_str(),timestamp.size());
+      writestr(timestamp.c_str(),timestamp.size(), dta);
     }else{
       writebin(ntimestamp, dta, swapit);
     }
@@ -219,7 +219,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Varname to long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
-      dta.write(nvarname.c_str(),nvarnameslen);
+      writestr(nvarname.c_str(),nvarnameslen, dta);
     }
     dta.write(endvarn.c_str(), endvarn.size());
 
@@ -249,7 +249,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Formats to long. Resizing. Max size is %d",
                       nformatslen);
 
-      dta.write(nformats.c_str(),nformatslen);
+      writestr(nformats.c_str(),nformatslen, dta);
     }
     dta.write(endform.c_str(),endform.size());
 
@@ -266,7 +266,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Vallabel to long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
-      dta.write(nvalLabels.c_str(), nvalLabelslen);
+      writestr(nvalLabels.c_str(), nvalLabelslen, dta);
     }
     dta.write(endvalLabel.c_str(),endvalLabel.size());
 
@@ -284,11 +284,11 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
                         nvarLabelslen - 1);
 
         nvarLabels[nvarLabels.size()] = '\0';
-        dta.write(nvarLabels.c_str(), nvarLabelslen);
+        writestr(nvarLabels.c_str(), nvarLabelslen, dta);
       } else {
         string nvarLabels = "";
         nvarLabels[nvarLabels.size()] = '\0';
-        dta.write(nvarLabels.c_str(), nvarLabelslen);
+        writestr(nvarLabels.c_str(), nvarLabelslen, dta);
       }
     }
     dta.write(endvarlabel.c_str(),endvarlabel.size());
@@ -316,9 +316,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         uint32_t nnocharacter = chlen*2 + ch3.size() +1;
         writebin(nnocharacter, dta, swapit);
 
-        dta.write(ch1.c_str(),chlen);
-        dta.write(ch2.c_str(),chlen);
-        dta.write(ch3.c_str(),ch3.size()+1);
+        writestr(ch1.c_str(), chlen, dta);
+        writestr(ch2.c_str(), chlen, dta);
+        writestr(ch3.c_str(),ch3.size()+1, dta);
 
         dta.write(endch.c_str(),endch.size());
       }
@@ -422,15 +422,15 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           int32_t const len = vartypes[i];
 
           string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
-           
+
           if(val_s == "NA")
             val_s.clear();
 
-          // make sure string is of lenth len and fill with \0 
-          stringstream val_stream; 
+          // make sure string is of lenth len and fill with \0
+          stringstream val_stream;
           val_stream << left << setw(len) << setfill('\0') << val_s;
           string val_strl = val_stream.str();
-          
+
           dta.write(val_strl.c_str(),val_strl.length());
           break;
         }
@@ -568,7 +568,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
         dta.write(startlbl.c_str(),startlbl.size());
         writebin(nlen, dta, swapit);
-        dta.write(labname.c_str(),lbllen);
+        writestr(labname.c_str(), lbllen, dta);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
@@ -597,7 +597,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             // labtext[labtext.size()] = '\0';
           }
 
-          dta.write(labtext.c_str(), labtext.size()+1);
+          writestr(labtext.c_str(), labtext.size()+1, dta);
         }
         dta.write(endlbl.c_str(),endlbl.size());
       }

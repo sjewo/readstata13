@@ -109,4 +109,19 @@ static void writebin(T t, std::fstream& dta, bool swapit)
   }
 }
 
+
+
+// dta.write(val_strl.c_str(),val_strl.length());
+template <typename T>
+static void writestr(std::string str1, T len, std::fstream& dta)
+{
+  char str2 [255];
+
+  memset(str2, 0, len);
+
+  strncpy(str2, str1.c_str(), str1.size());
+
+  dta.write(str2, len);
+}
+
 #endif

@@ -119,12 +119,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       Rcpp::warning("Datalabel too long. Resizing. Max size is %d.",
                     ndlabel - 1);
 
-    stringstream datalabel_stream; 
-    datalabel_stream << left << setw(ndlabel) << setfill('\0') << datalabel;
-    string datalabel_str = datalabel_stream.str();
-
-
-    dta.write(datalabel_str.c_str(), datalabel_str.length());
+    writestr(datalabel, ndlabel, dta);
 
     /* timestamp size is 17 */
     if (version > 104)
@@ -134,7 +129,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Timestamp too long. Dropping.");
         timestamp = "";
       }
-      dta.write(timestamp.c_str(),timestamp.size());
+      writestr(timestamp.c_str(), timestamp.size(), dta);
     }
 
     /* <variable_types> ... </variable_types> */
@@ -192,7 +187,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Varname too long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
-      dta.write(nvarname.c_str(),nvarnameslen);
+      writestr(nvarname.c_str(), nvarnameslen, dta);
     }
 
     /* <sortlist> ... </sortlist> */
@@ -213,7 +208,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Formats too long. Resizing. Max size is %d",
                       nformatslen - 1);
 
-      dta.write(nformats.c_str(),nformatslen);
+      writestr(nformats.c_str(), nformatslen, dta);
     }
 
     /* <value_label_names> ... </value_label_names> */
@@ -225,7 +220,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Vallabel too long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
-      dta.write(nvalLabels.c_str(), nvalLabelslen);
+      writestr(nvalLabels.c_str(), nvalLabelslen, dta);
     }
 
     /* <variable_labels> ... </variable_labels> */
@@ -240,7 +235,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           Rcpp::warning("Varlabel too long. Resizing. Max size is %d",
                         nvarLabelslen - 1);
       }
-      dta.write(nvarLabels.c_str(),nvarLabelslen);
+      writestr(nvarLabels.c_str(), nvarLabelslen, dta);
     }
 
 
@@ -272,9 +267,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           else
             writebin(len, dta, swapit);
 
-          dta.write(ch1.c_str(), chlen);
-          dta.write(ch2.c_str(), chlen);
-          dta.write(ch3.c_str(), ch3.size()+1);
+          writestr(ch1.c_str(), chlen, dta);
+          writestr(ch2.c_str(), chlen, dta);
+          writestr(ch3.c_str(), ch3.size()+1, dta);
 
         }
       }
@@ -385,26 +380,20 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         default:
         {
           int32_t len = vartypes[i];
-          
+
           string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
 
           if(val_s == "NA")
-            val_s = "";
+            val_s.clear();
 
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>maxstrsize)
           {
             Rcpp::warning("Character value too long. Resizing. Max size is %d.",
                           maxstrsize);
-            // val_s.resize(244);
           }
 
-          // make sure string is of lenth len and fill with \0 
-          stringstream val_stream; 
-          val_stream << left << setw(len) << setfill('\0') << val_s;
-          string val_strl = val_stream.str();
-          
-          dta.write(val_strl.c_str(),val_strl.length());
+          writestr(val_s, len, dta);
           break;
         }
 
@@ -479,7 +468,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
             // labtext[labtext.size()] = '\0';
           }
 
-          dta.write(labtext.c_str(), labtext.size()+1);
+          writestr(labtext.c_str(), labtext.size()+1, dta);
         }
       }
 

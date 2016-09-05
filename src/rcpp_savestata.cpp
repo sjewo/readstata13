@@ -426,12 +426,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           if(val_s == "NA")
             val_s.clear();
 
-          // make sure string is of lenth len and fill with \0
-          stringstream val_stream;
-          val_stream << left << setw(len) << setfill('\0') << val_s;
-          string val_strl = val_stream.str();
-
-          dta.write(val_strl.c_str(),val_strl.length());
+          writestr(val_s, len, dta);
           break;
         }
         // strL
@@ -521,7 +516,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         writebin(o, dta, swapit);
       writebin(t, dta, swapit);
       writebin(len, dta, swapit);
-      dta.write(strL.c_str(),strL.size());
+      writestr(strL, strL.size(), dta);
     }
 
     dta.write(endstrl.c_str(),endstrl.size());

@@ -119,7 +119,12 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       Rcpp::warning("Datalabel too long. Resizing. Max size is %d.",
                     ndlabel - 1);
 
-    dta.write(datalabel.c_str(), ndlabel);
+    stringstream datalabel_stream; 
+    datalabel_stream << left << setw(ndlabel) << setfill('\0') << datalabel;
+    string datalabel_str = datalabel_stream.str();
+
+
+    dta.write(datalabel_str.c_str(), datalabel_str.length());
 
     /* timestamp size is 17 */
     if (version > 104)

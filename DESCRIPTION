@@ -1,6 +1,6 @@
 Package: readstata13
 Type: Package
-Title: Import Stata Data Files
+Title: Import 'Stata' Data Files
 Version: 0.8.4
 Authors@R: c(
     person("Jan Marvin", "Garbuszus",

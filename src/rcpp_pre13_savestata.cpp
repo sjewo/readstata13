@@ -129,7 +129,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Timestamp too long. Dropping.");
         timestamp = "";
       }
-      writestr(timestamp.c_str(), timestamp.size(), dta);
+      writestr(timestamp, timestamp.size(), dta);
     }
 
     /* <variable_types> ... </variable_types> */
@@ -187,7 +187,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Varname too long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
-      writestr(nvarname.c_str(), nvarnameslen, dta);
+      writestr(nvarname, nvarnameslen, dta);
     }
 
     /* <sortlist> ... </sortlist> */
@@ -208,7 +208,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Formats too long. Resizing. Max size is %d",
                       nformatslen - 1);
 
-      writestr(nformats.c_str(), nformatslen, dta);
+      writestr(nformats, nformatslen, dta);
     }
 
     /* <value_label_names> ... </value_label_names> */
@@ -220,7 +220,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Vallabel too long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
-      writestr(nvalLabels.c_str(), nvalLabelslen, dta);
+      writestr(nvalLabels, nvalLabelslen, dta);
     }
 
     /* <variable_labels> ... </variable_labels> */
@@ -235,7 +235,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           Rcpp::warning("Varlabel too long. Resizing. Max size is %d",
                         nvarLabelslen - 1);
       }
-      writestr(nvarLabels.c_str(), nvarLabelslen, dta);
+      writestr(nvarLabels, nvarLabelslen, dta);
     }
 
 
@@ -267,9 +267,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           else
             writebin(len, dta, swapit);
 
-          writestr(ch1.c_str(), chlen, dta);
-          writestr(ch2.c_str(), chlen, dta);
-          writestr(ch3.c_str(), ch3.size()+1, dta);
+          writestr(ch1, chlen, dta);
+          writestr(ch2, chlen, dta);
+          writestr(ch3, ch3.size()+1, dta);
 
         }
       }
@@ -468,7 +468,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
             // labtext[labtext.size()] = '\0';
           }
 
-          writestr(labtext.c_str(), labtext.size()+1, dta);
+          writestr(labtext, labtext.size()+1, dta);
         }
       }
 

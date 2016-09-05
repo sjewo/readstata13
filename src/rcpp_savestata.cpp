@@ -167,7 +167,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       if (release==118)
         writebin(ndlabel, dta, swapit);
 
-      writestr(datalabel.c_str(),datalabel.size(), dta);
+      writestr(datalabel,datalabel.size(), dta);
     } else {
       writestr((char*)&ndlabel, sizeof(ndlabel), dta);
     }
@@ -178,11 +178,11 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     if (!timestamp.empty()) {
       ntimestamp = 17;
       writebin(ntimestamp, dta, swapit);
-      writestr(timestamp.c_str(),timestamp.size(), dta);
+      writestr(timestamp, timestamp.size(), dta);
     }else{
       writebin(ntimestamp, dta, swapit);
     }
-    dta.write(endheader.c_str(),endheader.size());
+    dta.write(endheader.c_str(), endheader.size());
 
     /* <map> ... </map> */
     map(1) = dta.tellg();
@@ -219,7 +219,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Varname to long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
-      writestr(nvarname.c_str(),nvarnameslen, dta);
+      writestr(nvarname, nvarnameslen, dta);
     }
     dta.write(endvarn.c_str(), endvarn.size());
 
@@ -249,7 +249,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Formats to long. Resizing. Max size is %d",
                       nformatslen);
 
-      writestr(nformats.c_str(),nformatslen, dta);
+      writestr(nformats, nformatslen, dta);
     }
     dta.write(endform.c_str(),endform.size());
 
@@ -266,7 +266,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Vallabel to long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
-      writestr(nvalLabels.c_str(), nvalLabelslen, dta);
+      writestr(nvalLabels, nvalLabelslen, dta);
     }
     dta.write(endvalLabel.c_str(),endvalLabel.size());
 
@@ -284,11 +284,11 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
                         nvarLabelslen - 1);
 
         nvarLabels[nvarLabels.size()] = '\0';
-        writestr(nvarLabels.c_str(), nvarLabelslen, dta);
+        writestr(nvarLabels, nvarLabelslen, dta);
       } else {
         string nvarLabels = "";
         nvarLabels[nvarLabels.size()] = '\0';
-        writestr(nvarLabels.c_str(), nvarLabelslen, dta);
+        writestr(nvarLabels, nvarLabelslen, dta);
       }
     }
     dta.write(endvarlabel.c_str(),endvarlabel.size());
@@ -316,9 +316,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         uint32_t nnocharacter = chlen*2 + ch3.size() +1;
         writebin(nnocharacter, dta, swapit);
 
-        writestr(ch1.c_str(), chlen, dta);
-        writestr(ch2.c_str(), chlen, dta);
-        writestr(ch3.c_str(),ch3.size()+1, dta);
+        writestr(ch1, chlen, dta);
+        writestr(ch2, chlen, dta);
+        writestr(ch3,ch3.size()+1, dta);
 
         dta.write(endch.c_str(),endch.size());
       }
@@ -561,9 +561,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N +
           sizeof(labvalueI)*N + txtlen;
 
-        dta.write(startlbl.c_str(),startlbl.size());
+        dta.write(startlbl.c_str(), startlbl.size());
         writebin(nlen, dta, swapit);
-        writestr(labname.c_str(), lbllen, dta);
+        writestr(labname, lbllen, dta);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
@@ -592,7 +592,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             // labtext[labtext.size()] = '\0';
           }
 
-          writestr(labtext.c_str(), labtext.size()+1, dta);
+          writestr(labtext, labtext.size()+1, dta);
         }
         dta.write(endlbl.c_str(),endlbl.size());
       }
@@ -613,7 +613,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
     /* seek up to <map> to rewrite it*/
     /* <map> ... </map> */
-    dta.seekg(map[1]);
+    dta.seekg(map(1));
     dta.write(startmap.c_str(),startmap.size());
     for (int i=0; i <14; ++i)
     {

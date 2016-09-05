@@ -39,7 +39,7 @@ use all of Statas numeric-vartypes.}
 \item{version}{\emph{numeric.} Stata format for the resulting dta-file either
 the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.}
 
-\item{convert.underscore}{\emph{logica.} If \code{TRUE}, in variable names
+\item{convert.underscore}{\emph{logical.} If \code{TRUE}, in variable names
 dots will be converted to underscores.}
 }
 \value{
@@ -73,6 +73,6 @@ Stata Corp (2014): Description of .dta file format
 }
 \seealso{
 \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-versions < 13 and \code{\link[haven]{read_dta}} in package \code{haven} for Stata version >= 13.
+versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
 }
 

@@ -1,10 +1,10 @@
 clear all
 
-set obs 4
+set obs 6
 gen int num = _n
-label variable num äöüß
+label variable num Ã¤Ã¶Ã¼ÃŸ
 
-label define numlabel 1 "ä" 2 "ö" 3 "ü" 4 "ß"
+label define numlabel 1 "Ã¤" 2 "Ã¶" 3 "Ã¼" 4 "ÃŸ" 5 "â‚¬" 6 "Å’"
 label values num numlabel
 
 // create character variable from labels

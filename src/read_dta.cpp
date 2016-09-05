@@ -339,10 +339,10 @@ List read_dta(FILE * file, const bool missing) {
   List ch = List();
   CharacterVector chs(3);
 
-    while (chtag.compare(tago)==0)
-    {
-      uint32_t nocharacter = 0;
-      nocharacter = readbin(nocharacter, file, swapit);
+  while (chtag.compare(tago)==0)
+  {
+    uint32_t nocharacter = 0;
+    nocharacter = readbin(nocharacter, file, swapit);
 
     std::string chvarname(chlen, '\0');
     std::string chcharact(chlen, '\0');
@@ -417,7 +417,7 @@ List read_dta(FILE * file, const bool missing) {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
 
-        if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
+        if ((missing == 0) && !(val_d == R_NegInf) && ((val_d<STATA_DOUBLE_NA_MIN) || (val_d>STATA_DOUBLE_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_d;
@@ -429,7 +429,7 @@ List read_dta(FILE * file, const bool missing) {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
 
-        if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
+        if ((missing == 0) && ((val_f<STATA_FLOAT_NA_MIN) || (val_f>STATA_FLOAT_NA_MAX)) )
           REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,i))[j] = val_f;
@@ -441,7 +441,7 @@ List read_dta(FILE * file, const bool missing) {
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
 
-        if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
+        if ((missing == 0) && ((val_l<STATA_INT_NA_MIN) || (val_l>STATA_INT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_l;
@@ -453,7 +453,7 @@ List read_dta(FILE * file, const bool missing) {
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
 
-        if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
+        if ((missing == 0) && ((val_i<STATA_SHORTINT_NA_MIN) || (val_i>STATA_SHORTINT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_i;
@@ -465,7 +465,7 @@ List read_dta(FILE * file, const bool missing) {
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
 
-        if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
+        if (missing == 0 && ( (val_b<STATA_BYTE_NA_MIN) || (val_b>STATA_BYTE_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,i))[j] = val_b;
@@ -485,7 +485,7 @@ List read_dta(FILE * file, const bool missing) {
         // string of any length
       case 32768:
       {// strL 2*4bit or 2 + 6 bit
-        char val_strl[22];
+        //char val_strl[22];
 
         // FixMe: Strl in 118
         switch (release)
@@ -498,7 +498,10 @@ List read_dta(FILE * file, const bool missing) {
             v = readbin(v, file, swapit);
             o = readbin(o, file, swapit);
 
-            sprintf(val_strl, "%010d%010d", v, o);
+            stringstream ss;
+            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+            string val_strl = ss.str();
+            //sprintf(val_strl, "%010d%010d", v, o);
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
           }
@@ -513,7 +516,10 @@ List read_dta(FILE * file, const bool missing) {
             v = (uint16_t)z;
             o = (z >> 16);
 
-            sprintf(val_strl, "%010d%010ld", v, o);
+            stringstream ss;
+            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+            string val_strl = ss.str();
+            //sprintf(val_strl, "%010d%010llu", v, o);
 
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
@@ -555,7 +561,7 @@ List read_dta(FILE * file, const bool missing) {
   while(gso.compare(tags)==0)
   {
     CharacterVector strls(2);
-    char ref[22];
+    string ref;
 
     // FixMe: Strl in 118
     switch (release)
@@ -567,7 +573,10 @@ List read_dta(FILE * file, const bool missing) {
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
-      sprintf(ref, "%010d%010d", v, o);
+      stringstream ss;
+      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+      ref.assign(ss.str());
+      //sprintf(ref, "%010d%010d", v, o);
       break;
     }
     case 118:
@@ -579,8 +588,11 @@ List read_dta(FILE * file, const bool missing) {
       o = readbin(o, file, swapit);
       // z = readbin(z, file, swapit);
 
-      sprintf(ref, "%010d%010ld", v, o);
-      // sprintf(ref, "%010ld", z);
+      stringstream ss;
+      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+      ref.assign(ss.str());
+      //sprintf(ref, "%010d%010ld", v, o);
+
       break;
     }
     }

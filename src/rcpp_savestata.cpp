@@ -31,8 +31,6 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
   uint16_t k = dat.size();
   uint64_t n = dat.nrows();
 
-  bool swapit = 0;
-
   const string timestamp = dat.attr("timestamp");
   string datalabel = dat.attr("datalabel");
   datalabel[datalabel.size()] = '\0';
@@ -418,19 +416,25 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
           break;
         }
+        // str
         case 2045:
         {
           int32_t const len = vartypes[i];
-          /* FixMe: Storing the vector in b for each string. */
-          CharacterVector b = as<CharacterVector>(dat[i]);
-          string val_s = as<string>(b[j]);
 
+          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
+           
           if(val_s == "NA")
-            val_s = "";
+            val_s.clear();
 
-          dta.write(val_s.c_str(),len);
+          // make sure string is of lenth len and fill with \0 
+          stringstream val_stream; 
+          val_stream << left << setw(len) << setfill('\0') << val_s;
+          string val_strl = val_stream.str();
+          
+          dta.write(val_strl.c_str(),val_strl.length());
           break;
         }
+        // strL
         case 32768:
         {
           /* Stata uses +1 */
@@ -474,8 +478,8 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             lo = (uint32_t)z;
             hi = (z >> 32);
 
-            writebin(lo, dta, 0);
-            writebin(hi, dta, 0);
+            writebin(lo, dta, swapit);
+            writebin(hi, dta, swapit);
 
             // push back every v, o and val_strl
             V.push_back(v);

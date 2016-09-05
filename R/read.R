@@ -24,9 +24,11 @@
 #'  value labels are created.
 #' @param generate.factors \emph{logical.} If \code{TRUE} and convert.factors is
 #'  TRUE, missing factor labels are created from integers.
-#' @param encoding \emph{character.} Strings can be converted from Windows-1252
-#'  to system encoding. Options are "CP1252" or "UTF-8" to specify target
-#'  encoding explicitly.
+#' @param encoding \emph{character.} Strings can be converted from Windows-1252 or UTF-8
+#'  to system encoding. Options are "latin1" or "UTF-8" to specify target
+#'  encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
+#'   which can't be displayed in the current locale. 
+#'   Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
 #'  "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
 #'  or newer "UTF-8" is used. In some situation the used encoding can differ for
@@ -99,7 +101,7 @@
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 #'  from foreign::read.dta().
 #' @seealso \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-#' versions < 13 and \code{\link[haven]{read_dta}} in package \code{haven} for Stata version >= 13.
+#' versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
@@ -109,7 +111,7 @@
 #' @importFrom stats na.omit 
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = NULL, fromEncoding=NULL,
+                       encoding = localeToCharset()[1], fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = FALSE,
                        add.rownames = FALSE, nonint.factors=FALSE) {
@@ -198,8 +200,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   var.labels <- attr(data, "var.labels")
 
   ## Encoding
-  if (!is.null(encoding)) {
-
+  if(!is.null(encoding)) {
+    
     # set from encoding by dta version
     if(is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
@@ -231,7 +233,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
     # recode character variables
     for (v in (1:ncol(data))[types <= sstr]) {
-      data[, v] <- iconv(data[, v], from=fromEncoding, sub="byte") #to=encoding?
+      data[, v] <- iconv(data[, v], from=fromEncoding, to=encoding, sub="byte")
     }
 
     # expansion.field
@@ -254,7 +256,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         attr(data, "strl") <- strl
       }
     }
-  }
+}
 
   var.labels <- attr(data, "var.labels")
 

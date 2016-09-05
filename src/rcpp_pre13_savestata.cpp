@@ -440,7 +440,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
         writebin(nlen, dta, swapit);
 
-        dta.write(labname.c_str(), nvarnameslen);
+        writestr(labname, nvarnameslen, dta);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);

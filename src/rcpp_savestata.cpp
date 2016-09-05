@@ -169,7 +169,16 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writestr(datalabel,datalabel.size(), dta);
     } else {
-      writestr((char*)&ndlabel, sizeof(ndlabel), dta);
+      // empty data label defined by byte(s) of zero
+      uint8_t zero = 0;
+
+      if (release == 117) {
+        writebin(zero, dta, swapit);
+      }
+      if (release == 118) {
+        writebin(zero, dta, swapit);
+        writebin(zero, dta, swapit);
+      }
     }
 
 

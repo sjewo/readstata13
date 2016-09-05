@@ -603,7 +603,8 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
     /* </stata_data> */
     map(12) = dta.tellg();
-    dta.write(end.c_str(),end.size());
+    // dta.write(end.c_str(),end.size());
+    writestr(end, end.size(), dta);
 
 
     /* end-of-file */

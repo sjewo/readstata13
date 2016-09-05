@@ -136,18 +136,18 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     NumericVector map(14);
     map(0) = dta.tellg();
 
-    dta.write(head.c_str(),head.size());
-    dta.write(version.c_str(),3); // 117|118 (e.g. Stata 13|14)
-    dta.write(byteord.c_str(),byteord.size());
-    dta.write(sbyteorder,3); // LSF
-    dta.write(K.c_str(),K.size());
+    writestr(head, head.size(), dta);
+    writestr(version, 3, dta); // 117|118 (e.g. Stata 13|14)
+    writestr(byteord, byteord.size(), dta);
+    writestr(sbyteorder, 3, dta); // LSF
+    writestr(K, K.size(), dta);
     writebin(k, dta, swapit);
-    dta.write(num.c_str(),num.size());
+    writestr(num, num.size(), dta);
     if (release==117)
       writebin((int32_t)n, dta, swapit);
     if (release==118)
       writebin(n, dta, swapit);
-    dta.write(lab.c_str(),lab.size());
+    writestr(lab, lab.size(), dta);
 
 
     /* write a datalabel */
@@ -183,7 +183,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
 
     /* timestamp size is 0 (= no timestamp) or 17 */
-    dta.write(timest.c_str(),timest.size());
+    writestr(timest, timest.size(), dta);
     if (!timestamp.empty()) {
       ntimestamp = 17;
       writebin(ntimestamp, dta, swapit);
@@ -191,21 +191,21 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     }else{
       writebin(ntimestamp, dta, swapit);
     }
-    dta.write(endheader.c_str(), endheader.size());
+    writestr(endheader, endheader.size(), dta);
 
     /* <map> ... </map> */
     map(1) = dta.tellg();
-    dta.write(startmap.c_str(),startmap.size());
+    writestr(startmap, startmap.size(), dta);
     for (int32_t i = 0; i <14; ++i)
     {
       uint64_t nmap = 0;
       writebin(nmap, dta, swapit);
     }
-    dta.write(endmap.c_str(),endmap.size());
+    writestr(endmap, endmap.size(), dta);
 
     /* <variable_types> ... </variable_types> */
     map(2) = dta.tellg();
-    dta.write(startvart.c_str(),startvart.size());
+    writestr(startvart, startvart.size(), dta);
     uint16_t nvartype;
     for (uint16_t i = 0; i < k; ++i)
     {
@@ -213,12 +213,12 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writebin(nvartype, dta, swapit);
     }
-    dta.write(endvart.c_str(),endvart.size());
+    writestr(endvart, endvart.size(), dta);
 
 
     /* <varnames> ... </varnames> */
     map(3) = dta.tellg();
-    dta.write(startvarn.c_str(), startvarn.size());
+    writestr(startvarn, startvarn.size(), dta);
     for (uint16_t i = 0; i < k; ++i )
     {
       string nvarname = as<string>(nvarnames[i]);
@@ -230,12 +230,12 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writestr(nvarname, nvarnameslen, dta);
     }
-    dta.write(endvarn.c_str(), endvarn.size());
+    writestr(endvarn, endvarn.size(), dta);
 
 
     /* <sortlist> ... </sortlist> */
     map(4) = dta.tellg();
-    dta.write(startsor.c_str(),startsor.size());
+    writestr(startsor, startsor.size(), dta);
 
     uint32_t big_k = k+1;
 
@@ -244,12 +244,12 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       uint16_t nsortlist = 0;
       writebin(nsortlist, dta, swapit);
     }
-    dta.write(endsor.c_str(),endsor.size());
+    writestr(endsor, endsor.size(), dta);
 
 
     /* <formats> ... </formats> */
     map(5) = dta.tellg();
-    dta.write(startform.c_str(),startform.size());
+    writestr(startform, startform.size(), dta);
     for (uint16_t i = 0; i < k; ++i )
     {
       string nformats = as<string>(formats[i]);
@@ -260,12 +260,12 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writestr(nformats, nformatslen, dta);
     }
-    dta.write(endform.c_str(),endform.size());
+    writestr(endform, endform.size(), dta);
 
 
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
-    dta.write(startvalLabel.c_str(),startvalLabel.size());
+    writestr(startvalLabel, startvalLabel.size(), dta);
     for (uint16_t i = 0; i < k; ++i)
     {
       string nvalLabels = as<string>(valLabels[i]);
@@ -277,12 +277,12 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writestr(nvalLabels, nvalLabelslen, dta);
     }
-    dta.write(endvalLabel.c_str(),endvalLabel.size());
+    writestr(endvalLabel, endvalLabel.size(), dta);
 
 
     /* <variable_labels> ... </variable_labels> */
     map(7) = dta.tellg();
-    dta.write(startvarlabel.c_str(),startvarlabel.size());
+    writestr(startvarlabel, startvarlabel.size(), dta);
     for (uint16_t i = 0; i < k; ++i)
     {
       if (!Rf_isNull(varLabels) && Rf_length(varLabels) > 1) {
@@ -300,18 +300,18 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         writestr(nvarLabels, nvarLabelslen, dta);
       }
     }
-    dta.write(endvarlabel.c_str(),endvarlabel.size());
+    writestr(endvarlabel, endvarlabel.size(), dta);
 
 
     /* <characteristics> ... </characteristics> */
     map(8) = dta.tellg();
-    dta.write(startcharacteristics.c_str(),startcharacteristics.size());
+    writestr(startcharacteristics, startcharacteristics.size(), dta);
     /* <ch> ... </ch> */
 
     if (chs.size()>0){
       for (int32_t i = 0; i<chs.size(); ++i){
 
-        dta.write(startch.c_str(),startch.size());
+        writestr(startch, startch.size(), dta);
 
         CharacterVector ch = as<CharacterVector>(chs[i]);
 
@@ -329,16 +329,16 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         writestr(ch2, chlen, dta);
         writestr(ch3,ch3.size()+1, dta);
 
-        dta.write(endch.c_str(),endch.size());
+        writestr(endch, endch.size(), dta);
       }
     }
 
-    dta.write(endcharacteristics.c_str(),endcharacteristics.size());
+    writestr(endcharacteristics, endcharacteristics.size(), dta);
 
 
     /* <data> ... </data> */
     map(9) = dta.tellg();
-    dta.write(startdata.c_str(),startdata.size());
+    writestr(startdata, startdata.size(), dta);
 
     IntegerVector V, O;
     CharacterVector STRL;
@@ -493,19 +493,19 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             }
             STRL.push_back(val_strl);
           } else {
-            dta.write((char*)&z,sizeof(z));
+            writestr((char*)&z, sizeof(z), dta);
           }
           break;
         }
         }
       }
     }
-    dta.write(enddata.c_str(),enddata.size());
+    writestr(enddata, enddata.size(), dta);
 
 
     /* <strls> ... </strls> */
     map(10) = dta.tellg();
-    dta.write(startstrl.c_str(),startstrl.size());
+    writestr(startstrl, startstrl.size(), dta);
 
     int32_t strlsize = STRL.length();
     for(int i =0; i < strlsize; ++i )
@@ -517,7 +517,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       const string strL = as<string>(STRL[i]);
       uint32_t len = strL.size();
 
-      dta.write(gso.c_str(),gso.size());
+      writestr(gso, gso.size(), dta);
       writebin(v, dta, swapit);
       if (release==117)
         writebin((uint32_t)o, dta, swapit);
@@ -528,12 +528,12 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       writestr(strL, strL.size(), dta);
     }
 
-    dta.write(endstrl.c_str(),endstrl.size());
+    writestr(endstrl, endstrl.size(), dta);
 
 
     /* <value_labels> ... </value_labels> */
     map(11) = dta.tellg();
-    dta.write(startvall.c_str(),startvall.size());
+    writestr(startvall, startvall.size(), dta);
     if (labeltable.size()>0)
     {
 
@@ -570,10 +570,10 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         int32_t nlen = sizeof(N) + sizeof(txtlen) + sizeof(offI)*N +
           sizeof(labvalueI)*N + txtlen;
 
-        dta.write(startlbl.c_str(), startlbl.size());
+        writestr(startlbl, startlbl.size(), dta);
         writebin(nlen, dta, swapit);
         writestr(labname, lbllen, dta);
-        dta.write((char*)&padding,3);
+        writestr((char*)&padding, 3, dta);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
 
@@ -603,16 +603,15 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
           writestr(labtext, labtext.size()+1, dta);
         }
-        dta.write(endlbl.c_str(),endlbl.size());
+        writestr(endlbl, endlbl.size(), dta);
       }
 
     }
-    dta.write(endvall.c_str(),endvall.size());
+    writestr(endvall, endvall.size(), dta);
 
 
     /* </stata_data> */
     map(12) = dta.tellg();
-    // dta.write(end.c_str(),end.size());
     writestr(end, end.size(), dta);
 
 
@@ -623,7 +622,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* seek up to <map> to rewrite it*/
     /* <map> ... </map> */
     dta.seekg(map(1));
-    dta.write(startmap.c_str(),startmap.size());
+    writestr(startmap, startmap.size(), dta);
     for (int i=0; i <14; ++i)
     {
       uint64_t nmap = 0;
@@ -641,7 +640,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         writebin(lo, dta, swapit);
       }
     }
-    dta.write(endmap.c_str(),endmap.size());
+    writestr(endmap, endmap.size(), dta);
 
     dta.close();
     return 0;

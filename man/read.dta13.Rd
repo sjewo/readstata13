@@ -7,7 +7,7 @@
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = localeToCharset()[1], fromEncoding = NULL,
   convert.underscore = FALSE, missing.type = FALSE, convert.dates = TRUE,
-  replace.strl = FALSE, add.rownames = FALSE, nonint.factors = FALSE)
+  replace.strl = TRUE, add.rownames = FALSE, nonint.factors = FALSE)
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
@@ -41,7 +41,7 @@ converted.}
 
 \item{replace.strl}{\emph{logical.} If \code{TRUE}, replace the reference to
 a strL string in the data.frame with the actual value. The strl attribute
-will be removed from the data.frame.}
+will be removed from the data.frame (see details).}
 
 \item{add.rownames}{\emph{logical.} If \code{TRUE}, the first column will be
 used as rownames. Variable will be dropped afterwards.}
@@ -95,8 +95,8 @@ dates.
 Stata 13 introduced a new character type called strL. strLs are able to store
  strings up to 2 billion characters.  While R is able to store
  strings of this size in a character vector, the printed representation of such 
- vectors looks rather cluttered, so by default only a reference is saved in the 
- data.frame (\code{replace.strl=FALSE}). 
+ vectors looks rather cluttered, so it's possible to save only a reference in the 
+ data.frame with option \code{replace.strl=FALSE}. 
 
 In R, you may use rownames to store characters (see for instance
  \code{data(swiss)}). In Stata, this is not possible and rownames have to be

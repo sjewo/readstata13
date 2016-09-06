@@ -30,11 +30,6 @@ using namespace std;
 int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 {
 
-  // This bool was inteded to do a swap if you want to create a MSF-File on a
-  // LSF-machine. By default it should be 0 (no byteswap).
-  // bool swapit = strcmp(byteorder, SBYTEORDER);
-  bool swapit = 0;
-
   uint16_t k = dat.size();
   uint32_t n = dat.nrows();
   int8_t byteorder = SBYTEORDER;
@@ -124,7 +119,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       Rcpp::warning("Datalabel too long. Resizing. Max size is %d.",
                     ndlabel - 1);
 
-    dta.write(datalabel.c_str(), ndlabel);
+    writestr(datalabel, ndlabel, dta);
 
     /* timestamp size is 17 */
     if (version > 104)
@@ -134,7 +129,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Timestamp too long. Dropping.");
         timestamp = "";
       }
-      dta.write(timestamp.c_str(),timestamp.size());
+      writestr(timestamp, timestamp.size(), dta);
     }
 
     /* <variable_types> ... </variable_types> */
@@ -192,7 +187,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Varname too long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
-      dta.write(nvarname.c_str(),nvarnameslen);
+      writestr(nvarname, nvarnameslen, dta);
     }
 
     /* <sortlist> ... </sortlist> */
@@ -213,7 +208,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Formats too long. Resizing. Max size is %d",
                       nformatslen - 1);
 
-      dta.write(nformats.c_str(),nformatslen);
+      writestr(nformats, nformatslen, dta);
     }
 
     /* <value_label_names> ... </value_label_names> */
@@ -225,7 +220,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         Rcpp::warning("Vallabel too long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
-      dta.write(nvalLabels.c_str(), nvalLabelslen);
+      writestr(nvalLabels, nvalLabelslen, dta);
     }
 
     /* <variable_labels> ... </variable_labels> */
@@ -240,7 +235,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           Rcpp::warning("Varlabel too long. Resizing. Max size is %d",
                         nvarLabelslen - 1);
       }
-      dta.write(nvarLabels.c_str(),nvarLabelslen);
+      writestr(nvarLabels, nvarLabelslen, dta);
     }
 
 
@@ -272,9 +267,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           else
             writebin(len, dta, swapit);
 
-          dta.write(ch1.c_str(), chlen);
-          dta.write(ch2.c_str(), chlen);
-          dta.write(ch3.c_str(), ch3.size()+1);
+          writestr(ch1, chlen, dta);
+          writestr(ch2, chlen, dta);
+          writestr(ch3, ch3.size()+1, dta);
 
         }
       }
@@ -385,21 +380,20 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         default:
         {
           int32_t len = vartypes[i];
-          /* FixMe: Storing the vector in b for each string. */
-          CharacterVector b = as<CharacterVector>(dat[i]);
-          string val_s = as<string>(b[j]);
-          
+
+          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
+
           if(val_s == "NA")
-            val_s = "";
+            val_s.clear();
 
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>maxstrsize)
           {
             Rcpp::warning("Character value too long. Resizing. Max size is %d.",
                           maxstrsize);
-            // val_s.resize(244);
           }
-          dta.write(val_s.c_str(), len);
+
+          writestr(val_s, len, dta);
           break;
         }
 
@@ -446,7 +440,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
         writebin(nlen, dta, swapit);
 
-        dta.write(labname.c_str(), nvarnameslen);
+        writestr(labname, nvarnameslen, dta);
         dta.write((char*)&padding,3);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
@@ -474,7 +468,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
             // labtext[labtext.size()] = '\0';
           }
 
-          dta.write(labtext.c_str(), labtext.size()+1);
+          writestr(labtext, labtext.size()+1, dta);
         }
       }
 

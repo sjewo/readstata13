@@ -21,6 +21,8 @@
 #include <Rcpp.h>
 #include <fstream>
 #include <string>
+#include <iostream>
+#include <sstream>
 
 #define GCC_VERSION (__GNUC__ * 10000 \
 + __GNUC_MINOR__ * 100                \
@@ -107,6 +109,20 @@ static void writebin(T t, std::fstream& dta, bool swapit)
   } else {
     dta.write((char*)&t, sizeof(t));
   }
+}
+
+
+
+template <typename T>
+static void writestr(std::string val_s, T len, std::fstream& dta)
+{
+
+  std::stringstream val_stream;
+  val_stream << std::left << std::setw(len) << std::setfill('\0') << val_s;
+  std::string val_strl = val_stream.str();
+
+  dta.write(val_strl.c_str(),val_strl.length());
+
 }
 
 #endif

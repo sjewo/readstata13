@@ -21,6 +21,10 @@ datacompare <- function(x, y) {
   all(unlist(Map(all.equal, x, y)))
 }
 
+namescompare <- function(x, y){
+  all(identical(names(x), names(y)))
+}
+
 
 files <- c("dd118", "dd117", "dd115", "dd114", "dd113", "dd112", "dd111",
            "dd110", "dd108", "dd107", "dd106", "dd105", "dd104", "dd103",
@@ -30,7 +34,7 @@ data(mtcars)
 
 #### version ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -93,7 +97,7 @@ test_that("version", {
 
 #### compress ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -156,7 +160,7 @@ test_that("compress", {
 
 #### convert.factors TRUE ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -222,7 +226,7 @@ test_that("convert.factors TRUE", {
 
 #### convert.factors FALSE ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -291,7 +295,7 @@ test_that("convert.factors TRUE", {
 # rm(list = files)
 
 #### add rownames TRUE ####
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -375,7 +379,7 @@ test_that("add.rownames TRUE", {
 #### data label TRUE ####
 dl <- "mtcars data file"
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -440,7 +444,7 @@ test_that("data label", {
 
 #### convert dates TRUE ####
 
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -503,7 +507,7 @@ test_that("convert.dates TRUE", {
 # rm(list = files)
 
 #### strl save ####
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -569,7 +573,7 @@ test_that("replace.strl TRUE", {
 # rm(list = files)
 
 #### convert.underscore save ####
-if (dir.exists13("data"))
+if (readstata13:::dir.exists13("data"))
   unlink("data", recursive = TRUE)
 dir.create("data")
 
@@ -614,6 +618,7 @@ unlink("data", recursive = TRUE)
 names(dd) <- "x_1"
 
 test_that("convert.underscore TRUE", {
+  # check numerics
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
   expect_true(datacompare(dd, dd115))
@@ -629,6 +634,22 @@ test_that("convert.underscore TRUE", {
   expect_true(datacompare(dd, dd104))
   expect_true(datacompare(dd, dd103))
   expect_true(datacompare(dd, dd102))
+  # check names
+  expect_true(namescompare(dd, dd118))
+  expect_true(namescompare(dd, dd117))
+  expect_true(namescompare(dd, dd115))
+  expect_true(namescompare(dd, dd114))
+  expect_true(namescompare(dd, dd113))
+  expect_true(namescompare(dd, dd112))
+  expect_true(namescompare(dd, dd111))
+  expect_true(namescompare(dd, dd110))
+  expect_true(namescompare(dd, dd108))
+  expect_true(namescompare(dd, dd107))
+  expect_true(namescompare(dd, dd106))
+  expect_true(namescompare(dd, dd105))
+  expect_true(namescompare(dd, dd104))
+  expect_true(namescompare(dd, dd103))
+  expect_true(namescompare(dd, dd102))
 })
 
 # rm(list = files)

@@ -113,7 +113,7 @@
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        encoding = localeToCharset()[1], fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
-                       convert.dates = TRUE, replace.strl = FALSE,
+                       convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE) {
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {

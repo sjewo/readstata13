@@ -176,10 +176,10 @@ test_that("encoding UTF-8 (Stata 14)", {
 })
 
 test_that("Reading of strls", {
-  strl <- system.file("extdata", "statacar_strl.dta", package="readstata13")
+  strl <- system.file("extdata", "statacar.dta", package="readstata13")
 
   ddstrlf <- read.dta13(strl, replace.strl = F)
-  ddstrlfref <- paste0("0000000011000000000", 1:8)
+  ddstrlfref <- c("00000000110000000001", "00000000110000000002", "00000000110000000003", "00000000110000000004", "00000000110000000005", "00000000110000000006", "00000000110000000007", "00000000110000000008")
   expect_equal(ddstrlf$modelStrL, ddstrlfref)
 
   ddstrl <- read.dta13(strl, replace.strl = T)

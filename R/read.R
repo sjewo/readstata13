@@ -256,23 +256,19 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         attr(data, "strl") <- strl
       }
     }
-}
+  }
 
   var.labels <- attr(data, "var.labels")
 
-  if (replace.strl) {
-    if (version >= 117L) {
-      strl <- c("")
-      names(strl) <- "00000000000000000000"
-      strl <- c(strl, attr(data,"strl"))
-      for (j in seq(ncol(data))[types == 32768] ) {
-        data[, j] <- strl[data[,j]]
-      }
-      # if strls are in data.frame remove attribute strl
-      attr(data, "strl") <- NULL
-    } else {
-      message("replace.strl is only available for dta-format >= 117.")
+  if (replace.strl & version >= 117L) {
+    strl <- c("")
+    names(strl) <- "00000000000000000000"
+    strl <- c(strl, attr(data,"strl"))
+    for (j in seq(ncol(data))[types == 32768] ) {
+      data[, j] <- strl[data[,j]]
     }
+    # if strls are in data.frame remove attribute strl
+    attr(data, "strl") <- NULL
   }
 
 

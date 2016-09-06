@@ -1,3 +1,8 @@
+0.8.4
+- fix valgrind errors. converting from dta.write to writestr
+- fix for empty data label
+- make replace.strl default
+
 0.8.3
 - restrict length of varnames to 32 chars for compatibility with Stata 14
 - Stop compression of doubles as floats. Now test if compression of doubles as

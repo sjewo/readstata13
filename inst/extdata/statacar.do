@@ -15,6 +15,8 @@ end
 
 gen ldatecal2 = date(ldatecal, "YMD")
 
+generate strL modelStrL = model
+
 drop ldatecal
 
 rename ldatecal2 ldatecal

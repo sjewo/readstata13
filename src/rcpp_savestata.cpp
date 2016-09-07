@@ -353,7 +353,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           // store numeric as Stata double (double)
         case 65526:
         {
-          double val_d = as<NumericVector>(dat[i])[j];
+          double val_d = 0;
+
+          val_d = as<NumericVector>(dat[i])[j];
 
           if ( (val_d == NA_REAL) | R_IsNA(val_d) | R_IsNaN(val_d) | std::isinf(val_d) )
             val_d = STATA_DOUBLE_NA;
@@ -365,11 +367,15 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           // float
         case 65527:
         {
-          double val_d = as<NumericVector>(dat[i])[j];
-          float val_f = (double)(val_d);
+          double val_d = 0;
+          float  val_f = 0;
+
+          val_d = as<NumericVector>(dat[i])[j];
 
           if ( (val_d == NA_REAL) | (R_IsNA(val_d)) | R_IsNaN(val_d) | std::isinf(val_d) )
             val_f = STATA_FLOAT_NA;
+          else
+            val_f = (double)(val_d);
 
           writebin(val_f, dta, swapit);
 
@@ -378,7 +384,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           // store integer as Stata long (int32_t)
         case 65528:
         {
-          int32_t val_l = as<IntegerVector>(dat[i])[j];
+          int32_t val_l = 0;
+
+          val_l = as<IntegerVector>(dat[i])[j];
 
           if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) | R_IsNaN(val_l) | std::isinf(val_l) )
             val_l = STATA_INT_NA;
@@ -390,17 +398,15 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           // int
         case 65529:
         {
-          union v {
-            int32_t   l;
-            int16_t   i;
-          } val;
+          int16_t val_i = 0;
+          int32_t val_l = 0;
 
-          val.l = as<IntegerVector>(dat[i])[j];
+          val_l = as<IntegerVector>(dat[i])[j];
 
-          int16_t val_i = val.i;
-
-          if (val.l == NA_INTEGER)
+          if (val_l == NA_INTEGER)
             val_i = STATA_SHORTINT_NA;
+          else
+            val_i = val_l;
 
           writebin(val_i, dta, swapit);
 
@@ -409,17 +415,15 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           // byte
         case 65530:
         {
-          union v {
-            int32_t   l;
-            int8_t    b;
-          } val;
+          int8_t  val_b = 0;
+          int32_t val_l = 0;
 
-          val.l = as<IntegerVector>(dat[i])[j];
+          val_l = as<IntegerVector>(dat[i])[j];
 
-          int8_t val_b = val.b;
-
-          if (val.l == NA_INTEGER)
+          if (val_l == NA_INTEGER)
             val_b = STATA_BYTE_NA;
+          else
+            val_b = val_l;
 
           writebin(val_b, dta, swapit);
 

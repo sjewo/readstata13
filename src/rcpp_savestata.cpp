@@ -632,10 +632,10 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       hi = (nmap >> 32);
       lo = nmap;
 
-      if (swapit==0) {
+      if (SBYTEORDER == 2) { // LSF
         writebin(lo, dta, swapit);
         writebin(hi, dta, swapit);
-      } else {
+      } else {               // MSF
         writebin(hi, dta, swapit);
         writebin(lo, dta, swapit);
       }

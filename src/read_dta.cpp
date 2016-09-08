@@ -510,18 +510,16 @@ List read_dta(FILE * file, const bool missing) {
             int16_t v = 0;
             int64_t o = 0, z = 0;
 
+            z = readbin(z, file, swapit);
+
             // works for LSF on little- and big-endian
             if(byteorder.compare("LSF")==0) {
-              z = readbin(z, file, swapit);
-
               v = (int16_t)z;
               o = (z >> 16);
             }
 
             // works if we read a big-endian file on little-endian
             if(byteorder.compare("MSF")==0) {
-              z = readbin(z, file, swapit);
-
               v = (z >> 48) & ((1 << 16) - 1);
               o = z & ((1 << 16) - 1);
             }

@@ -498,9 +498,9 @@ List read_dta(FILE * file, const bool missing) {
             v = readbin(v, file, swapit);
             o = readbin(o, file, swapit);
 
-            stringstream ss;
-            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-            string val_strl = ss.str();
+            stringstream val_stream;
+            val_stream << v << '_' << o;
+            string val_strl = val_stream.str();
             //sprintf(val_strl, "%010d%010d", v, o);
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
@@ -541,7 +541,7 @@ List read_dta(FILE * file, const bool missing) {
             }
 
             stringstream val_stream;
-            val_stream << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+            val_stream << v << '_' << o;
             string val_strl = val_stream.str();
 
             as<CharacterVector>(df[i])[j] = val_strl;
@@ -596,9 +596,9 @@ List read_dta(FILE * file, const bool missing) {
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
-      stringstream ss;
-      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-      ref.assign(ss.str());
+      stringstream val_stream;
+      val_stream << v << '_' << o;
+      ref.assign(val_stream.str());
       //sprintf(ref, "%010d%010d", v, o);
       break;
     }
@@ -611,9 +611,9 @@ List read_dta(FILE * file, const bool missing) {
       o = readbin(o, file, swapit);
       // z = readbin(z, file, swapit);
 
-      stringstream ss;
-      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-      ref.assign(ss.str());
+      stringstream val_stream;
+      val_stream << v << '_' << o;
+      ref.assign(val_stream.str());
       //sprintf(ref, "%010d%010ld", v, o);
 
       break;

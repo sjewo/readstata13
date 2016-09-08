@@ -468,30 +468,25 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           }
             case 118:
           {
-            uint16_t v = i+1;
-            uint64_t o = j+1;
-
-            uint32_t hi = 0, lo = 0;
-
-            // z is 'oooo oooo'
-            z = o;
-            if (SBYTEORDER == 2) {
-              // if LSF move z to make space for v
-              z <<= 16;
-            }
-            z |=v;
-            // z is 'vvoo oooo'
-
-            // store z as two int32_t
-            lo = (uint32_t)z;
-            hi = (z >> 32);
-
-            writebin(lo, dta, swapit);
-            writebin(hi, dta, swapit);
+            int16_t v = i+1;
+            int64_t o = j+1;
+            char    z[8];
 
             // push back every v, o and val_strl
             V.push_back(v);
             O.push_back(o);
+
+            // z is 'vv-- ----'
+            memcpy(&z[0], &v, sizeof(v));
+            if (SBYTEORDER == 1) {
+              o <<= 16;
+            }
+            memcpy(&z[2], &o, 6);
+            // z is 'vvoo oooo'
+
+            dta.write((char*)&z, sizeof(z));
+            // writestr((char*)&z, sizeof(z), dta);
+
             break;
           }
             }

@@ -21,11 +21,11 @@
 using namespace Rcpp;
 using namespace std;
 
-//' Writes the binary Stata file
-//'
-//' @param filePath The full systempath to the dta file you want to export.
-//' @param dat an R-Object of class data.frame.
-//' @export
+// Writes the binary Stata file
+//
+// @param filePath The full systempath to the dta file you want to export.
+// @param dat an R-Object of class data.frame.
+// @export
 // [[Rcpp::export]]
 int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 {

@@ -513,23 +513,30 @@ List read_dta(FILE * file, const bool missing) {
             // works for LSF on little- and big-endian
             if(byteorder.compare("LSF")==0) {
               z = readbin(z, file, swapit);
-            } else{
-              z = readbin(z, file, 0);
-            }
 
-            v = (int16_t)z;
-            o = (z >> 16);
+              v = (int16_t)z;
+              o = (z >> 16);
+            }
 
             // works if we read a big-endian file on little-endian
             if(byteorder.compare("MSF")==0) {
+              z = readbin(z, file, 0);
 
-              // why?
-              if(!swapit)
-                o >>= 32;
+              // in big endian v is at the end of the int
+              if (swapit == 0) {
+                v = (z >> 48);
+                o = (z << 48);
+
+                o <<= 16;
+              }
 
               // reverse the initial swap
-              if (swapit) {
+              if (swapit == 1) {
+                v = (int16_t)z;
+                o = (z >> 16);
+
                 o <<= 16;
+
                 v = swap_endian(v);
                 o = swap_endian(o);
               }

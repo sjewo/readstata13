@@ -524,10 +524,8 @@ List read_dta(FILE * file, const bool missing) {
 
               // in big endian v is at the end of the int
               if (swapit == 0) {
-                v = (z >> 48);
-                o = (z << 48);
-
-                o <<= 16;
+                v = (z >> 48) & ((1 << 16) - 1);
+                o = z & ((1 << 16) - 1);
               }
 
               // reverse the initial swap

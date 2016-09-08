@@ -507,19 +507,27 @@ List read_dta(FILE * file, const bool missing) {
           }
         case 118:
           {
-            uint16_t v = 0;
-            uint64_t o = 0;
-            uint64_t z = 0;
+            int16_t v = 0;
+            int64_t o = 0, z = 0;
 
-            z = readbin(z, file, swapit);
+            z = readbin(z, file, 0);
 
-            v = (uint16_t)z;
+            v = (int16_t)z;
             o = (z >> 16);
 
-            stringstream ss;
-            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-            string val_strl = ss.str();
-            //sprintf(val_strl, "%010d%010llu", v, o);
+            // if we need to swap
+            if (swapit) {
+              // if we read a big-endian file on little-endian
+              if(byteorder.compare("MSF")==0)
+                o <<= 16;
+
+              v = swap_endian(v);
+              o = swap_endian(o);
+            }
+
+            stringstream val_stream;
+            val_stream << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
+            string val_strl = val_stream.str();
 
             as<CharacterVector>(df[i])[j] = val_strl;
             break;

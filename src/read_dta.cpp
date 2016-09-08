@@ -520,24 +520,10 @@ List read_dta(FILE * file, const bool missing) {
 
             // works if we read a big-endian file on little-endian
             if(byteorder.compare("MSF")==0) {
-              z = readbin(z, file, 0);
+              z = readbin(z, file, swapit);
 
-              // in big endian v is at the end of the int
-              if (swapit == 0) {
-                v = (z >> 48) & ((1 << 16) - 1);
-                o = z & ((1 << 16) - 1);
-              }
-
-              // reverse the initial swap
-              if (swapit == 1) {
-                v = (int16_t)z;
-                o = (z >> 16);
-
-                o <<= 16;
-
-                v = swap_endian(v);
-                o = swap_endian(o);
-              }
+              v = (z >> 48) & ((1 << 16) - 1);
+              o = z & ((1 << 16) - 1);
             }
 
             stringstream val_stream;

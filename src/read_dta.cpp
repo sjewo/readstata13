@@ -513,6 +513,8 @@ List read_dta(FILE * file, const bool missing) {
 
             if(byteorder.compare("LSF")==0) {
               z = readbin(z, file, swapit);
+            } else{
+              z = readbin(z, file, 0);
             }
 
             v = (int16_t)z;

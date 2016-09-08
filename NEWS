@@ -1,3 +1,6 @@
+0.8.5
+- fix errors on big-endian systems
+
 0.8.4
 - fix valgrind errors. converting from dta.write to writestr
 - fix for empty data label

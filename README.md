@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.8.4")
+devtools::install_github("sjewo/readstata13", ref="0.8.5")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.8.4")
+install_github("readstata13", username="sjewo", ref="0.8.5")
 ```
 
 To install the current development version from github:
@@ -56,7 +56,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 ### Working features
-
+* [0.8.5] fix errors on big-endians systems
 * [0.8.4] fix valgrind errors. converting from dta.write to writestr
 * [0.8.4] fix for empty data label
 * [0.8.4] make replace.strl default

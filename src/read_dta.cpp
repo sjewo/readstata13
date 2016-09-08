@@ -498,28 +498,35 @@ List read_dta(FILE * file, const bool missing) {
             v = readbin(v, file, swapit);
             o = readbin(o, file, swapit);
 
-            stringstream ss;
-            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-            string val_strl = ss.str();
+            stringstream val_stream;
+            val_stream << v << '_' << o;
+            string val_strl = val_stream.str();
             //sprintf(val_strl, "%010d%010d", v, o);
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
           }
         case 118:
           {
-            uint16_t v = 0;
-            uint64_t o = 0;
-            uint64_t z = 0;
+            int16_t v = 0;
+            int64_t o = 0, z = 0;
 
             z = readbin(z, file, swapit);
 
-            v = (uint16_t)z;
-            o = (z >> 16);
+            // works for LSF on little- and big-endian
+            if(byteorder.compare("LSF")==0) {
+              v = (int16_t)z;
+              o = (z >> 16);
+            }
 
-            stringstream ss;
-            ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-            string val_strl = ss.str();
-            //sprintf(val_strl, "%010d%010llu", v, o);
+            // works if we read a big-endian file on little-endian
+            if(byteorder.compare("MSF")==0) {
+              v = (z >> 48) & ((1 << 16) - 1);
+              o = z & ((1 << 16) - 1);
+            }
+
+            stringstream val_stream;
+            val_stream << v << '_' << o;
+            string val_strl = val_stream.str();
 
             as<CharacterVector>(df[i])[j] = val_strl;
             break;
@@ -573,9 +580,9 @@ List read_dta(FILE * file, const bool missing) {
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
-      stringstream ss;
-      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-      ref.assign(ss.str());
+      stringstream val_stream;
+      val_stream << v << '_' << o;
+      ref.assign(val_stream.str());
       //sprintf(ref, "%010d%010d", v, o);
       break;
     }
@@ -588,9 +595,9 @@ List read_dta(FILE * file, const bool missing) {
       o = readbin(o, file, swapit);
       // z = readbin(z, file, swapit);
 
-      stringstream ss;
-      ss << setfill('0') << setw(10) << v << setfill('0') << setw(10) << o;
-      ref.assign(ss.str());
+      stringstream val_stream;
+      val_stream << v << '_' << o;
+      ref.assign(val_stream.str());
       //sprintf(ref, "%010d%010ld", v, o);
 
       break;

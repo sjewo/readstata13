@@ -510,19 +510,22 @@ List read_dta(FILE * file, const bool missing) {
             int16_t v = 0;
             int64_t o = 0, z = 0;
 
-            z = readbin(z, file, 0);
+
+            if(byteorder.compare("LSF")==0) {
+              z = readbin(z, file, swapit);
+            }
 
             v = (int16_t)z;
             o = (z >> 16);
 
-            // if we need to swap
-            if (swapit) {
-              // if we read a big-endian file on little-endian
-              if(byteorder.compare("MSF")==0)
-                o <<= 16;
+            // if we read a big-endian file on little-endian
+            if(byteorder.compare("MSF")==0) {
+              o <<= 16;
 
-              v = swap_endian(v);
-              o = swap_endian(o);
+              if (swapit) {
+                v = swap_endian(v);
+                o = swap_endian(o);
+              }
             }
 
             stringstream val_stream;

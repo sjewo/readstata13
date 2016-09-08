@@ -179,7 +179,7 @@ test_that("Reading of strls", {
   strl <- system.file("extdata", "statacar.dta", package="readstata13")
 
   ddstrlf <- read.dta13(strl, replace.strl = F)
-  ddstrlfref <- paste0("0000000011000000000", 1:8)
+  ddstrlfref <- paste0("11_", 1:8)
   expect_equal(ddstrlf$modelStrL, ddstrlfref)
 
   ddstrl <- read.dta13(strl, replace.strl = T)

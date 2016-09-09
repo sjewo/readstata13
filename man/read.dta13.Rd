@@ -5,9 +5,9 @@
 \title{Read Stata Binary Files}
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
-  encoding = localeToCharset()[1], fromEncoding = NULL,
-  convert.underscore = FALSE, missing.type = FALSE, convert.dates = TRUE,
-  replace.strl = TRUE, add.rownames = FALSE, nonint.factors = FALSE)
+  encoding = "UTF-8", fromEncoding = NULL, convert.underscore = FALSE,
+  missing.type = FALSE, convert.dates = TRUE, replace.strl = TRUE,
+  add.rownames = FALSE, nonint.factors = FALSE)
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}

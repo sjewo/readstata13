@@ -111,7 +111,7 @@
 #' @importFrom stats na.omit 
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = localeToCharset()[1], fromEncoding=NULL,
+                       encoding = "UTF-8", fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE) {

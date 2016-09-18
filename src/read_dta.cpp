@@ -20,7 +20,7 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_dta(FILE * file, const bool missing) {
+List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   // stata_dta><header>
   test("stata_dta><header>", file);
   test("<release>", file);
@@ -403,9 +403,13 @@ List read_dta(FILE * file, const bool missing) {
     }
   }
 
+  uint32_t nmin = selectrows(1);
+  uint32_t nmax = selectrows(2);
+
   // 2. fill it with data
   for(uint32_t j=0; j<n; ++j)
   {
+
     for (uint16_t i=0; i<k; ++i)
     {
       int const type = vartype[i];

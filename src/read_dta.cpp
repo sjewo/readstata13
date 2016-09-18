@@ -107,10 +107,10 @@ List read_dta(FILE * file, const bool missing) {
   * Number of Observations
   */
 
-  int64_t n = 0;
+  uint64_t n = 0;
 
   if(release==117) {
-    n = readbin((int32_t)n, file, swapit);
+    n = readbin((uint32_t)n, file, swapit);
   }
   if (release ==118) {
     n = readbin(n, file, swapit);
@@ -404,7 +404,7 @@ List read_dta(FILE * file, const bool missing) {
   }
 
   // 2. fill it with data
-  for(uint32_t j=0; j<n; ++j)
+  for(uint64_t j=0; j<n; ++j)
   {
     for (uint16_t i=0; i<k; ++i)
     {

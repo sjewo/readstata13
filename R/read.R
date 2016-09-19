@@ -152,9 +152,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     if (select.rows[2] < select.rows[1])
       select.rows <- c(select.rows[2], select.rows[1])
 
-    # finally remove -1 from each row (c++ starts with 0, R with 1)
-    # if (min(select.rows) == 0)
-      # select.rows <- select.rows -1
+    # make sure to start at index position 1 if select.rows[2] > 0
+    if (select.rows[2] > 0 & select.rows[1] == 0)
+      select.rows[1] <- 1
   }
   else {
     # set a value

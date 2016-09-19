@@ -55,7 +55,7 @@ List stata_read(const char * filePath, const bool missing,
   if (fbit.compare(expfbit) == 0)
     df = read_dta(file, missing, selectrows);
   else
-    df = read_pre13_dta(file, missing);
+    df = read_pre13_dta(file, missing, selectrows);
 
   fclose(file);
 

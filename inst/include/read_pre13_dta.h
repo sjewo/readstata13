@@ -18,6 +18,6 @@
 #ifndef READPRE13DTA_H
 #define READPRE13DTA_H
 
-Rcpp::List read_pre13_dta(FILE * file, const bool missing);
+Rcpp::List read_pre13_dta(FILE * file, const bool missing, const Rcpp::IntegerVector selectrows);
 
 #endif

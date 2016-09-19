@@ -442,7 +442,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
       import = 1;
 
       // temoprary index values to be reset at the end of the loop
-      tmp_val = tmp_j = j;
+      tmp_val = j;
+      j = tmp_j;
       tmp_j++;
     }
 
@@ -598,7 +599,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   }
 
   // 3. Create a data.frame
-  df.attr("row.names") = rvec +1;
+  df.attr("row.names") = rvec;
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
 

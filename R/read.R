@@ -47,6 +47,9 @@
 #'  used as rownames. Variable will be dropped afterwards.
 #' @param nonint.factors \emph{logical.} If \code{TRUE}, factors labels
 #'  will be assigned to variables of type float and double.
+#' @param select.rows \emph{integer.} Vector of one or two numbers. If single
+#'  value rows from 1:val are selected. If two values of a range are selected
+#'  the rows in range will be selected.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -129,33 +132,36 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   if (!file.exists(filepath))
     return(message("File not found."))
 
+
+
   # some select.row checks
   if (!is.null(select.rows)) {
     # check that it is a numeric
-    if (!is.numeric(select.rows))
+    if (!is.numeric(select.rows)){
       return(message("select.rows must be of type numeric"))
-    else {
+    } else {
       # check that lenght is not > 2
-      if (length(select.rows)>2)
+      if (length(select.rows) > 2)
         return(message("select.rows must be of length 1 or 2."))
-      # if lenght 1 add a starting zero
-      if (length(select.rows==1))
-        select.rows <- select.rows (1, select.rows)
+
+      # if lenght 1 start at row 1
+      if (length(select.rows) == 1)
+        select.rows <- c(1, select.rows)
     }
     # reorder if 2 is bigger than 1
     if (select.rows[2] < select.rows[1])
       select.rows <- c(select.rows[2], select.rows[1])
 
     # finally remove -1 from each row (c++ starts with 0, R with 1)
-    if (min(select.rows) == 0)
-      select.rows <- select.rows -1
+    # if (min(select.rows) == 0)
+      # select.rows <- select.rows -1
   }
   else {
     # set a value
-    select.rows <- c(-1,-1)
+    select.rows <- c(0,0)
   }
 
-  data <- stata_read(filepath,missing.type, select.rows)
+  data <- stata_read(filepath, missing.type, select.rows)
 
   version <- attr(data, "version")
 

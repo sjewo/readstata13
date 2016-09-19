@@ -655,3 +655,197 @@ test_that("convert.underscore TRUE", {
 
 # rm(list = files)
 
+#### strl save ####
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+# strLs can be of length any length up to 2 billion characters. Starting with
+# 2046 a string is handled as a strL
+dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
+                          paste(replicate(2046, "b"), collapse = "")),
+                  stringsAsFactors = FALSE)
+
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+# save.dta13(dd, "data/dta_115.dta", version = 115) # no strl
+# save.dta13(dd, "data/dta_114.dta", version = 114)
+# save.dta13(dd, "data/dta_113.dta", version = 113)
+# save.dta13(dd, "data/dta_112.dta", version = 112)
+# save.dta13(dd, "data/dta_111.dta", version = 111)
+# save.dta13(dd, "data/dta_110.dta", version = 110)
+# save.dta13(dd, "data/dta_108.dta", version = 108)
+# save.dta13(dd, "data/dta_107.dta", version = 107)
+# save.dta13(dd, "data/dta_106.dta", version = 106)
+# save.dta13(dd, "data/dta_105.dta", version = 105)
+# save.dta13(dd, "data/dta_104.dta", version = 104)
+# save.dta13(dd, "data/dta_103.dta", version = 103)
+# save.dta13(dd, "data/dta_102.dta", version = 102)
+
+
+dd118 <- read.dta13("data/dta_118.dta", replace.strl = TRUE)
+dd117 <- read.dta13("data/dta_117.dta", replace.strl = TRUE)
+# dd115 <- read.dta13("data/dta_115.dta")
+# dd114 <- read.dta13("data/dta_114.dta")
+# dd113 <- read.dta13("data/dta_113.dta")
+# dd112 <- read.dta13("data/dta_112.dta")
+# dd111 <- read.dta13("data/dta_111.dta")
+# dd110 <- read.dta13("data/dta_110.dta")
+# dd108 <- read.dta13("data/dta_108.dta")
+# dd107 <- read.dta13("data/dta_107.dta")
+# dd106 <- read.dta13("data/dta_106.dta")
+# dd105 <- read.dta13("data/dta_105.dta")
+# dd104 <- read.dta13("data/dta_104.dta")
+# dd103 <- read.dta13("data/dta_103.dta")
+# dd102 <- read.dta13("data/dta_102.dta")
+
+unlink("data", recursive = TRUE)
+
+test_that("replace.strl TRUE", {
+  # Check that rownames are identical
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  # expect_true(datacompare(dd, dd115))
+  # expect_true(datacompare(dd, dd114))
+  # expect_true(datacompare(dd, dd113))
+  # expect_true(datacompare(dd, dd112))
+  # expect_true(datacompare(dd, dd111))
+  # expect_true(datacompare(dd, dd110))
+  # expect_true(datacompare(dd, dd108))
+  # expect_true(datacompare(dd, dd107))
+  # expect_true(datacompare(dd, dd106))
+  # expect_true(datacompare(dd, dd105))
+  # expect_true(datacompare(dd, dd104))
+  # expect_true(datacompare(dd, dd103))
+  # expect_true(datacompare(dd, dd102))
+})
+
+# rm(list = files)
+
+#### select.rows ####
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+
+dd <- mtcars
+
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+# save.dta13(dd, "data/dta_115.dta", version = 115, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_114.dta", version = 114, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_113.dta", version = 113, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_112.dta", version = 112, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_111.dta", version = 111, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_110.dta", version = 110, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_108.dta", version = 108, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_107.dta", version = 107, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_106.dta", version = 106, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_105.dta", version = 105, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_104.dta", version = 104, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_103.dta", version = 103, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_102.dta", version = 102, convert.underscore = TRUE)
+
+
+dd118 <- read.dta13("data/dta_118.dta", select.rows = 5)
+dd117 <- read.dta13("data/dta_117.dta", select.rows = 5)
+# dd115 <- read.dta13("data/dta_115.dta")
+# dd114 <- read.dta13("data/dta_114.dta")
+# dd113 <- read.dta13("data/dta_113.dta")
+# dd112 <- read.dta13("data/dta_112.dta")
+# dd111 <- read.dta13("data/dta_111.dta")
+# dd110 <- read.dta13("data/dta_110.dta")
+# dd108 <- read.dta13("data/dta_108.dta")
+# dd107 <- read.dta13("data/dta_107.dta")
+# dd106 <- read.dta13("data/dta_106.dta")
+# dd105 <- read.dta13("data/dta_105.dta")
+# dd104 <- read.dta13("data/dta_104.dta")
+# dd103 <- read.dta13("data/dta_103.dta")
+# dd102 <- read.dta13("data/dta_102.dta")
+
+unlink("data", recursive = TRUE)
+
+dd <- dd[1:5,]
+
+test_that("convert.underscore TRUE", {
+  # check numerics
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  # expect_true(datacompare(dd, dd115))
+  # expect_true(datacompare(dd, dd114))
+  # expect_true(datacompare(dd, dd113))
+  # expect_true(datacompare(dd, dd112))
+  # expect_true(datacompare(dd, dd111))
+  # expect_true(datacompare(dd, dd110))
+  # expect_true(datacompare(dd, dd108))
+  # expect_true(datacompare(dd, dd107))
+  # expect_true(datacompare(dd, dd106))
+  # expect_true(datacompare(dd, dd105))
+  # expect_true(datacompare(dd, dd104))
+  # expect_true(datacompare(dd, dd103))
+  # expect_true(datacompare(dd, dd102))
+})
+
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+dd <- mtcars
+
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+# save.dta13(dd, "data/dta_115.dta", version = 115, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_114.dta", version = 114, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_113.dta", version = 113, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_112.dta", version = 112, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_111.dta", version = 111, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_110.dta", version = 110, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_108.dta", version = 108, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_107.dta", version = 107, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_106.dta", version = 106, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_105.dta", version = 105, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_104.dta", version = 104, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_103.dta", version = 103, convert.underscore = TRUE)
+# save.dta13(dd, "data/dta_102.dta", version = 102, convert.underscore = TRUE)
+
+
+dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5,10))
+dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5,10))
+# dd115 <- read.dta13("data/dta_115.dta")
+# dd114 <- read.dta13("data/dta_114.dta")
+# dd113 <- read.dta13("data/dta_113.dta")
+# dd112 <- read.dta13("data/dta_112.dta")
+# dd111 <- read.dta13("data/dta_111.dta")
+# dd110 <- read.dta13("data/dta_110.dta")
+# dd108 <- read.dta13("data/dta_108.dta")
+# dd107 <- read.dta13("data/dta_107.dta")
+# dd106 <- read.dta13("data/dta_106.dta")
+# dd105 <- read.dta13("data/dta_105.dta")
+# dd104 <- read.dta13("data/dta_104.dta")
+# dd103 <- read.dta13("data/dta_103.dta")
+# dd102 <- read.dta13("data/dta_102.dta")
+
+unlink("data", recursive = TRUE)
+
+dd <- dd[5:10,]
+
+test_that("convert.underscore TRUE", {
+  # check numerics
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  # expect_true(datacompare(dd, dd115))
+  # expect_true(datacompare(dd, dd114))
+  # expect_true(datacompare(dd, dd113))
+  # expect_true(datacompare(dd, dd112))
+  # expect_true(datacompare(dd, dd111))
+  # expect_true(datacompare(dd, dd110))
+  # expect_true(datacompare(dd, dd108))
+  # expect_true(datacompare(dd, dd107))
+  # expect_true(datacompare(dd, dd106))
+  # expect_true(datacompare(dd, dd105))
+  # expect_true(datacompare(dd, dd104))
+  # expect_true(datacompare(dd, dd103))
+  # expect_true(datacompare(dd, dd102))
+})
+
+# rm(list = files)

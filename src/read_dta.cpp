@@ -107,7 +107,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   * Number of Observations
   */
 
-  int64_t n = 0;
+  uint64_t n = 0;
 
   if(release==117) {
     n = readbin((int32_t)n, file, swapit);
@@ -379,6 +379,32 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   * attatched and the list type is changed to data.frame.
   */
 
+  uint64_t nmin = selectrows(0);
+  uint64_t nmax = selectrows(1);
+  uint64_t nn   = 0;
+
+  // avoid overflow ( -1 because n contains full rows)
+  if ((nmin == 0) && (nmax == 0)){
+    nmin = 1;
+    nmax = n;
+  }
+
+  if (n < nmax)
+    nmax = n;
+
+  if (n < nmin)
+    nmin = n;
+
+  nmin = nmin -1;
+  nmax = nmax -1;
+
+  // Rcout << n << ":" << nmax << std::endl;
+
+  Rcpp::IntegerVector rvec = seq(nmin, nmax);
+  nn = rvec.size();
+
+  // Rcout << nn << std::endl;
+
   // 1. create the list
   List df(k);
   for (uint16_t i=0; i<k; ++i)
@@ -388,27 +414,40 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     {
     case 65526:
     case 65527:
-      SET_VECTOR_ELT(df, i, NumericVector(no_init(n)));
+      SET_VECTOR_ELT(df, i, NumericVector(no_init(nn)));
       break;
 
     case 65528:
     case 65529:
     case 65530:
-      SET_VECTOR_ELT(df, i, IntegerVector(no_init(n)));
+      SET_VECTOR_ELT(df, i, IntegerVector(no_init(nn)));
       break;
 
     default:
-      SET_VECTOR_ELT(df, i, CharacterVector(no_init(n)));
+      SET_VECTOR_ELT(df, i, CharacterVector(no_init(nn)));
     break;
     }
   }
 
-  uint32_t nmin = selectrows(1);
-  uint32_t nmax = selectrows(2);
+  uint64_t tmp_j = 0, tmp_val = 0;
+  bool import = 1;
 
   // 2. fill it with data
-  for(uint32_t j=0; j<n; ++j)
+  for(uint64_t j=0; j<n; ++j)
   {
+
+    if ((j < nmin) || (j > nmax)) {
+      import = 0;
+    } else {
+      import = 1;
+
+      tmp_val = j;
+      j       = tmp_j;
+
+      tmp_j++;
+    }
+
+    // Rcout << j << " " << nmax <<" "<< import << std::endl;
 
     for (uint16_t i=0; i<k; ++i)
     {
@@ -421,10 +460,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
 
-        if ((missing == 0) && !(val_d == R_NegInf) && ((val_d<STATA_DOUBLE_NA_MIN) || (val_d>STATA_DOUBLE_NA_MAX)) )
-          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
-        else
-          REAL(VECTOR_ELT(df,i))[j] = val_d;
+        if (import == 1) {
+          if ((missing == 0) && !(val_d == R_NegInf) && ((val_d<STATA_DOUBLE_NA_MIN) || (val_d>STATA_DOUBLE_NA_MAX)) )
+            REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+          else
+            REAL(VECTOR_ELT(df,i))[j] = val_d;
+        }
         break;
       }
         // float
@@ -433,10 +474,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
 
-        if ((missing == 0) && ((val_f<STATA_FLOAT_NA_MIN) || (val_f>STATA_FLOAT_NA_MAX)) )
-          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
-        else
-          REAL(VECTOR_ELT(df,i))[j] = val_f;
+        if (import == 1) {
+          if ((missing == 0) && ((val_f<STATA_FLOAT_NA_MIN) || (val_f>STATA_FLOAT_NA_MAX)) )
+            REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+          else
+            REAL(VECTOR_ELT(df,i))[j] = val_f;
+        }
         break;
       }
         //long
@@ -445,10 +488,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
 
-        if ((missing == 0) && ((val_l<STATA_INT_NA_MIN) || (val_l>STATA_INT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_l;
+        if (import == 1) {
+          if ((missing == 0) && ((val_l<STATA_INT_NA_MIN) || (val_l>STATA_INT_NA_MAX)) )
+            INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
+          else
+            INTEGER(VECTOR_ELT(df,i))[j] = val_l;
+        }
         break;
       }
         // int
@@ -457,10 +502,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
 
-        if ((missing == 0) && ((val_i<STATA_SHORTINT_NA_MIN) || (val_i>STATA_SHORTINT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_i;
+        if (import == 1) {
+          if ((missing == 0) && ((val_i<STATA_SHORTINT_NA_MIN) || (val_i>STATA_SHORTINT_NA_MAX)) )
+            INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+          else
+            INTEGER(VECTOR_ELT(df,i))[j] = val_i;
+        }
         break;
       }
         // byte
@@ -469,10 +516,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
 
-        if (missing == 0 && ( (val_b<STATA_BYTE_NA_MIN) || (val_b>STATA_BYTE_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_b;
+        if (import == 1) {
+          if (missing == 0 && ( (val_b<STATA_BYTE_NA_MIN) || (val_b>STATA_BYTE_NA_MAX)) )
+            INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+          else
+            INTEGER(VECTOR_ELT(df,i))[j] = val_b;
+        }
         break;
       }
         // strings with 2045 or fewer characters
@@ -483,7 +532,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         std::string val_s (len, '\0');
 
         readstring(val_s, file, val_s.size());
-        as<CharacterVector>(df[i])[j] = val_s;
+        if (import == 1) {
+          as<CharacterVector>(df[i])[j] = val_s;
+        }
         break;
       }
         // string of any length
@@ -506,7 +557,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
             val_stream << v << '_' << o;
             string val_strl = val_stream.str();
             //sprintf(val_strl, "%010d%010d", v, o);
-            as<CharacterVector>(df[i])[j] = val_strl;
+            if (import == 1) {
+              as<CharacterVector>(df[i])[j] = val_strl;
+            }
             break;
           }
         case 118:
@@ -532,18 +585,22 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
             val_stream << v << '_' << o;
             string val_strl = val_stream.str();
 
-            as<CharacterVector>(df[i])[j] = val_strl;
+            if (import == 1) {
+              as<CharacterVector>(df[i])[j] = val_strl;
+            }
             break;
           }
         }
       }
       }
     }
+
+    if (import == 1)
+      j = tmp_val;
   }
 
   // 3. Create a data.frame
-  R_xlen_t nrows = Rf_length(df[0]);
-  df.attr("row.names") = IntegerVector::create(NA_INTEGER, nrows);
+  df.attr("row.names") = rvec +1;
   df.attr("names") = varnames;
   df.attr("class") = "data.frame";
 

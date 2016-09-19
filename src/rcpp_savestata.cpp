@@ -343,7 +343,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     IntegerVector V, O;
     CharacterVector STRL;
 
-    for(uint32_t j = 0; j < n; ++j)
+    for(uint64_t j = 0; j < n; ++j)
     {
       for (uint16_t i = 0; i < k; ++i)
       {

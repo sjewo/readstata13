@@ -383,27 +383,26 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   uint64_t nmax = selectrows(1);
   uint64_t nn   = 0;
 
-  // avoid overflow ( -1 because n contains full rows)
+  // if  selectrows is c(0,0) use full data
   if ((nmin == 0) && (nmax == 0)){
     nmin = 1;
     nmax = n;
   }
 
+  // make sure that n is not greater nmax
   if (n < nmax)
     nmax = n;
 
+  // neither should nmin be greater
   if (n < nmin)
     nmin = n;
-
-  nmin = nmin -1;
-  nmax = nmax -1;
-
-  // Rcout << n << ":" << nmax << std::endl;
 
   Rcpp::IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
 
-  // Rcout << nn << std::endl;
+  // use c indexing starting at 0
+  nmin = nmin -1;
+  nmax = nmax -1;
 
   // 1. create the list
   List df(k);
@@ -436,18 +435,16 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   for(uint64_t j=0; j<n; ++j)
   {
 
+    // import is a bool if data is handed over to R
     if ((j < nmin) || (j > nmax)) {
       import = 0;
     } else {
       import = 1;
 
-      tmp_val = j;
-      j       = tmp_j;
-
+      // temoprary index values to be reset at the end of the loop
+      tmp_val = tmp_j = j;
       tmp_j++;
     }
-
-    // Rcout << j << " " << nmax <<" "<< import << std::endl;
 
     for (uint16_t i=0; i<k; ++i)
     {
@@ -595,6 +592,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
       }
     }
 
+    // reset temporary index values to their original values
     if (import == 1)
       j = tmp_val;
   }

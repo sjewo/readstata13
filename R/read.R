@@ -27,7 +27,7 @@
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252 or UTF-8
 #'  to system encoding. Options are "latin1" or "UTF-8" to specify target
 #'  encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
-#'   which can't be displayed in the current locale. 
+#'   which can't be displayed in the current locale.
 #'   Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
 #'  "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
@@ -45,8 +45,11 @@
 #'  converted.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, the first column will be
 #'  used as rownames. Variable will be dropped afterwards.
-#' @param nonint.factors \emph{logical.} If \code{TRUE}, factors labels 
+#' @param nonint.factors \emph{logical.} If \code{TRUE}, factors labels
 #'  will be assigned to variables of type float and double.
+#' @param select.rows \emph{integer.} Vector of one or two numbers. If single
+#'  value rows from 1:val are selected. If two values of a range are selected
+#'  the rows in range will be selected.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -66,17 +69,17 @@
 #'
 #' Stata 13 introduced a new character type called strL. strLs are able to store
 #'  strings up to 2 billion characters.  While R is able to store
-#'  strings of this size in a character vector, the printed representation of such 
-#'  vectors looks rather cluttered, so it's possible to save only a reference in the 
-#'  data.frame with option \code{replace.strl=FALSE}. 
+#'  strings of this size in a character vector, the printed representation of such
+#'  vectors looks rather cluttered, so it's possible to save only a reference in the
+#'  data.frame with option \code{replace.strl=FALSE}.
 #'
 #' In R, you may use rownames to store characters (see for instance
 #'  \code{data(swiss)}). In Stata, this is not possible and rownames have to be
-#'  stored as a variable. If you want to use rownames, set add.rownames to TRUE. 
-#'  Then the first variable of the dta-file will hold the rownames of the resulting 
+#'  stored as a variable. If you want to use rownames, set add.rownames to TRUE.
+#'  Then the first variable of the dta-file will hold the rownames of the resulting
 #'  data.frame.
 #'
-#' Reading dta-files of older and newer versions than 13 was introduced 
+#' Reading dta-files of older and newer versions than 13 was introduced
 #'  with version 0.8.
 #' @return The function returns a data.frame with attributes. The attributes
 #'  include
@@ -107,14 +110,15 @@
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
-#' @importFrom utils download.file 
-#' @importFrom stats na.omit 
+#' @importFrom utils download.file
+#' @importFrom stats na.omit
 #' @export
 read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        encoding = "UTF-8", fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
-                       add.rownames = FALSE, nonint.factors=FALSE) {
+                       add.rownames = FALSE, nonint.factors=FALSE,
+                       select.rows = NULL) {
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -128,7 +132,39 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   if (!file.exists(filepath))
     return(message("File not found."))
 
-  data <- stata_read(filepath,missing.type)
+
+
+  # some select.row checks
+  if (!is.null(select.rows)) {
+    # check that it is a numeric
+    if (!is.numeric(select.rows)){
+      return(message("select.rows must be of type numeric"))
+    } else {
+      # guard against negative values
+      if (any(select.rows < 0) )
+        select.rows <- abs(select.rows)
+
+      # check that lenght is not > 2
+      if (length(select.rows) > 2)
+        return(message("select.rows must be of length 1 or 2."))
+
+      # if lenght 1 start at row 1
+      if (length(select.rows) == 1)
+        select.rows <- c(1, select.rows)
+    }
+    # reorder if 2 is bigger than 1
+    if (select.rows[2] < select.rows[1])
+      select.rows <- c(select.rows[2], select.rows[1])
+
+    # make sure to start at index position 1 if select.rows[2] > 0
+    if (select.rows[2] > 0 & select.rows[1] == 0)
+      select.rows[1] <- 1
+  } else {
+    # set a value
+    select.rows <- c(0,0)
+  }
+
+  data <- stata_read(filepath, missing.type, select.rows)
 
   version <- attr(data, "version")
 
@@ -201,7 +237,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   ## Encoding
   if(!is.null(encoding)) {
-    
+
     # set from encoding by dta version
     if(is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
@@ -335,7 +371,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       }
     }
   }
-  
+
   if (add.rownames) {
     rownames(data) <- data[[1]]
     data[[1]] <- NULL

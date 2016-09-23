@@ -655,3 +655,130 @@ test_that("convert.underscore TRUE", {
 
 # rm(list = files)
 
+#### select.rows ####
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+
+dd <- mtcars
+
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+save.dta13(dd, "data/dta_115.dta", version = 115)
+save.dta13(dd, "data/dta_114.dta", version = 114)
+save.dta13(dd, "data/dta_113.dta", version = 113)
+save.dta13(dd, "data/dta_112.dta", version = 112)
+save.dta13(dd, "data/dta_111.dta", version = 111)
+save.dta13(dd, "data/dta_110.dta", version = 110)
+save.dta13(dd, "data/dta_108.dta", version = 108)
+save.dta13(dd, "data/dta_107.dta", version = 107)
+save.dta13(dd, "data/dta_106.dta", version = 106)
+save.dta13(dd, "data/dta_105.dta", version = 105)
+save.dta13(dd, "data/dta_104.dta", version = 104)
+save.dta13(dd, "data/dta_103.dta", version = 103)
+save.dta13(dd, "data/dta_102.dta", version = 102)
+
+
+dd118 <- read.dta13("data/dta_118.dta", select.rows = 5)
+dd117 <- read.dta13("data/dta_117.dta", select.rows = 5)
+dd115 <- read.dta13("data/dta_115.dta", select.rows = 5)
+dd114 <- read.dta13("data/dta_114.dta", select.rows = 5)
+dd113 <- read.dta13("data/dta_113.dta", select.rows = 5)
+dd112 <- read.dta13("data/dta_112.dta", select.rows = 5)
+dd111 <- read.dta13("data/dta_111.dta", select.rows = 5)
+dd110 <- read.dta13("data/dta_110.dta", select.rows = 5)
+dd108 <- read.dta13("data/dta_108.dta", select.rows = 5)
+dd107 <- read.dta13("data/dta_107.dta", select.rows = 5)
+dd106 <- read.dta13("data/dta_106.dta", select.rows = 5)
+dd105 <- read.dta13("data/dta_105.dta", select.rows = 5)
+dd104 <- read.dta13("data/dta_104.dta", select.rows = 5)
+dd103 <- read.dta13("data/dta_103.dta", select.rows = 5)
+dd102 <- read.dta13("data/dta_102.dta", select.rows = 5)
+
+unlink("data", recursive = TRUE)
+
+dd <- dd[1:5,]
+
+test_that("select.rows = 5", {
+  # check numerics
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  expect_true(datacompare(dd, dd115))
+  expect_true(datacompare(dd, dd114))
+  expect_true(datacompare(dd, dd113))
+  expect_true(datacompare(dd, dd112))
+  expect_true(datacompare(dd, dd111))
+  expect_true(datacompare(dd, dd110))
+  expect_true(datacompare(dd, dd108))
+  expect_true(datacompare(dd, dd107))
+  expect_true(datacompare(dd, dd106))
+  expect_true(datacompare(dd, dd105))
+  expect_true(datacompare(dd, dd104))
+  expect_true(datacompare(dd, dd103))
+  expect_true(datacompare(dd, dd102))
+})
+
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+dd <- mtcars
+
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+save.dta13(dd, "data/dta_115.dta", version = 115)
+save.dta13(dd, "data/dta_114.dta", version = 114)
+save.dta13(dd, "data/dta_113.dta", version = 113)
+save.dta13(dd, "data/dta_112.dta", version = 112)
+save.dta13(dd, "data/dta_111.dta", version = 111)
+save.dta13(dd, "data/dta_110.dta", version = 110)
+save.dta13(dd, "data/dta_108.dta", version = 108)
+save.dta13(dd, "data/dta_107.dta", version = 107)
+save.dta13(dd, "data/dta_106.dta", version = 106)
+save.dta13(dd, "data/dta_105.dta", version = 105)
+save.dta13(dd, "data/dta_104.dta", version = 104)
+save.dta13(dd, "data/dta_103.dta", version = 103)
+save.dta13(dd, "data/dta_102.dta", version = 102)
+
+
+dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5,10))
+dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5,10))
+dd115 <- read.dta13("data/dta_115.dta", select.rows = c(5,10))
+dd114 <- read.dta13("data/dta_114.dta", select.rows = c(5,10))
+dd113 <- read.dta13("data/dta_113.dta", select.rows = c(5,10))
+dd112 <- read.dta13("data/dta_112.dta", select.rows = c(5,10))
+dd111 <- read.dta13("data/dta_111.dta", select.rows = c(5,10))
+dd110 <- read.dta13("data/dta_110.dta", select.rows = c(5,10))
+dd108 <- read.dta13("data/dta_108.dta", select.rows = c(5,10))
+dd107 <- read.dta13("data/dta_107.dta", select.rows = c(5,10))
+dd106 <- read.dta13("data/dta_106.dta", select.rows = c(5,10))
+dd105 <- read.dta13("data/dta_105.dta", select.rows = c(5,10))
+dd104 <- read.dta13("data/dta_104.dta", select.rows = c(5,10))
+dd103 <- read.dta13("data/dta_103.dta", select.rows = c(5,10))
+dd102 <- read.dta13("data/dta_102.dta", select.rows = c(5,10))
+
+unlink("data", recursive = TRUE)
+
+dd <- dd[5:10,]
+
+test_that("select.rows = c(5,10)", {
+  # check numerics
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  expect_true(datacompare(dd, dd115))
+  expect_true(datacompare(dd, dd114))
+  expect_true(datacompare(dd, dd113))
+  expect_true(datacompare(dd, dd112))
+  expect_true(datacompare(dd, dd111))
+  expect_true(datacompare(dd, dd110))
+  expect_true(datacompare(dd, dd108))
+  expect_true(datacompare(dd, dd107))
+  expect_true(datacompare(dd, dd106))
+  expect_true(datacompare(dd, dd105))
+  expect_true(datacompare(dd, dd104))
+  expect_true(datacompare(dd, dd103))
+  expect_true(datacompare(dd, dd102))
+})
+
+# rm(list = files)

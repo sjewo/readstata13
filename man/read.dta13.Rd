@@ -7,7 +7,7 @@
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = "UTF-8", fromEncoding = NULL, convert.underscore = FALSE,
   missing.type = FALSE, convert.dates = TRUE, replace.strl = TRUE,
-  add.rownames = FALSE, nonint.factors = FALSE)
+  add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL)
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
@@ -21,7 +21,7 @@ TRUE, missing factor labels are created from integers.}
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252 or UTF-8
 to system encoding. Options are "latin1" or "UTF-8" to specify target
 encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
- which can't be displayed in the current locale. 
+ which can't be displayed in the current locale.
  Set encoding=NULL to stop reencoding.}
 
 \item{fromEncoding}{\emph{character.} We expect strings to be encoded as
@@ -46,8 +46,12 @@ will be removed from the data.frame (see details).}
 \item{add.rownames}{\emph{logical.} If \code{TRUE}, the first column will be
 used as rownames. Variable will be dropped afterwards.}
 
-\item{nonint.factors}{\emph{logical.} If \code{TRUE}, factors labels 
+\item{nonint.factors}{\emph{logical.} If \code{TRUE}, factors labels
 will be assigned to variables of type float and double.}
+
+\item{select.rows}{\emph{integer.} Vector of one or two numbers. If single
+value rows from 1:val are selected. If two values of a range are selected
+the rows in range will be selected.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes
@@ -94,17 +98,17 @@ dates.
 
 Stata 13 introduced a new character type called strL. strLs are able to store
  strings up to 2 billion characters.  While R is able to store
- strings of this size in a character vector, the printed representation of such 
- vectors looks rather cluttered, so it's possible to save only a reference in the 
- data.frame with option \code{replace.strl=FALSE}. 
+ strings of this size in a character vector, the printed representation of such
+ vectors looks rather cluttered, so it's possible to save only a reference in the
+ data.frame with option \code{replace.strl=FALSE}.
 
 In R, you may use rownames to store characters (see for instance
  \code{data(swiss)}). In Stata, this is not possible and rownames have to be
- stored as a variable. If you want to use rownames, set add.rownames to TRUE. 
- Then the first variable of the dta-file will hold the rownames of the resulting 
+ stored as a variable. If you want to use rownames, set add.rownames to TRUE.
+ Then the first variable of the dta-file will hold the rownames of the resulting
  data.frame.
 
-Reading dta-files of older and newer versions than 13 was introduced 
+Reading dta-files of older and newer versions than 13 was introduced
  with version 0.8.
 }
 \note{

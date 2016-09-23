@@ -5,8 +5,8 @@ stata_pre13_save <- function(filePath, dat) {
     .Call('readstata13_stata_pre13_save', PACKAGE = 'readstata13', filePath, dat)
 }
 
-stata_read <- function(filePath, missing) {
-    .Call('readstata13_stata_read', PACKAGE = 'readstata13', filePath, missing)
+stata_read <- function(filePath, missing, selectrows) {
+    .Call('readstata13_stata_read', PACKAGE = 'readstata13', filePath, missing, selectrows)
 }
 
 stata_save <- function(filePath, dat) {

@@ -140,6 +140,10 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     if (!is.numeric(select.rows)){
       return(message("select.rows must be of type numeric"))
     } else {
+      # guard against negative values
+      if (any(select.rows < 0) )
+        select.rows <- abs(select.rows)
+
       # check that lenght is not > 2
       if (length(select.rows) > 2)
         return(message("select.rows must be of length 1 or 2."))
@@ -155,8 +159,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # make sure to start at index position 1 if select.rows[2] > 0
     if (select.rows[2] > 0 & select.rows[1] == 0)
       select.rows[1] <- 1
-  }
-  else {
+  } else {
     # set a value
     select.rows <- c(0,0)
   }

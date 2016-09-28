@@ -1,3 +1,7 @@
+[testing]
+- fix saving characters containing missings
+- implement partial reading of dta-files
+
 0.8.5
 - fix errors on big-endian systems
 

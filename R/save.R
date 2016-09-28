@@ -287,7 +287,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   # str and strL are stored by maximum length of chars in a variable
   maxchar <- function(x) {
-    max(nchar(x, type="byte")) + 1
+    max(nchar(x, type="byte"), na.rm = TRUE) + 1
   }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
   str.length[str.length > sstr] <- sstrl

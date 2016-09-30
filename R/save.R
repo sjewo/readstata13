@@ -226,7 +226,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
-  empty <- sapply(data, function(x) all(is.na(x)))
+  empty <- sapply(data, function(x) all(is.na(x) & !is.character(x)))
   ddates <- vartypen == "Date"
 
   # default no compression: numeric as double; integer as long; date as date;
@@ -286,11 +286,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     }
   }
 
-
   # str and strL are stored by maximum length of chars in a variable
-  maxchar <- function(x) {
-    max(nchar(x, type="byte"), na.rm = TRUE) + 1
-  }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
   str.length[str.length > sstr] <- sstrl
 

@@ -228,7 +228,7 @@ set.label <- function(dat, var.name, lang=NA) {
 #' @return Returns an named vector of variable labels
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
-#' @aliases varlabel 
+#' @aliases varlabel
 #' @aliases 'varlabel<-'
 NULL
 
@@ -389,4 +389,29 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 #' @param x vector of data frame
 saveToExport <- function(x) {
   isTRUE(all.equal(x, as.integer(x)))
+}
+
+
+#' Check max char length of data.frame vectors
+#'
+#' Stata requires us to provide the maximum size of a charactervector as every
+#' row is stored in a bit region of this size.
+#'
+#' Ex: If the max chars size is four, _ is no character in this vector:
+#' 1. row: four
+#' 3. row: one_
+#' 4. row: ____
+#'
+#' If a character vector contains only missings or is empty, we will assign it a
+#' value of one, since Stata otherwise cannot handle what we write.
+#'
+#' @param x vector of data frame
+maxchar <- function(x) {
+  z <- max(nchar(x, type="byte"), na.rm = TRUE)
+
+  # Stata does not allow storing a string of size 0
+  if(is.infinite(z) | (z == 0))
+    z <- 1
+
+  z
 }

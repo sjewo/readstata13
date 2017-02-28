@@ -29,4 +29,3 @@ dat$type
 # German label
 set.label(dat, "type", "de")
 }
-

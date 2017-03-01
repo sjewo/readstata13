@@ -2,6 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{varlabel}
 \alias{varlabel}
+\alias{varlabel}
 \alias{varlabel<-}
 \title{Get and assign Stata Variable Labels}
 \usage{
@@ -29,4 +30,3 @@ Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
 Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
-

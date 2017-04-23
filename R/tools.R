@@ -15,19 +15,11 @@
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
 
-
-# Check for is.connection
-#
-# @param x an R object
-# @author tidyverse/readr
-is.connection <- function(x) inherits(x, "connection")
-
 # Check for isDta
 #
 # @param x filepath
 # @author jmg
 isDta <- function(x) grepl(".dta$", x = x)
-
 
 # Check for isZip
 #
@@ -35,19 +27,26 @@ isDta <- function(x) grepl(".dta$", x = x)
 # @author jmg
 isZip <- function(x) grepl(".zip$", x = x)
 
-# Wrapper Around read_connection_
+# Extract archive and return dta-path
 #
-# @param con a connection
-# @author tidyverse/readr
-read_connection <- function(con) {
-  stopifnot(is.connection(con))
+# @param x filepath of archive
+# @author jmg
+extract <- function(x) {
+  tmpdir <- tempdir()
 
-  if (!isOpen(con)) {
-    open(con, "rb")
-    on.exit(close(con), add = TRUE)
+  if (isZip(x)){
+    message("zip-file found")
+    uz <- unzip(zipfile = x, exdir = tmpdir)
   }
 
-  read_connection_(con)
+  uz <- uz[grep(x = uz, pattern = ".dta$")]
+
+  if (length(uz) > 1) {
+    warning("Multiple dta-files in archive. Selecting first dta-file found.")
+    uz <- uz[1]
+  }
+
+  uz
 }
 
 

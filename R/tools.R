@@ -14,6 +14,43 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/>.
 
+
+
+# Check for is.connection
+#
+# @param x an R object
+# @author tidyverse/readr
+is.connection <- function(x) inherits(x, "connection")
+
+# Check for isDta
+#
+# @param x filepath
+# @author jmg
+isDta <- function(x) grepl(".dta$", x = x)
+
+
+# Check for isZip
+#
+# @param x filepath
+# @author jmg
+isZip <- function(x) grepl(".zip$", x = x)
+
+# Wrapper Around read_connection_
+#
+# @param con a connection
+# @author tidyverse/readr
+read_connection <- function(con) {
+  stopifnot(is.connection(con))
+
+  if (!isOpen(con)) {
+    open(con, "rb")
+    on.exit(close(con), add = TRUE)
+  }
+
+  read_connection_(con)
+}
+
+
 # Wrapper Around iconv Calls for Code Readability
 #
 # @param x element to be converted

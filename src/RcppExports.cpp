@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// read_connection_
+RawVector read_connection_(RObject con, int chunk_size);
+RcppExport SEXP readstata13_read_connection_(SEXP conSEXP, SEXP chunk_sizeSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< RObject >::type con(conSEXP);
+    Rcpp::traits::input_parameter< int >::type chunk_size(chunk_sizeSEXP);
+    rcpp_result_gen = Rcpp::wrap(read_connection_(con, chunk_size));
+    return rcpp_result_gen;
+END_RCPP
+}
 // stata_pre13_save
 int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat);
 RcppExport SEXP readstata13_stata_pre13_save(SEXP filePathSEXP, SEXP datSEXP) {

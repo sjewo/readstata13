@@ -132,7 +132,41 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   if (!file.exists(filepath))
     return(message("File not found."))
 
+  # check if file is connection else assume it exists?
+  if (is.connection(file) | !isDta(file)) {
 
+    # if file is no connection, make it a connection
+    if (!is.connection(file)) {
+
+      file <- basename(filepath)
+
+      if (!isDta(file)) {
+
+        # an example for zip leaves thousands of options for other connection
+        # types.
+        if (isZip(file)) {
+          # assumes, that file.dta.zip contains file.dta. This leaves thousands
+          # of options. readr unzips the file content and greps the filenames.
+          file <- gsub(".zip", "", file)
+
+          filepath <- unz(description = filepath, file = file, open = "rb")
+        }
+
+      }
+    }
+
+    # pipes the content as RawVector to filepath (the full dta file is now in R)
+    data <- read_connection(filepath)
+
+    # since we only read files and not RawVectors we store the file as a tmpfile
+    filepath <- tempfile(pattern = "file", tmpdir = tempdir(), fileext = ".dta")
+
+    # write the file to read it once again
+    writeBin(data, filepath)
+
+    # remove the data from memory else we store a single file like three times
+    data <- NULL; gc()
+  }
 
   # some select.row checks
   if (!is.null(select.rows)) {

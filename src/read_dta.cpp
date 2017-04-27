@@ -535,6 +535,7 @@ List read_dta(FILE * file, const bool missing) {
       }
       }
     }
+    Rcpp::checkUserInterrupt();
   }
 
   // 3. Create a data.frame

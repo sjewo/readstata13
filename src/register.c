@@ -3,7 +3,7 @@
 #include <stdlib.h> // for NULL
 #include <R_ext/Rdynload.h>
 
-/* FIXME: 
+/* FIXME:
 *    Check these declarations against the C/Fortran source code.
 *    */
 
@@ -15,7 +15,7 @@ extern SEXP readstata13_stata_save(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"readstata13_stata_pre13_save", (DL_FUNC) &readstata13_stata_pre13_save, 2},
-    {"readstata13_stata_read",       (DL_FUNC) &readstata13_stata_read,       2},
+    {"readstata13_stata_read",       (DL_FUNC) &readstata13_stata_read,       3},
     {"readstata13_stata_save",       (DL_FUNC) &readstata13_stata_save,       2},
     {NULL, NULL, 0}
 };

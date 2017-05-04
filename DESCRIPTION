@@ -9,7 +9,8 @@ Authors@R: c(
     email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = c("aut", "cre")),
     person("R Core Team", role="cph"),
     person("Magnus Thor", "Torfason", role="ctb"),
-    person("Luke M.", "Olson", role="ctb")
+    person("Luke M.", "Olson", role="ctb"),
+    person("Giovanni", "Righi", role="ctb")
     )
 Description: Function to read and write the 'Stata' file format.
 URL: https://github.com/sjewo/readstata13

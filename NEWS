@@ -1,4 +1,5 @@
 [testing]
+- check interrupt for long read
 - fix storage size of character vectors in save.dta13
 - fix saving characters containing missings
 - implement partial reading of dta-files

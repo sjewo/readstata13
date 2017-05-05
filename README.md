@@ -56,6 +56,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 ### Working features
+* [0.9.0] Generate unique factor labels to prevent errors in factor definition
 * [0.9.0] check interrupt for long read. Patch by Giovanni Righi
 * [0.9.0] updates to notes, roxygen and register
 * [0.9.0] fixed size of character length. Bug reported by Yiming (Paul) Li

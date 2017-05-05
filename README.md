@@ -1,4 +1,4 @@
-#readstata13
+# readstata13
 
 Package to read and write all Stata file formats (version 14 and older) into a
 R data.frame. The dta file format versions 102 to 118 are supported.

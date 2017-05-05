@@ -31,8 +31,8 @@
 #'  hexcode.
 #' @param convert.dates \emph{logical.} If \code{TRUE}, dates will be converted
 #'  to Stata date time format. Code from \code{foreign::write.dta}
-#' @param convert.underscore \emph{logical.} If \code{TRUE}, in variable names
-#'  dots will be converted to underscores.
+#' @param convert.underscore \emph{logical.} If \code{TRUE}, all non numerics or
+#' non alphabet characters will be converted to underscores.
 #' @param tz \emph{character.} The name of the timezone convert.dates will use.
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames
 #'  will be added to the dta-file.
@@ -146,7 +146,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   rownames(data) <- NULL
 
   if (convert.underscore) {
-    names(data) <- gsub("[^a-zA-Z0-9:]", "_", names(data))
+    names(data) <- gsub("[^a-zA-Z0-9_]", "_", names(data))
+    names(data)[grepl("^[0-9]", names(data))] <-
+      paste0( "_", names(data)[grepl("^[0-9]", names(data))])
   }
 
   filepath <- path.expand(file)
@@ -224,7 +226,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   ff <- sapply(data, is.numeric)
   ii <- sapply(data, is.integer)
   factors <- sapply(data, is.factor)
-  empty <- sapply(data, function(x) all(is.na(x)))
+  empty <- sapply(data, function(x) all(is.na(x) & !is.character(x)))
   ddates <- vartypen == "Date"
 
   # default no compression: numeric as double; integer as long; date as date;
@@ -284,11 +286,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     }
   }
 
-
   # str and strL are stored by maximum length of chars in a variable
-  maxchar <- function(x) {
-    max(nchar(x, type="byte")) + 1
-  }
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
   str.length[str.length > sstr] <- sstrl
 

@@ -1,3 +1,11 @@
+[0.9.0]
+- generate unique factor labels to prevent errors in factor definition
+- check interrupt for long read
+- fix storage size of character vectors in save.dta13
+- fix saving characters containing missings
+- implement partial reading of dta-files
+- fix an integer bug with saving data.frames of length requiring uint64_t
+
 0.8.5
 - fix errors on big-endian systems
 
@@ -11,7 +19,7 @@
 - Stop compression of doubles as floats. Now test if compression of doubles as
   interger types is possible.
 - add many function tests
-  
+
 
 0.8.2
 - save NA values in character vector as empty string

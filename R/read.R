@@ -362,12 +362,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           labcount <- table(names(labtable))
           if(any(labcount > 1)) {
             warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels detected - generating unique labels.\n"))
-            
+            labdups <- names(labtable) %in% names(labcount[labcount > 1])
             # generate unique labels from assigned label and code number
-            names(labtable)[names(labtable) %in% names(labcount[labcount > 1])] <- paste0(names(labtable)[names(labtable) %in% names(labcount[labcount > 1])],
-                                                                                        "_(",
-                                                                                        labtable[names(labtable) %in% names(labcount[labcount > 1])],
-                                                                                        ")")
+            names(labtable)[labdups] <- paste0(names(labtable)[labdups], "_(", labtable[labdups], ")")
           }
           
           data[, i] <- factor(data[, i], levels=labtable,

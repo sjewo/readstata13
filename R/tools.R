@@ -214,13 +214,12 @@ set.label <- function(dat, var.name, lang=NA) {
   #check for duplicated labels
   labcount <- table(names(labtable))
   if(any(labcount > 1)) {
-    warning(paste0("\n  ",var.name, ":\n  Duplicated factor levels detected - generating unique labels.\n"))
     
+    
+    warning(paste0("\n  ",var.name, ":\n  Duplicated factor levels detected - generating unique labels.\n"))
+    labdups <- names(labtable) %in% names(labcount[labcount > 1])
     # generate unique labels from assigned label and code number
-    names(labtable)[names(labtable) %in% names(labcount[labcount > 1])] <- paste0(names(labtable)[names(labtable) %in% names(labcount[labcount > 1])],
-                                                                                  "_(",
-                                                                                  labtable[names(labtable) %in% names(labcount[labcount > 1])],
-                                                                                  ")")
+    names(labtable)[labdups] <- paste0(names(labtable)[labdups], "_(", labtable[labdups], ")")
   }
   
   return(factor(tmp, levels=labtable,

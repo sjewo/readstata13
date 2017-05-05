@@ -185,7 +185,8 @@ get.label <- function(dat, label.name) {
 
 #' Assign Stata Labels to a Variable
 #'
-#' Assign value labels from a Stata label set to a variable.
+#' Assign value labels from a Stata label set to a variable. If duplicated labels are found, 
+#' unique labels will be generated according the following scheme: "label_(integer code)".
 #'
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param var.name \emph{character.} Name of the variable in the data.frame
@@ -210,6 +211,18 @@ set.label <- function(dat, var.name, lang=NA) {
 
   labtable <- get.label(dat, get.label.name(dat, var.name, lang))
 
+  #check for duplicated labels
+  labcount <- table(names(labtable))
+  if(any(labcount > 1)) {
+    warning(paste0("\n  ",var.name, ":\n  Duplicated factor levels detected - generating unique labels.\n"))
+    
+    # generate unique labels from assigned label and code number
+    names(labtable)[names(labtable) %in% names(labcount[labcount > 1])] <- paste0(names(labtable)[names(labtable) %in% names(labcount[labcount > 1])],
+                                                                                  "_(",
+                                                                                  labtable[names(labtable) %in% names(labcount[labcount > 1])],
+                                                                                  ")")
+  }
+  
   return(factor(tmp, levels=labtable,
                 labels=names(labtable))
   )

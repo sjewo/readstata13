@@ -16,7 +16,8 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 value labels are created.}
 
 \item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is
-TRUE, missing factor labels are created from integers.}
+TRUE, missing factor labels are created from integers. If duplicated labels are found, 
+unique labels will be generated according the following scheme: "label_(integer code)".}
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252 or UTF-8
 to system encoding. Options are "latin1" or "UTF-8" to specify target

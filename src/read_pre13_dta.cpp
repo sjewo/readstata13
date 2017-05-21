@@ -520,6 +520,7 @@ List read_pre13_dta(FILE * file, const bool missing,
         break;
       }
       }
+      Rcpp::checkUserInterrupt();
     }
 
     // reset temporary index values to their original values

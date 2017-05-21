@@ -1,4 +1,6 @@
-[testing]
+[0.9.0]
+- generate unique factor labels to prevent errors in factor definition
+- check interrupt for long read
 - fix storage size of character vectors in save.dta13
 - fix saving characters containing missings
 - implement partial reading of dta-files

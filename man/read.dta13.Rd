@@ -16,7 +16,8 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 value labels are created.}
 
 \item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is
-TRUE, missing factor labels are created from integers.}
+TRUE, missing factor labels are created from integers. If duplicated labels are found, 
+unique labels will be generated according the following scheme: "label_(integer code)".}
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252 or UTF-8
 to system encoding. Options are "latin1" or "UTF-8" to specify target
@@ -115,11 +116,6 @@ Reading dta-files of older and newer versions than 13 was introduced
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
  from foreign::read.dta().
 }
-\author{
-Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
-
-Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
-}
 \references{
 Stata Corp (2014): Description of .dta file format
  \url{http://www.stata.com/help.cgi?dta}
@@ -128,4 +124,8 @@ Stata Corp (2014): Description of .dta file format
 \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
 versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
 }
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
+}

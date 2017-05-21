@@ -13,4 +13,3 @@ saveToExport(x)
 Compression can reduce numeric vectors as integers if the vector does only
 contain integer type data.
 }
-

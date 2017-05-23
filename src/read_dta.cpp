@@ -430,172 +430,154 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
   uint64_t rlength = calc_rowlength(vartype);
 
-  uint64_t tmp_j = 0, tmp_val = 0;
-  bool import = 1;
-
   // 2. fill it with data
-  for(uint64_t j=0; j<n; ++j)
+
+  // skip into the data part
+  fseeko64(file, rlength * nmin, SEEK_CUR);
+
+  for(uint32_t j=0; j<nn; ++j)
   {
 
-    // import is a bool if data is handed over to R
-    if ((j < nmin) || (j > nmax)) {
-
-      // skip this row
-      import = 0;
-      fseeko64(file, rlength, SEEK_CUR);
-    } else {
-      import = 1;
-
-      // temporary index values to be reset at the end of the loop
-      tmp_val = j;
-      j = tmp_j;
-      tmp_j++;
-    }
-
-    if (import == 1)
-      for (uint16_t i=0; i<k; ++i)
+    for (uint16_t i=0; i<k; ++i)
+    {
+      int const type = vartype[i];
+      switch(type < 2046 ? 2045 : type)
       {
-        int const type = vartype[i];
-        switch(type < 2046 ? 2045 : type)
-        {
-          // double
-        case 65526:
-        {
-          double val_d = 0;
-          val_d = readbin(val_d, file, swapit);
+        // double
+      case 65526:
+      {
+        double val_d = 0;
+        val_d = readbin(val_d, file, swapit);
 
-          if ((missing == 0) && !(val_d == R_NegInf) && ((val_d<STATA_DOUBLE_NA_MIN) || (val_d>STATA_DOUBLE_NA_MAX)) )
-            REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
-          else
-            REAL(VECTOR_ELT(df,i))[j] = val_d;
+        if ((missing == 0) && !(val_d == R_NegInf) && ((val_d<STATA_DOUBLE_NA_MIN) || (val_d>STATA_DOUBLE_NA_MAX)) )
+          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+        else
+          REAL(VECTOR_ELT(df,i))[j] = val_d;
 
-          break;
-        }
-          // float
-        case 65527:
-        {
-          float val_f = 0;
-          val_f = readbin(val_f, file, swapit);
-
-          if ((missing == 0) && ((val_f<STATA_FLOAT_NA_MIN) || (val_f>STATA_FLOAT_NA_MAX)) )
-            REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
-          else
-            REAL(VECTOR_ELT(df,i))[j] = val_f;
-
-          break;
-        }
-          // long
-        case 65528:
-        {
-          int32_t val_l = 0;
-          val_l = readbin(val_l, file, swapit);
-
-          if ((missing == 0) && ((val_l<STATA_INT_NA_MIN) || (val_l>STATA_INT_NA_MAX)) )
-            INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
-          else
-            INTEGER(VECTOR_ELT(df,i))[j] = val_l;
-
-          break;
-        }
-          // int
-        case 65529:
-        {
-          int16_t val_i = 0;
-          val_i = readbin(val_i, file, swapit);
-
-          if ((missing == 0) && ((val_i<STATA_SHORTINT_NA_MIN) || (val_i>STATA_SHORTINT_NA_MAX)) )
-            INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
-          else
-            INTEGER(VECTOR_ELT(df,i))[j] = val_i;
-
-          break;
-        }
-          // byte
-        case 65530:
-        {
-          int8_t val_b = 0;
-          val_b = readbin(val_b, file, swapit);
-
-          if (missing == 0 && ( (val_b<STATA_BYTE_NA_MIN) || (val_b>STATA_BYTE_NA_MAX)) )
-            INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
-          else
-            INTEGER(VECTOR_ELT(df,i))[j] = val_b;
-
-          break;
-        }
-          // strings with 2045 or fewer characters
-        case 2045:
-        {
-          int32_t len = 0;
-          len = vartype[i];
-          std::string val_s (len, '\0');
-
-          readstring(val_s, file, val_s.size());
-          if (import == 1) {
-            as<CharacterVector>(df[i])[j] = val_s;
-          }
-          break;
-        }
-          // string of any length
-        case 32768:
-        {// strL 2*4bit or 2 + 6 bit
-
-          // FixMe: Strl in 118
-          switch (release)
-        {
-
-        case 117:
-        {
-          uint32_t v = 0, o = 0;
-
-          v = readbin(v, file, swapit);
-          o = readbin(o, file, swapit);
-
-          stringstream val_stream;
-          val_stream << v << '_' << o;
-          string val_strl = val_stream.str();
-
-          as<CharacterVector>(df[i])[j] = val_strl;
-
-          break;
-        }
-        case 118:
-        {
-          int16_t v = 0;
-          int64_t o = 0, z = 0;
-
-          z = readbin(z, file, swapit);
-
-          // works for LSF on little- and big-endian
-          if(byteorder.compare("LSF")==0) {
-            v = (int16_t)z;
-            o = (z >> 16);
-          }
-
-          // works if we read a big-endian file on little-endian
-          if(byteorder.compare("MSF")==0) {
-            v = (z >> 48) & ((1 << 16) - 1);
-            o = z & ((1 << 16) - 1);
-          }
-
-          stringstream val_stream;
-          val_stream << v << '_' << o;
-          string val_strl = val_stream.str();
-
-          as<CharacterVector>(df[i])[j] = val_strl;
-
-          break;
-        }
-        }
-        }
-        }
-        Rcpp::checkUserInterrupt();
+        break;
       }
+        // float
+      case 65527:
+      {
+        float val_f = 0;
+        val_f = readbin(val_f, file, swapit);
 
-      // reset temporary index values to their original values
-      if (import == 1)
-        j = tmp_val;
+        if ((missing == 0) && ((val_f<STATA_FLOAT_NA_MIN) || (val_f>STATA_FLOAT_NA_MAX)) )
+          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+        else
+          REAL(VECTOR_ELT(df,i))[j] = val_f;
+
+        break;
+      }
+        // long
+      case 65528:
+      {
+        int32_t val_l = 0;
+        val_l = readbin(val_l, file, swapit);
+
+        if ((missing == 0) && ((val_l<STATA_INT_NA_MIN) || (val_l>STATA_INT_NA_MAX)) )
+          INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
+        else
+          INTEGER(VECTOR_ELT(df,i))[j] = val_l;
+
+        break;
+      }
+        // int
+      case 65529:
+      {
+        int16_t val_i = 0;
+        val_i = readbin(val_i, file, swapit);
+
+        if ((missing == 0) && ((val_i<STATA_SHORTINT_NA_MIN) || (val_i>STATA_SHORTINT_NA_MAX)) )
+          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+        else
+          INTEGER(VECTOR_ELT(df,i))[j] = val_i;
+
+        break;
+      }
+        // byte
+      case 65530:
+      {
+        int8_t val_b = 0;
+        val_b = readbin(val_b, file, swapit);
+
+        if (missing == 0 && ( (val_b<STATA_BYTE_NA_MIN) || (val_b>STATA_BYTE_NA_MAX)) )
+          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+        else
+          INTEGER(VECTOR_ELT(df,i))[j] = val_b;
+
+        break;
+      }
+        // strings with 2045 or fewer characters
+      case 2045:
+      {
+        int32_t len = 0;
+        len = vartype[i];
+        std::string val_s (len, '\0');
+
+        readstring(val_s, file, val_s.size());
+        as<CharacterVector>(df[i])[j] = val_s;
+        break;
+      }
+        // string of any length
+      case 32768:
+      {// strL 2*4bit or 2 + 6 bit
+
+        // FixMe: Strl in 118
+        switch (release)
+      {
+
+      case 117:
+      {
+        uint32_t v = 0, o = 0;
+
+        v = readbin(v, file, swapit);
+        o = readbin(o, file, swapit);
+
+        stringstream val_stream;
+        val_stream << v << '_' << o;
+        string val_strl = val_stream.str();
+
+        as<CharacterVector>(df[i])[j] = val_strl;
+
+        break;
+      }
+      case 118:
+      {
+        int16_t v = 0;
+        int64_t o = 0, z = 0;
+
+        z = readbin(z, file, swapit);
+
+        // works for LSF on little- and big-endian
+        if(byteorder.compare("LSF")==0) {
+          v = (int16_t)z;
+          o = (z >> 16);
+        }
+
+        // works if we read a big-endian file on little-endian
+        if(byteorder.compare("MSF")==0) {
+          v = (z >> 48) & ((1 << 16) - 1);
+          o = z & ((1 << 16) - 1);
+        }
+
+        stringstream val_stream;
+        val_stream << v << '_' << o;
+        string val_strl = val_stream.str();
+
+        as<CharacterVector>(df[i])[j] = val_strl;
+
+        break;
+      }
+      }
+      }
+      }
+      Rcpp::checkUserInterrupt();
+    }
   }
+
+  // skip to end of data part
+  fseeko64(file, rlength * (n - nmax -1), SEEK_CUR);
 
   // 3. Create a data.frame
   df.attr("row.names") = rvec;

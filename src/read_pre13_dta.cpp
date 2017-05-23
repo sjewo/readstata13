@@ -436,97 +436,98 @@ List read_pre13_dta(FILE * file, const bool missing,
       tmp_j++;
     }
 
-    for (uint16_t i=0; i<k; ++i)
-    {
-      int32_t const type = vartype[i];
-      switch(type)
-      {
-        // double
-      case STATA_DOUBLE:
-      {
-        double val_d = 0;
-        val_d = readbin(val_d, file, swapit);
-
-        if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
-          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
-        else
-          REAL(VECTOR_ELT(df,i))[j] = val_d;
-
-        break;
-      }
-        // float
-      case STATA_FLOAT:
-      {
-        float val_f = 0;
-        val_f = readbin(val_f, file, swapit);
-
-        if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
-          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
-        else
-          REAL(VECTOR_ELT(df,i))[j] = val_f;
-
-        break;
-      }
-        // long
-      case STATA_INT:
-      {
-        int32_t val_l = 0;
-        val_l = readbin(val_l, file, swapit);
-
-
-        if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_l;
-
-        break;
-      }
-        // int
-      case STATA_SHORTINT:
-      {
-        int16_t val_i = 0;
-        val_i = readbin(val_i, file, swapit);
-
-        if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_i;
-
-        break;
-      }
-        // byte
-      case STATA_BYTE:
-      {
-        int8_t val_b = 0;
-        val_b = readbin(val_b, file, swapit);
-
-        if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_b;
-
-        break;
-      }
-        // strings with 244 or fewer characters
-      default:
-      {
-        int32_t len = 0;
-        len = vartype[i];
-        std::string val_s (len, '\0');
-
-        readstring(val_s, file, val_s.size());
-
-        as<CharacterVector>(df[i])[j] = val_s;
-
-        break;
-      }
-      }
-      Rcpp::checkUserInterrupt();
-    }
-
-    // reset temporary index values to their original values
     if (import == 1)
-      j = tmp_val;
+      for (uint16_t i=0; i<k; ++i)
+      {
+        int32_t const type = vartype[i];
+        switch(type)
+        {
+          // double
+        case STATA_DOUBLE:
+        {
+          double val_d = 0;
+          val_d = readbin(val_d, file, swapit);
+
+          if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
+            REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+          else
+            REAL(VECTOR_ELT(df,i))[j] = val_d;
+
+          break;
+        }
+          // float
+        case STATA_FLOAT:
+        {
+          float val_f = 0;
+          val_f = readbin(val_f, file, swapit);
+
+          if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
+            REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+          else
+            REAL(VECTOR_ELT(df,i))[j] = val_f;
+
+          break;
+        }
+          // long
+        case STATA_INT:
+        {
+          int32_t val_l = 0;
+          val_l = readbin(val_l, file, swapit);
+
+
+          if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
+            INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
+          else
+            INTEGER(VECTOR_ELT(df,i))[j] = val_l;
+
+          break;
+        }
+          // int
+        case STATA_SHORTINT:
+        {
+          int16_t val_i = 0;
+          val_i = readbin(val_i, file, swapit);
+
+          if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
+            INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+          else
+            INTEGER(VECTOR_ELT(df,i))[j] = val_i;
+
+          break;
+        }
+          // byte
+        case STATA_BYTE:
+        {
+          int8_t val_b = 0;
+          val_b = readbin(val_b, file, swapit);
+
+          if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
+            INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+          else
+            INTEGER(VECTOR_ELT(df,i))[j] = val_b;
+
+          break;
+        }
+          // strings with 244 or fewer characters
+        default:
+        {
+          int32_t len = 0;
+          len = vartype[i];
+          std::string val_s (len, '\0');
+
+          readstring(val_s, file, val_s.size());
+
+          as<CharacterVector>(df[i])[j] = val_s;
+
+          break;
+        }
+        }
+        Rcpp::checkUserInterrupt();
+      }
+
+      // reset temporary index values to their original values
+      if (import == 1)
+        j = tmp_val;
   }
 
   // 3. Create a data.frame

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -72,9 +72,9 @@ T readuint48( T t , FILE * file, bool swapit)
   } else if (ferror(file)){
     Rcpp::warning("num: a binary read error occurred.");
   }
-  
+
   t = *(uint64_t *)&uint48;
-  
+
   if (swapit==0)
     return(t);
   else
@@ -90,7 +90,7 @@ static void readstring(std::string &mystring, FILE * fp, int nchar)
 inline void test(std::string testme, FILE * file)
 {
   std::string test(testme.size(), '\0');
-  
+
   readstring(test,file, test.size());
   if (testme.compare(test)!=0)
   {
@@ -116,19 +116,19 @@ static void writebin(T t, std::fstream& dta, bool swapit)
 template <typename T>
 static void writestr(std::string val_s, T len, std::fstream& dta)
 {
-  
+
   std::stringstream val_stream;
   val_stream << std::left << std::setw(len) << std::setfill('\0') << val_s;
   std::string val_strl = val_stream.str();
-  
+
   dta.write(val_strl.c_str(),val_strl.length());
-  
+
 }
 
 inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
-  
+
   uint16_t k = vartype.size();
-  
+
   Rcpp::NumericVector rlen(k);
   // calculate row length in byte
   for (uint16_t i=0; i<k; ++i)
@@ -157,9 +157,9 @@ inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
     break;
     }
   }
-  
+
   uint64_t rlength = sum(rlen);
-  
+
   return(rlength);
 }
 

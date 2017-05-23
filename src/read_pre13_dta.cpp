@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -410,6 +410,8 @@ List read_pre13_dta(FILE * file, const bool missing,
     break;
     }
   }
+  
+  uint64_t rlength = calc_rowlength(vartype);
 
   uint32_t tmp_j = 0, tmp_val = 0;
   bool import = 1;
@@ -421,7 +423,10 @@ List read_pre13_dta(FILE * file, const bool missing,
 
     // import is a bool if data is handed over to R
     if ((j < nmin) || (j > nmax)) {
+      
+      // skip this row
       import = 0;
+      fseeko64(file, rlength, SEEK_CUR);
     } else {
       import = 1;
 

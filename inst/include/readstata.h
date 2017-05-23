@@ -30,12 +30,12 @@
 
 /* Test for GCC < 4.9.0 */
 #if GCC_VERSION < 40900 & !__clang__
-    typedef signed char int8_t;
-    typedef unsigned char uint8_t;
-    typedef signed short int16_t;
-    typedef unsigned short uint16_t;
-    typedef signed int int32_t;
-    typedef unsigned int uint32_t;
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef signed short int16_t;
+typedef unsigned short uint16_t;
+typedef signed int int32_t;
+typedef unsigned int uint32_t;
 #else
 #include <stdint.h>
 #endif
@@ -72,9 +72,9 @@ T readuint48( T t , FILE * file, bool swapit)
   } else if (ferror(file)){
     Rcpp::warning("num: a binary read error occurred.");
   }
-
+  
   t = *(uint64_t *)&uint48;
-
+  
   if (swapit==0)
     return(t);
   else
@@ -90,7 +90,7 @@ static void readstring(std::string &mystring, FILE * fp, int nchar)
 inline void test(std::string testme, FILE * file)
 {
   std::string test(testme.size(), '\0');
-
+  
   readstring(test,file, test.size());
   if (testme.compare(test)!=0)
   {
@@ -116,40 +116,40 @@ static void writebin(T t, std::fstream& dta, bool swapit)
 template <typename T>
 static void writestr(std::string val_s, T len, std::fstream& dta)
 {
-
+  
   std::stringstream val_stream;
   val_stream << std::left << std::setw(len) << std::setfill('\0') << val_s;
   std::string val_strl = val_stream.str();
-
+  
   dta.write(val_strl.c_str(),val_strl.length());
-
+  
 }
 
 inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
-
+  
   uint16_t k = vartype.size();
   
-  // calculate row length in byte
   Rcpp::NumericVector rlen(k);
+  // calculate row length in byte
   for (uint16_t i=0; i<k; ++i)
   {
     int const type = vartype[i];
     switch(type)
     {
-    case 65526:
+    case STATA_DOUBLE:
       rlen(i) = 8;
       break;
-    case 65527:
-    case 65528:
+    case STATA_FLOAT:
+    case STATA_INT:
       rlen(i) = 4;
       break;
-    case 65529:
+    case STATA_SHORTINT:
       rlen(i) = 2;
       break;
-    case 65530:
+    case STATA_BYTE:
       rlen(i) = 1;
       break;
-    case 32768:
+    case STATA_STRL:
       rlen(i) = 8;
       break;
     default:
@@ -158,7 +158,7 @@ inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
     }
   }
   
-  int32_t rlength = sum(rlen);
+  uint64_t rlength = sum(rlen);
   
   return(rlength);
 }

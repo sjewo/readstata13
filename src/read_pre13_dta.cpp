@@ -394,8 +394,8 @@ List read_pre13_dta(FILE * file, const bool missing,
     int const type = vartype[i];
     switch(type)
     {
-    case STATA_FLOAT:
     case STATA_DOUBLE:
+    case STATA_FLOAT:
       SET_VECTOR_ELT(df, i, NumericVector(no_init(nn)));
       break;
 

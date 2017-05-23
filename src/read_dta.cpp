@@ -411,14 +411,14 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     int const type = vartype[i];
     switch(type)
     {
-    case 65526:
-    case 65527:
+    case STATA_DOUBLE:
+    case STATA_FLOAT:
       SET_VECTOR_ELT(df, i, NumericVector(no_init(nn)));
       break;
 
-    case 65528:
-    case 65529:
-    case 65530:
+    case STATA_INT:
+    case STATA_SHORTINT:
+    case STATA_BYTE:
       SET_VECTOR_ELT(df, i, IntegerVector(no_init(nn)));
       break;
 
@@ -444,7 +444,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
       switch(type < 2046 ? 2045 : type)
       {
         // double
-      case 65526:
+      case STATA_DOUBLE:
       {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
@@ -457,7 +457,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         break;
       }
         // float
-      case 65527:
+      case STATA_FLOAT:
       {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
@@ -470,7 +470,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         break;
       }
         // long
-      case 65528:
+      case STATA_INT:
       {
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
@@ -483,7 +483,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         break;
       }
         // int
-      case 65529:
+      case STATA_SHORTINT:
       {
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
@@ -496,7 +496,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         break;
       }
         // byte
-      case 65530:
+      case STATA_BYTE:
       {
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
@@ -520,7 +520,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         break;
       }
         // string of any length
-      case 32768:
+      case STATA_STRL:
       {// strL 2*4bit or 2 + 6 bit
 
         // FixMe: Strl in 118

@@ -10,7 +10,8 @@ Authors@R: c(
     person("R Core Team", role="cph"),
     person("Magnus Thor", "Torfason", role="ctb"),
     person("Luke M.", "Olson", role="ctb"),
-    person("Giovanni", "Righi", role="ctb")
+    person("Giovanni", "Righi", role="ctb"),
+    person("Kevin Jin", role="ctb")
     )
 Description: Function to read and write the 'Stata' file format.
 URL: https://github.com/sjewo/readstata13

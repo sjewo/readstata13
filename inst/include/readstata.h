@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -30,12 +30,12 @@
 
 /* Test for GCC < 4.9.0 */
 #if GCC_VERSION < 40900 & !__clang__
-    typedef signed char int8_t;
-    typedef unsigned char uint8_t;
-    typedef signed short int16_t;
-    typedef unsigned short uint16_t;
-    typedef signed int int32_t;
-    typedef unsigned int uint32_t;
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef signed short int16_t;
+typedef unsigned short uint16_t;
+typedef signed int int32_t;
+typedef unsigned int uint32_t;
 #else
 #include <stdint.h>
 #endif
@@ -123,6 +123,44 @@ static void writestr(std::string val_s, T len, std::fstream& dta)
 
   dta.write(val_strl.c_str(),val_strl.length());
 
+}
+
+inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
+
+  uint16_t k = vartype.size();
+
+  Rcpp::NumericVector rlen(k);
+  // calculate row length in byte
+  for (uint16_t i=0; i<k; ++i)
+  {
+    int const type = vartype[i];
+    switch(type)
+    {
+    case STATA_DOUBLE:
+      rlen(i) = 8;
+      break;
+    case STATA_FLOAT:
+    case STATA_INT:
+      rlen(i) = 4;
+      break;
+    case STATA_SHORTINT:
+      rlen(i) = 2;
+      break;
+    case STATA_BYTE:
+      rlen(i) = 1;
+      break;
+    case STATA_STRL:
+      rlen(i) = 8;
+      break;
+    default:
+      rlen(i) = type;
+    break;
+    }
+  }
+
+  uint64_t rlength = sum(rlen);
+
+  return(rlength);
 }
 
 #endif

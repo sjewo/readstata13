@@ -100,7 +100,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   if(release < 119){
     k = readbin((uint16_t)k, file, swapit);
   }
-  if(release == 199){
+  if(release == 119){
     k = readbin(k, file, swapit);
   }
 

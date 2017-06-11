@@ -28,7 +28,7 @@ using namespace std;
 // [[Rcpp::export]]
 int stata_save(const char * filePath, Rcpp::DataFrame dat)
 {
-  uint16_t k = dat.size();
+  uint32_t k = dat.size();
   uint64_t n = dat.nrows();
 
   const string timestamp = dat.attr("timestamp");
@@ -141,7 +141,10 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     writestr(byteord, byteord.size(), dta);
     writestr(sbyteorder, 3, dta); // LSF
     writestr(K, K.size(), dta);
-    writebin(k, dta, swapit);
+    if (release < 119)
+      writebin((int16_t)k, dta, swapit);
+    if (release == 119)
+      writebin(k, dta, swapit);
     writestr(num, num.size(), dta);
     if (release==117)
       writebin((int32_t)n, dta, swapit);

@@ -96,8 +96,13 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   * Number of Variables
   */
 
-  uint16_t k = 0;
-  k = readbin(k, file, swapit);
+  uint32_t k = 0;
+  if(release < 119){
+    k = readbin((uint16_t)k, file, swapit);
+  }
+  if(release == 199){
+    k = readbin(k, file, swapit);
+  }
 
   //</K>
   test("</K>", file);

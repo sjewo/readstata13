@@ -75,6 +75,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     stop("Path is invalid. Possibly a non existend directory.")
 
   # Allow writing version as Stata version not Stata format
+  if (version==15L)
+    version <- 119
   if (version==14L)
     version <- 118
   if (version==13L)
@@ -90,7 +92,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (version==6)
     version <- 108
 
-  if (version<102 | version == 109 | version == 116 | version>118)
+  if (version<102 | version == 109 | version == 116 | version>119)
     stop("Version missmatch abort execution. No Data was saved.")
 
   sstr     <- 2045
@@ -278,7 +280,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[empty] <- sbyte
   }
 
-  # recode character variables. 118 wants utf-8, so encoding may be required
+  # recode character variables. >118 wants utf-8, so encoding may be required
   if(doRecode) {
     #TODO: use seq_len ?
     for(v in (1:ncol(data))[vartypen == "character"]) {

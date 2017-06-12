@@ -30,7 +30,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   */
 
   int8_t fversion = 117L; //f = first
-  int8_t lversion = 118L; //l = last
+  int8_t lversion = 119L; //l = last
 
   std::string version(3, '\0');
   readstring(version, file, version.size());
@@ -65,6 +65,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     lbllen = 33;
     break;
   case 118:
+  case 119:
     nvarnameslen = 129;
     nformatslen = 57;
     nvalLabelslen = 129;
@@ -97,12 +98,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   */
 
   uint32_t k = 0;
-  if(release < 119){
+  if(release < 119)
     k = readbin((uint16_t)k, file, swapit);
-  }
-  if(release == 119){
+  if(release==119)
     k = readbin(k, file, swapit);
-  }
 
   //</K>
   test("</K>", file);
@@ -114,12 +113,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
   uint64_t n = 0;
 
-  if(release==117) {
+  if(release==117)
     n = readbin((uint32_t)n, file, swapit);
-  }
-  if (release ==118) {
+  if (release ==118 | release==119)
     n = readbin(n, file, swapit);
-  }
 
   //</N>
   test("</N>", file);
@@ -134,7 +131,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
   uint16_t ndlabel = 0;
 
-  if (release==118)
+  if (release==118 | release==119)
     ndlabel = readbin(ndlabel, file, swapit);
   if (release==117)
     ndlabel = readbin((int8_t)ndlabel, file, swapit);

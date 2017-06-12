@@ -74,6 +74,8 @@ The function returns a data.frame with attributes. The attributes
    and the contents of Stata characteristic field.}
   \item{missing:}{List of numeric vectors with Stata missing type for each
    variable.}
+  \item{byteorder:}{Byteorder of the dta-file. LSF or MSF.}
+  \item{orig.dim:}{Dimension recorded inside the dta-file.}
 }
 }
 \description{

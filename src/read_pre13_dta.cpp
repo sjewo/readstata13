@@ -119,6 +119,11 @@ List read_pre13_dta(FILE * file, const bool missing,
 
   uint32_t n = 0;
   n = readbin(n, file, swapit);
+  
+  // dim to return original dim for partial read files
+  IntegerVector dim(2);
+  dim(0) = n;
+  dim(1) = k;
 
   /*
   * A dataset may have a label e.g. "Written by R".
@@ -639,5 +644,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   df.attr("label.table") = labelList;
   df.attr("expansion.fields") = ch;
   df.attr("byteorder") = byteorderI;
+  df.attr("orig.dim") = dim;
+  
   return df;
 }

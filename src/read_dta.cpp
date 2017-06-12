@@ -121,6 +121,11 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   //</N>
   test("</N>", file);
   test("<label>", file);
+  
+  // dim to return original dim for partial read files
+  IntegerVector dim(2);
+  dim(0) = n;
+  dim(1) = k;
 
   /*
   * A dataset may have a label e.g. "Written by R".
@@ -823,6 +828,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   df.attr("expansion.fields") = ch;
   df.attr("strl") = strlvalues;
   df.attr("byteorder") = wrap(byteorder);
+  df.attr("orig.dim") = dim;
 
   return df;
 }

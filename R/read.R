@@ -101,6 +101,8 @@
 #'    and the contents of Stata characteristic field.}
 #'   \item{missing:}{List of numeric vectors with Stata missing type for each
 #'    variable.}
+#'   \item{byteorder:}{Byteorder of the dta-file. LSF or MSF.}
+#'   \item{orig.dim:}{Dimension recorded inside the dta-file.}
 #' }
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 #'  from foreign::read.dta().

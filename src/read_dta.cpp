@@ -579,11 +579,11 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
         // works for LSF on little- and big-endian
         if(byteorder.compare("LSF")==0) {
-          v = (int32_t)z;
+          v = (int32_t)z & ((1 << 24) - 1);
           o = (z >> 24);
         }
 
-        // works if we read a big-endian file on little-endian
+        // FixMe: works if we read a big-endian file on little-endian
         if(byteorder.compare("MSF")==0) {
           v = (z >> 48) & ((1 << 24) - 1);
           o = z & ((1 << 24) - 1);

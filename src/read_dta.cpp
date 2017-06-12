@@ -221,12 +221,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   IntegerVector vartype(k);
   for (uint32_t i=0; i<k; ++i)
   {
-    uint32_t nvartype = 0;
-
-    if (release < 119)
-      nvartype = readbin((uint16_t)nvartype, file, swapit);
-    if (release==119)
-      nvartype = readbin(nvartype, file, swapit);
+    uint16_t nvartype = 0;
+    nvartype = readbin(nvartype, file, swapit);
     vartype[i] = nvartype;
   }
 
@@ -263,12 +259,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   IntegerVector sortlist(big_k);
   for (uint64_t i=0; i<big_k; ++i)
   {
-    uint32_t nsortlist = 0;
-
-    if (release < 119)
-      nsortlist = readbin((uint16_t)nsortlist, file, swapit);
-    if (release==119)
-      nsortlist = readbin(nsortlist, file, swapit);
+    uint16_t nsortlist = 0;
+    nsortlist = readbin(nsortlist, file, swapit);
     sortlist[i] = nsortlist;
   }
 

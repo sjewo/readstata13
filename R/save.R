@@ -39,7 +39,7 @@
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will
 #'  use all of Statas numeric-vartypes.
 #' @param version \emph{numeric.} Stata format for the resulting dta-file either
-#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.
+#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 15.
 #' @return The function writes a dta-file to disk. The following features of the
 #'  dta file format are supported:
 #' \describe{

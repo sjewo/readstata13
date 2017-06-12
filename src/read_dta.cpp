@@ -219,8 +219,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   */
 
   IntegerVector vartype(k);
-  for (uint16_t i=0; i<k; ++i)
+  for (uint32_t i=0; i<k; ++i)
   {
+    // FixMe: uint32_t nvartype if release == 119?
     uint16_t nvartype = 0;
     nvartype = readbin(nvartype, file, swapit);
     vartype[i] = nvartype;
@@ -237,7 +238,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   std::string nvarnames(nvarnameslen, '\0');
 
   CharacterVector varnames(k);
-  for (uint16_t i=0; i<k; ++i)
+  for (uint32_t i=0; i<k; ++i)
   {
     readstring(nvarnames, file, nvarnames.size());
     varnames[i] = nvarnames;
@@ -254,11 +255,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   * Vector size is k+1.
   */
 
-  uint32_t big_k = k+1;
+  uint64_t big_k = k+1;
 
   IntegerVector sortlist(big_k);
-  for (uint32_t i=0; i<big_k; ++i)
+  for (uint64_t i=0; i<big_k; ++i)
   {
+    // FixMe: uint32_t nsortlist if release==119?
     uint16_t nsortlist = 0;
     nsortlist = readbin(nsortlist, file, swapit);
     sortlist[i] = nsortlist;
@@ -276,7 +278,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   std::string nformats(nformatslen, '\0');
 
   CharacterVector formats(k);
-  for (uint16_t i=0; i<k; ++i)
+  for (uint32_t i=0; i<k; ++i)
   {
     readstring(nformats, file, nformats.size());
     formats[i] = nformats;
@@ -295,7 +297,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   std::string nvalLabels(nvalLabelslen, '\0');
 
   CharacterVector valLabels(k);
-  for (uint16_t i=0; i<k; ++i)
+  for (uint32_t i=0; i<k; ++i)
   {
     readstring(nvalLabels, file, nvalLabels.size());
     valLabels[i] = nvalLabels;
@@ -312,7 +314,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   std::string nvarLabels (nvarLabelslen, '\0');
 
   CharacterVector varLabels(k);
-  for (uint16_t i=0; i<k; ++i)
+  for (uint32_t i=0; i<k; ++i)
   {
     readstring(nvarLabels, file, nvarLabels.size());
     varLabels[i] = nvarLabels;
@@ -408,7 +410,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
   // 1. create the list
   List df(k);
-  for (uint16_t i=0; i<k; ++i)
+  for (uint32_t i=0; i<k; ++i)
   {
     int const type = vartype[i];
     switch(type)
@@ -437,10 +439,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   // skip into the data part
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
-  for(uint32_t j=0; j<nn; ++j)
+  for(uint64_t j=0; j<nn; ++j)
   {
-
-    for (uint16_t i=0; i<k; ++i)
+    for (uint32_t i=0; i<k; ++i)
     {
       int const type = vartype[i];
       switch(type < 2046 ? 2045 : type)

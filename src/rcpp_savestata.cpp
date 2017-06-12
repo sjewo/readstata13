@@ -211,7 +211,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     map(2) = dta.tellg();
     writestr(startvart, startvart.size(), dta);
     uint16_t nvartype;
-    for (uint16_t i = 0; i < k; ++i)
+    for (uint32_t i = 0; i < k; ++i)
     {
       nvartype = as<uint16_t>(vartypes[i]);
 
@@ -223,7 +223,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <varnames> ... </varnames> */
     map(3) = dta.tellg();
     writestr(startvarn, startvarn.size(), dta);
-    for (uint16_t i = 0; i < k; ++i )
+    for (uint32_t i = 0; i < k; ++i )
     {
       string nvarname = as<string>(nvarnames[i]);
       nvarname[nvarname.size()] = '\0';
@@ -254,7 +254,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <formats> ... </formats> */
     map(5) = dta.tellg();
     writestr(startform, startform.size(), dta);
-    for (uint16_t i = 0; i < k; ++i )
+    for (uint32_t i = 0; i < k; ++i )
     {
       string nformats = as<string>(formats[i]);
 
@@ -270,7 +270,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
     writestr(startvalLabel, startvalLabel.size(), dta);
-    for (uint16_t i = 0; i < k; ++i)
+    for (uint32_t i = 0; i < k; ++i)
     {
       string nvalLabels = as<string>(valLabels[i]);
       nvalLabels[nvalLabels.size()] = '\0';
@@ -287,7 +287,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <variable_labels> ... </variable_labels> */
     map(7) = dta.tellg();
     writestr(startvarlabel, startvarlabel.size(), dta);
-    for (uint16_t i = 0; i < k; ++i)
+    for (uint32_t i = 0; i < k; ++i)
     {
       if (!Rf_isNull(varLabels) && Rf_length(varLabels) > 1) {
         string nvarLabels = as<string>(varLabels[i]);

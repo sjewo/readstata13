@@ -241,9 +241,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     map(4) = dta.tellg();
     writestr(startsor, startsor.size(), dta);
 
-    uint32_t big_k = k+1;
+    uint64_t big_k = k+1;
 
-    for (uint32_t i = 0; i < big_k; ++i)
+    for (uint64_t i = 0; i < big_k; ++i)
     {
       uint16_t nsortlist = 0;
       writebin(nsortlist, dta, swapit);

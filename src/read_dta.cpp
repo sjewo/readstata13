@@ -570,6 +570,33 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
         break;
       }
+      case 119:
+      {
+        int32_t v = 0;
+        int64_t o = 0, z = 0;
+
+        z = readbin(z, file, swapit);
+
+        // works for LSF on little- and big-endian
+        if(byteorder.compare("LSF")==0) {
+          v = (int32_t)z;
+          o = (z >> 24);
+        }
+
+        // works if we read a big-endian file on little-endian
+        if(byteorder.compare("MSF")==0) {
+          v = (z >> 48) & ((1 << 24) - 1);
+          o = z & ((1 << 24) - 1);
+        }
+
+        stringstream val_stream;
+        val_stream << v << '_' << o;
+        string val_strl = val_stream.str();
+
+        as<CharacterVector>(df[i])[j] = val_strl;
+
+        break;
+      }
       }
       }
       }

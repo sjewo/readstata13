@@ -147,9 +147,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     if (release == 119)
       writebin(k, dta, swapit);
     writestr(num, num.size(), dta);
-    if (release==117)
+    if (release == 117)
       writebin((int32_t)n, dta, swapit);
-    if (release==118 | release==119)
+    if ((release == 118) | (release == 119))
       writebin(n, dta, swapit);
     writestr(lab, lab.size(), dta);
 
@@ -166,9 +166,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       }
       ndlabel = datalabel.size();
 
-      if (release==117)
+      if (release == 117)
         writebin((uint8_t)ndlabel, dta, swapit);
-      if (release==118 | release==119)
+      if ((release == 118) | (release == 119))
         writebin(ndlabel, dta, swapit);
 
       writestr(datalabel,datalabel.size(), dta);
@@ -179,7 +179,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       if (release == 117) {
         writebin(zero, dta, swapit);
       }
-      if (release == 118 | release == 119) {
+      if ((release == 118) | (release == 119)) {
         writebin(zero, dta, swapit);
         writebin(zero, dta, swapit);
       }
@@ -545,9 +545,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writestr(gso, gso.size(), dta);
       writebin(v, dta, swapit);
-      if (release==117)
+      if (release == 117)
         writebin((uint32_t)o, dta, swapit);
-      if (release==118 | release==119)
+      if ((release == 118) | (release == 119))
         writebin(o, dta, swapit);
       writebin(t, dta, swapit);
       writebin(len, dta, swapit);

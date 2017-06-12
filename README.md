@@ -1,7 +1,7 @@
 # readstata13
 
-Package to read and write all Stata file formats (version 14 and older) into a
-R data.frame. The dta file format versions 102 to 118 are supported.
+Package to read and write all Stata file formats (version 15 and older) into a
+R data.frame. The dta file format versions 102 to 119 are supported.
 
 The function ```read.dta``` from the foreign package imports only dta files from
 Stata versions <= 12. Due to the different structure and features of dta 117
@@ -56,6 +56,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 ### Working features
+* [testing] Experimental support for format 119
 * [testing] Improvements to partial reading. Idea by Kevin Jin
 * [0.9.0] Generate unique factor labels to prevent errors in factor definition
 * [0.9.0] check interrupt for long read. Patch by Giovanni Righi

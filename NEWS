@@ -1,4 +1,5 @@
 [testing]
+- experimental support for format 119
 - improve partial reading
 
 [0.9.0]

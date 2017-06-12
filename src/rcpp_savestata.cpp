@@ -493,6 +493,29 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
             break;
           }
+            case 119:
+          {
+            int32_t v = i+1;
+            int64_t o = j+1;
+            char    z[8];
+
+            // push back every v, o and val_strl
+            V.push_back(v);
+            O.push_back(o);
+
+            // z is 'vv-- ----'
+            memcpy(&z[0], &v, sizeof(v));
+            if (SBYTEORDER == 1) {
+              o <<= 24;
+            }
+            memcpy(&z[3], &o, 5);
+            // z is 'vvvo oooo'
+
+            dta.write((char*)&z, sizeof(z));
+            // writestr((char*)&z, sizeof(z), dta);
+
+            break;
+          }
             }
             STRL.push_back(val_strl);
           } else {

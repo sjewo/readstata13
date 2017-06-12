@@ -656,6 +656,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
       break;
     }
     case 118:
+    case 119:
     {
       uint32_t v = 0;
       uint64_t o = 0;

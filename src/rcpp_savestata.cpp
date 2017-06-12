@@ -155,7 +155,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
 
     /* write a datalabel */
-    if(!datalabel.empty())
+    if (!datalabel.empty())
     {
       if (datalabel.size() > maxdatalabelsize)
       {
@@ -440,7 +440,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
           string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
 
-          if(val_s == "NA")
+          if (val_s == "NA")
             val_s.clear();
 
           writestr(val_s, len, dta);

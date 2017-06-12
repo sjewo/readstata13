@@ -113,7 +113,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
   uint64_t n = 0;
 
-  if(release == 117)
+  if (release == 117)
     n = readbin((uint32_t)n, file, swapit);
   if ((release == 118) | (release == 119))
     n = readbin(n, file, swapit);
@@ -551,13 +551,13 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         z = readbin(z, file, swapit);
 
         // works for LSF on little- and big-endian
-        if(byteorder.compare("LSF")==0) {
+        if (byteorder.compare("LSF")==0) {
           v = (int16_t)z;
           o = (z >> 16);
         }
 
         // works if we read a big-endian file on little-endian
-        if(byteorder.compare("MSF")==0) {
+        if (byteorder.compare("MSF")==0) {
           v = (z >> 48) & ((1 << 16) - 1);
           o = z & ((1 << 16) - 1);
         }
@@ -578,13 +578,13 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         z = readbin(z, file, swapit);
 
         // works for LSF on little- and big-endian
-        if(byteorder.compare("LSF")==0) {
+        if (byteorder.compare("LSF")==0) {
           v = (int32_t)z & ((1 << 24) - 1);
           o = (z >> 24);
         }
 
         // FixMe: works if we read a big-endian file on little-endian
-        if(byteorder.compare("MSF")==0) {
+        if (byteorder.compare("MSF")==0) {
           v = (z >> 48) & ((1 << 24) - 1);
           o = z & ((1 << 24) - 1);
         }
@@ -652,7 +652,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
       stringstream val_stream;
       val_stream << v << '_' << o;
       ref.assign(val_stream.str());
-      //sprintf(ref, "%010d%010d", v, o);
+      
       break;
     }
     case 118:
@@ -660,15 +660,13 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     {
       uint32_t v = 0;
       uint64_t o = 0;
-      // uint64_t z = 0;
+      
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
-      // z = readbin(z, file, swapit);
 
       stringstream val_stream;
       val_stream << v << '_' << o;
       ref.assign(val_stream.str());
-      //sprintf(ref, "%010d%010ld", v, o);
 
       break;
     }

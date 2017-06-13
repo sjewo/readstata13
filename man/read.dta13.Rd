@@ -7,7 +7,8 @@
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = "UTF-8", fromEncoding = NULL, convert.underscore = FALSE,
   missing.type = FALSE, convert.dates = TRUE, replace.strl = TRUE,
-  add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL)
+  add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL,
+  select.cols = NULL)
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}

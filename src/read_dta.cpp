@@ -20,7 +20,8 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
+List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
+              const CharacterVector selectcols) {
   // stata_dta><header>
   test("stata_dta><header>", file);
   test("<release>", file);
@@ -404,18 +405,68 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   if (n < nmin)
     nmin = n;
 
+  Rcpp::IntegerVector cvec = seq(1, k);
   Rcpp::IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
 
   // use c indexing starting at 0
   nmin = nmin -1;
   nmax = nmax -1;
+  
+  
+  IntegerVector rlen = calc_rowlength(vartype);
+  
+  uint64_t rlength = sum(rlen);
+  
+  // if (selectcols != "") {
+  IntegerVector select = match(selectcols, varnames);
+  
+  uint32_t kk = select.size();
+  
+  // shrink varnames
+  // CharacterVector varnames2 = varnames[select];
+  
+  IntegerVector vartype2 = vartype[select];
+  
+  Rcout << rlen << " select: " << select << std::endl;
+  
+  // IntegerVector rlen2 = rlen.erase(select);
+  // rlen2 = -rlen2;
+  // Rcout << rlen2 << std::endl;
+  
+  IntegerVector vartype3 = vartype;
+
+  vector<int> vec = as<vector<int>>(cvec);
+  
+  for (int i=0; i < select.size(); ++i){
+    vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());   
+  }
+  
+  IntegerVector nselect = wrap(vec);
+  nselect = nselect -1;
+
+  // Function Rf_which("which");
+  // 
+  // IntegerVector nselect = as<IntegerVector>(Rf_which(cvec != select));
+
+  Rcout << " nselect: " << nselect << std::endl;
+  
+  IntegerVector rlen2 = rlen[nselect];
+  rlen2 = -rlen2;
+  
+  // Rcout << rlen2 << std::endl;
+  
+  vartype3[nselect] = rlen2;
+  
+  Rcout << vartype3 << std::endl;
+  
+  // }
 
   // 1. create the list
   List df(k);
   for (uint32_t i=0; i<k; ++i)
   {
-    int const type = vartype[i];
+    int const type = vartype3[i];
     switch(type)
     {
     case STATA_DOUBLE:
@@ -435,8 +486,6 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     }
   }
 
-  uint64_t rlength = calc_rowlength(vartype);
-
   // 2. fill it with data
 
   // skip into the data part
@@ -446,8 +495,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   {
     for (uint32_t i=0; i<k; ++i)
     {
-      int const type = vartype[i];
-      switch(type < 2046 ? 2045 : type)
+      int const type = vartype3[i];
+      switch(type >0 & type < 2046 ? 2045 : type)
       {
         // double
       case STATA_DOUBLE:
@@ -603,6 +652,13 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         break;
       }
       }
+      }
+        // case < 0:
+      default:
+      {
+        // Rcout << abs(type) << std::endl;
+        // skip to the next valid case
+        fseeko64(file, abs(type), SEEK_CUR);
       }
       }
       Rcpp::checkUserInterrupt();

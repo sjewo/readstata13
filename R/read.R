@@ -121,7 +121,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE,
-                       select.rows = NULL) {
+                       select.rows = NULL, select.cols = NULL) {
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -166,8 +166,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # set a value
     select.rows <- c(0,0)
   }
+  
+  if (is.null(select.cols)){
+    select.cols <- ""
+  }
 
-  data <- stata_read(filepath, missing.type, select.rows)
+  data <- stata_read(filepath, missing.type, select.rows, select.cols)
 
   version <- attr(data, "version")
 

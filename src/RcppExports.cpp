@@ -18,15 +18,16 @@ BEGIN_RCPP
 END_RCPP
 }
 // stata_read
-List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows);
-RcppExport SEXP readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP) {
+List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows, const CharacterVector selectcols);
+RcppExport SEXP readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcolsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
     Rcpp::traits::input_parameter< const bool >::type missing(missingSEXP);
     Rcpp::traits::input_parameter< const IntegerVector >::type selectrows(selectrowsSEXP);
-    rcpp_result_gen = Rcpp::wrap(stata_read(filePath, missing, selectrows));
+    Rcpp::traits::input_parameter< const CharacterVector >::type selectcols(selectcolsSEXP);
+    rcpp_result_gen = Rcpp::wrap(stata_read(filePath, missing, selectrows, selectcols));
     return rcpp_result_gen;
 END_RCPP
 }

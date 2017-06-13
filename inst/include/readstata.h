@@ -125,11 +125,11 @@ static void writestr(std::string val_s, T len, std::fstream& dta)
 
 }
 
-inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
+inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
 
-  uint16_t k = vartype.size();
+  uint32_t k = vartype.size();
 
-  Rcpp::NumericVector rlen(k);
+  Rcpp::IntegerVector rlen(k);
   // calculate row length in byte
   for (uint16_t i=0; i<k; ++i)
   {
@@ -158,9 +158,10 @@ inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
     }
   }
 
-  uint64_t rlength = sum(rlen);
-
-  return(rlength);
+  return(rlen);
 }
+
+
+
 
 #endif

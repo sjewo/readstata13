@@ -416,7 +416,7 @@ List read_pre13_dta(FILE * file, const bool missing,
     }
   }
 
-  uint64_t rlength = calc_rowlength(vartype);
+  uint64_t rlength = sum(calc_rowlength(vartype));
 
   // 2. fill it with data
 

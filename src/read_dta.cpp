@@ -860,11 +860,13 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   test("ue_labels>", file);
   test("</stata_dta>", file);
 
-
-
   /*
    * assign attributes to the resulting data.frame
    */
+
+  formats = formats[select_c];
+  valLabels = valLabels[select_c];
+  varLabels = varLabels[select_c];
 
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;

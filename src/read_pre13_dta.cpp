@@ -683,6 +683,10 @@ List read_pre13_dta(FILE * file, const bool missing,
    * assign attributes to the resulting data.frame
    */
 
+  formats = formats[select_c];
+  valLabels = valLabels[select_c];
+  varLabels = varLabels[select_c];
+
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;

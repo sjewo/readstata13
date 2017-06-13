@@ -56,6 +56,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 ### Working features
+* [testing] Allow reading only pre-selected variables
 * [testing] Experimental support for format 119
 * [testing] Improvements to partial reading. Idea by Kevin Jin
 * [0.9.0] Generate unique factor labels to prevent errors in factor definition

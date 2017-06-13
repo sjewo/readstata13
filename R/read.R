@@ -51,6 +51,7 @@
 #' @param select.rows \emph{integer.} Vector of one or two numbers. If single
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
+#' @param select.cols \emph{character:} Vector of variables to select.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -121,7 +122,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE,
-                       select.rows = NULL) {
+                       select.rows = NULL, select.cols = NULL) {
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -167,7 +168,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     select.rows <- c(0,0)
   }
 
-  data <- stata_read(filepath, missing.type, select.rows)
+  if (is.null(select.cols)){
+    select.cols <- ""
+  }
+
+  data <- stata_read(filepath, missing.type, select.rows, select.cols)
 
   version <- attr(data, "version")
 

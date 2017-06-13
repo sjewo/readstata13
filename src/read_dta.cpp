@@ -20,7 +20,8 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
+List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
+              const CharacterVector selectcols) {
   // stata_dta><header>
   test("stata_dta><header>", file);
   test("<release>", file);
@@ -121,7 +122,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   //</N>
   test("</N>", file);
   test("<label>", file);
-  
+
   // dim to return original dim for partial read files
   IntegerVector dim(2);
   dim(0) = n;
@@ -404,6 +405,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   if (n < nmin)
     nmin = n;
 
+  Rcpp::IntegerVector cvec = seq(1, k);
   Rcpp::IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
 
@@ -411,11 +413,45 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   nmin = nmin -1;
   nmax = nmax -1;
 
+  // calculate length of variables and of row
+  IntegerVector rlen = calc_rowlength(vartype);
+  uint64_t rlength = sum(rlen);
+
+  // check if vars are selected
+  std::string selcols = as<std::string>(selectcols(0));
+  bool noselectvars = selcols == "";
+
+  // select vars: either select every var or only matched cases
+  IntegerVector select;
+  if (noselectvars) {
+    select = cvec;
+  } else {
+    select = choose(selectcols, varnames);
+  }
+
+  // match returns r index
+  IntegerVector select_c = select -1;
+
+  uint32_t kk = select.size();
+
+  // shrink variables
+  CharacterVector varnames_kk = varnames[select_c];
+  IntegerVector vartype_kk = vartype[select_c];
+  IntegerVector vartype3 = vartype;
+
+  IntegerVector nselect = which_pos(cvec, select);
+
+  IntegerVector rlen2 = rlen[nselect];
+  rlen2 = -rlen2;
+
+  vartype3[nselect] = rlen2;
+
   // 1. create the list
-  List df(k);
-  for (uint32_t i=0; i<k; ++i)
+  List df(kk);
+  for (uint32_t i=0; i<kk; ++i)
   {
-    int const type = vartype[i];
+    int const type = vartype_kk[i];
+
     switch(type)
     {
     case STATA_DOUBLE:
@@ -435,19 +471,21 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     }
   }
 
-  uint64_t rlength = calc_rowlength(vartype);
-
   // 2. fill it with data
 
   // skip into the data part
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
+  uint32_t ii = 0;
   for(uint64_t j=0; j<nn; ++j)
   {
+    // reset partial index
+    ii = 0;
     for (uint32_t i=0; i<k; ++i)
     {
-      int const type = vartype[i];
-      switch(type < 2046 ? 2045 : type)
+      int const type = vartype3[i];
+
+      switch(((type >0) & (type < 2046)) ? 2045 : type)
       {
         // double
       case STATA_DOUBLE:
@@ -456,9 +494,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_d = readbin(val_d, file, swapit);
 
         if ((missing == 0) && !(val_d == R_NegInf) && ((val_d<STATA_DOUBLE_NA_MIN) || (val_d>STATA_DOUBLE_NA_MAX)) )
-          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+          REAL(VECTOR_ELT(df,ii))[j] = NA_REAL;
         else
-          REAL(VECTOR_ELT(df,i))[j] = val_d;
+          REAL(VECTOR_ELT(df,ii))[j] = val_d;
 
         break;
       }
@@ -469,9 +507,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_f = readbin(val_f, file, swapit);
 
         if ((missing == 0) && ((val_f<STATA_FLOAT_NA_MIN) || (val_f>STATA_FLOAT_NA_MAX)) )
-          REAL(VECTOR_ELT(df,i))[j] = NA_REAL;
+          REAL(VECTOR_ELT(df,ii))[j] = NA_REAL;
         else
-          REAL(VECTOR_ELT(df,i))[j] = val_f;
+          REAL(VECTOR_ELT(df,ii))[j] = val_f;
 
         break;
       }
@@ -482,9 +520,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_l = readbin(val_l, file, swapit);
 
         if ((missing == 0) && ((val_l<STATA_INT_NA_MIN) || (val_l>STATA_INT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j]  = NA_INTEGER;
+          INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
         else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_l;
+          INTEGER(VECTOR_ELT(df,ii))[j] = val_l;
 
         break;
       }
@@ -495,9 +533,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_i = readbin(val_i, file, swapit);
 
         if ((missing == 0) && ((val_i<STATA_SHORTINT_NA_MIN) || (val_i>STATA_SHORTINT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+          INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
         else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_i;
+          INTEGER(VECTOR_ELT(df,ii))[j] = val_i;
 
         break;
       }
@@ -508,9 +546,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_b = readbin(val_b, file, swapit);
 
         if (missing == 0 && ( (val_b<STATA_BYTE_NA_MIN) || (val_b>STATA_BYTE_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,i))[j] = NA_INTEGER;
+          INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
         else
-          INTEGER(VECTOR_ELT(df,i))[j] = val_b;
+          INTEGER(VECTOR_ELT(df,ii))[j] = val_b;
 
         break;
       }
@@ -522,7 +560,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         std::string val_s (len, '\0');
 
         readstring(val_s, file, val_s.size());
-        as<CharacterVector>(df[i])[j] = val_s;
+        as<CharacterVector>(df[ii])[j] = val_s;
         break;
       }
         // string of any length
@@ -544,7 +582,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_stream << v << '_' << o;
         string val_strl = val_stream.str();
 
-        as<CharacterVector>(df[i])[j] = val_strl;
+        as<CharacterVector>(df[ii])[j] = val_strl;
 
         break;
       }
@@ -571,7 +609,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_stream << v << '_' << o;
         string val_strl = val_stream.str();
 
-        as<CharacterVector>(df[i])[j] = val_strl;
+        as<CharacterVector>(df[ii])[j] = val_strl;
 
         break;
       }
@@ -598,13 +636,24 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
         val_stream << v << '_' << o;
         string val_strl = val_stream.str();
 
-        as<CharacterVector>(df[i])[j] = val_strl;
+        as<CharacterVector>(df[ii])[j] = val_strl;
 
         break;
       }
       }
+        break;
+      }
+        // case < 0:
+      default:
+      {
+        // skip to the next valid case
+        fseeko64(file, abs(type), SEEK_CUR);
+        break;
       }
       }
+
+      if (type >= 0) ii += 1;
+
       Rcpp::checkUserInterrupt();
     }
   }
@@ -614,7 +663,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
 
   // 3. Create a data.frame
   df.attr("row.names") = rvec;
-  df.attr("names") = varnames;
+  df.attr("names") = varnames_kk;
   df.attr("class") = "data.frame";
 
   //</data>
@@ -657,7 +706,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
       stringstream val_stream;
       val_stream << v << '_' << o;
       ref.assign(val_stream.str());
-      
+
       break;
     }
     case 118:
@@ -665,7 +714,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
     {
       uint32_t v = 0;
       uint64_t o = 0;
-      
+
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 
@@ -811,16 +860,18 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows) {
   test("ue_labels>", file);
   test("</stata_dta>", file);
 
-
-
   /*
    * assign attributes to the resulting data.frame
    */
 
+  formats = formats[select_c];
+  valLabels = valLabels[select_c];
+  varLabels = varLabels[select_c];
+
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;
-  df.attr("types") = vartype;
+  df.attr("types") = vartype_kk;
   df.attr("val.labels") = valLabels;
   df.attr("var.labels") = varLabels;
   df.attr("version") = versionIV;

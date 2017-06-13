@@ -125,11 +125,11 @@ static void writestr(std::string val_s, T len, std::fstream& dta)
 
 }
 
-inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
+inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
 
   uint32_t k = vartype.size();
 
-  Rcpp::NumericVector rlen(k);
+  Rcpp::IntegerVector rlen(k);
   // calculate row length in byte
   for (uint32_t i=0; i<k; ++i)
   {
@@ -158,9 +158,43 @@ inline uint64_t calc_rowlength(Rcpp::IntegerVector vartype) {
     }
   }
 
-  uint64_t rlength = sum(rlen);
-
-  return(rlength);
+  return(rlen);
 }
+
+inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
+                                  Rcpp::CharacterVector y)
+{
+  Rcpp::IntegerVector mm = Rcpp::match(x, y);
+
+  if (Rcpp::any(Rcpp::is_na(mm))) {
+    Rcpp::LogicalVector ll = !Rcpp::is_na(mm);
+
+    Rcpp::CharacterVector ms = x[ll==0];
+
+    Rcpp::Rcout << "Variable " <<  ms <<
+      " was not found in dta-file." << std::endl;
+
+    mm = mm[ll==1];
+  }
+
+  return(mm);
+}
+
+
+inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
+                                     Rcpp::IntegerVector select)
+{
+  // integer position of not selected variables
+  std::vector<int> vec = Rcpp::as< std::vector<int> >(cvec);
+  for (uint32_t i=0; i<select.size(); ++i) {
+    vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
+  }
+
+  Rcpp::IntegerVector nselect = Rcpp::wrap(vec);
+  nselect = nselect -1;
+
+  return(nselect);
+}
+
 
 #endif

@@ -1,4 +1,5 @@
 [testing]
+- allow reading only pre-selected variables
 - experimental support for format 119
 - improve partial reading
 

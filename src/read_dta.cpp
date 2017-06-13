@@ -446,6 +446,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   vartype3[nselect] = rlen2;
 
+
   // 1. create the list
   List df(kk);
   for (uint32_t i=0; i<kk; ++i)
@@ -470,6 +471,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     break;
     }
   }
+    
+  // calulate jumpsize
+  IntegerVector vartype4 = calc_jump(vartype3);
+  kk = vartype4.size();
 
   // 2. fill it with data
 
@@ -481,9 +486,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   {
     // reset partial index
     ii = 0;
-    for (uint32_t i=0; i<k; ++i)
+    for (uint32_t i=0; i<kk; ++i)
     {
-      int const type = vartype3[i];
+      int const type = vartype4[i];
 
       switch(((type >0) & (type < 2046)) ? 2045 : type)
       {

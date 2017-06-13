@@ -454,6 +454,10 @@ List read_pre13_dta(FILE * file, const bool missing,
     }
   }
 
+  // calulate jumpsize
+  IntegerVector vartype4 = calc_jump(vartype3);
+  kk = vartype4.size();
+
   // 2. fill it with data
 
   // skip into the data part
@@ -464,9 +468,9 @@ List read_pre13_dta(FILE * file, const bool missing,
   {
     // reset partial index
     ii = 0;
-    for (uint16_t i=0; i<k; ++i)
+    for (uint16_t i=0; i<kk; ++i)
     {
-      int const type = vartype3[i];
+      int const type = vartype4[i];
 
 
       switch(((type >0) & (type < 244)) ? 244 : type)

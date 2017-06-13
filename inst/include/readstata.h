@@ -196,5 +196,49 @@ inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
   return(nselect);
 }
 
+inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
+
+  // amount of
+  Rcpp::IntegerVector vartype4;
+  int64_t val = 0;
+  bool last = 0;
+
+  uint32_t k = vartype3.size();
+
+  for (uint32_t i=0; i<k; ++i)
+  {
+
+    int32_t value = vartype3(i);
+
+    if (value < 0) {
+
+      // after start or if last was pos fill to val
+      if ( (i == 0) || (last == 1)) {
+        val = value;
+      } else {
+        val += value;
+      }
+      last = 0;
+
+    } else {
+
+      // push back if last was neg
+      if (i > 0 & last == 0)
+        vartype4.push_back(val);
+
+      val = value;
+      vartype4.push_back(val);
+
+      last = 1;
+    }
+
+    if ((i+1 == k) & (last == 0)) {
+      vartype4.push_back(val);
+    }
+
+  }
+
+    return(vartype4);
+}
 
 #endif

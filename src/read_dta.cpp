@@ -506,8 +506,6 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     {
       int const type = vartype3[i];
 
-      Rcout << type << std::endl;
-
       switch(((type >0) & (type < 2046)) ? 2045 : type)
       {
         // double
@@ -611,8 +609,6 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
       }
       case 118:
       {
-        Rcout << "strl" << std::endl;
-
         int16_t v = 0;
         int64_t o = 0, z = 0;
 
@@ -666,19 +662,18 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
         break;
       }
       }
+        break;
       }
         // case < 0:
       default:
       {
-        // Rcout << abs(type) << std::endl;
         // skip to the next valid case
         fseeko64(file, abs(type), SEEK_CUR);
+        break;
       }
       }
 
       if (type >= 0) ii += 1;
-
-      // Rcout << "i: " << i << " ii: " << ii << std::endl;
 
       Rcpp::checkUserInterrupt();
     }

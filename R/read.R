@@ -51,7 +51,7 @@
 #' @param select.rows \emph{integer.} Vector of one or two numbers. If single
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
-#'  @param select.cols \emph{character:} Vector of variables to select.
+#' @param select.cols \emph{character:} Vector of variables to select.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.

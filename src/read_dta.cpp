@@ -122,7 +122,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   //</N>
   test("</N>", file);
   test("<label>", file);
-  
+
   // dim to return original dim for partial read files
   IntegerVector dim(2);
   dim(0) = n;
@@ -412,73 +412,67 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   // use c indexing starting at 0
   nmin = nmin -1;
   nmax = nmax -1;
-  
-  
+
+
   IntegerVector rlen = calc_rowlength(vartype);
-  
+
   uint64_t rlength = sum(rlen);
-  
-  // if (selectcols != "") {
-  IntegerVector select = match(selectcols, varnames);
-  
+
+  // check selectvars
+  std::string selcols = as<std::string>(selectcols(0));
+  bool noselectvars = selcols == "";
+
+  IntegerVector select;
+
+  if (noselectvars) {
+    Rcout << "no select" << std::endl;
+    select = cvec;
+  } else {
+    Rcout << "select" << std::endl;
+    select = match(selectcols, varnames);
+  }
+
   // match returns r index
   IntegerVector select_c = select -1;
-  
+
   uint32_t kk = select.size();
-  
-  // shrink varnames
+
+  // shrink variables
   CharacterVector varnames_kk = varnames[select_c];
-  
   IntegerVector vartype_kk = vartype[select_c];
-  
-  Rcout << "vartype_kk: " << vartype_kk << std::endl;
-  
-  Rcout << rlen << " select: " << select << std::endl;
-  
-  // IntegerVector rlen2 = rlen.erase(select);
-  // rlen2 = -rlen2;
-  // Rcout << rlen2 << std::endl;
-  
-  
+
+  // Rcout << "vartype_kk: " << vartype_kk << std::endl;
+  //
+  Rcout << "rlen: " << rlen << " select: " << select << std::endl;
+
   Rcout << "vartype: " << vartype << std::endl;
   IntegerVector vartype3 = vartype;
 
+  // integer position of not selected variables
   vector<int> vec = as<vector<int>>(cvec);
-  
-  for (int i=0; i < select.size(); ++i){
-    vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());   
+  for (uint32_t i=0; i < select.size(); ++i){
+    vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
   }
-  
   IntegerVector nselect = wrap(vec);
   nselect = nselect -1;
 
-  // Function Rf_which("which");
-  // 
-  // IntegerVector nselect = as<IntegerVector>(Rf_which(cvec != select));
-
   Rcout << " nselect: " << nselect << std::endl;
-  
+
   IntegerVector rlen2 = rlen[nselect];
   rlen2 = -rlen2;
-  
-  // Rcout << rlen2 << std::endl;
-  
+
   vartype3[nselect] = rlen2;
-  
-  Rcout << vartype3 << std::endl;
-  
-  Rcout << "vartype3: " << vartype3 << std::endl;
-  
-  // }
+
+  Rcout << "rlen2: " << rlen2 << " vartype3: " << vartype3 << std::endl;
+
+  Rcout << "varnames_kk: " << varnames_kk << std::endl;
 
   // 1. create the list
   List df(kk);
-  uint32_t ii = 0;
-  
   for (uint32_t i=0; i<kk; ++i)
   {
     int const type = vartype_kk[i];
-    
+
     switch(type)
     {
     case STATA_DOUBLE:
@@ -503,7 +497,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   // skip into the data part
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
-
+  uint32_t ii = 0;
   for(uint64_t j=0; j<nn; ++j)
   {
     // reset partial index
@@ -511,10 +505,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     for (uint32_t i=0; i<k; ++i)
     {
       int const type = vartype3[i];
-      
+
       Rcout << type << std::endl;
-      
-      switch((type >0) & (type < 2046) ? 2045 : type)
+
+      switch(((type >0) & (type < 2046)) ? 2045 : type)
       {
         // double
       case STATA_DOUBLE:
@@ -617,6 +611,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
       }
       case 118:
       {
+        Rcout << "strl" << std::endl;
+
         int16_t v = 0;
         int64_t o = 0, z = 0;
 
@@ -679,11 +675,11 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
         fseeko64(file, abs(type), SEEK_CUR);
       }
       }
-      
+
       if (type >= 0) ii += 1;
-      
-      Rcout << "i: " << i << " ii: " << ii << std::endl;
-      
+
+      // Rcout << "i: " << i << " ii: " << ii << std::endl;
+
       Rcpp::checkUserInterrupt();
     }
   }
@@ -736,7 +732,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
       stringstream val_stream;
       val_stream << v << '_' << o;
       ref.assign(val_stream.str());
-      
+
       break;
     }
     case 118:
@@ -744,7 +740,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     {
       uint32_t v = 0;
       uint64_t o = 0;
-      
+
       v = readbin(v, file, swapit);
       o = readbin(o, file, swapit);
 

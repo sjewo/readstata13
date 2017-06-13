@@ -413,22 +413,19 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   nmin = nmin -1;
   nmax = nmax -1;
 
-
+  // calculate length of variables and of row
   IntegerVector rlen = calc_rowlength(vartype);
-
   uint64_t rlength = sum(rlen);
 
-  // check selectvars
+  // check if vars are selected
   std::string selcols = as<std::string>(selectcols(0));
   bool noselectvars = selcols == "";
 
+  // select vars: either select every var or only matched cases
   IntegerVector select;
-
   if (noselectvars) {
-    Rcout << "no select" << std::endl;
     select = cvec;
   } else {
-    Rcout << "select" << std::endl;
     select = match(selectcols, varnames);
   }
 
@@ -440,12 +437,6 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   // shrink variables
   CharacterVector varnames_kk = varnames[select_c];
   IntegerVector vartype_kk = vartype[select_c];
-
-  // Rcout << "vartype_kk: " << vartype_kk << std::endl;
-  //
-  Rcout << "rlen: " << rlen << " select: " << select << std::endl;
-
-  Rcout << "vartype: " << vartype << std::endl;
   IntegerVector vartype3 = vartype;
 
   // integer position of not selected variables
@@ -456,16 +447,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   IntegerVector nselect = wrap(vec);
   nselect = nselect -1;
 
-  Rcout << " nselect: " << nselect << std::endl;
-
   IntegerVector rlen2 = rlen[nselect];
   rlen2 = -rlen2;
 
   vartype3[nselect] = rlen2;
-
-  Rcout << "rlen2: " << rlen2 << " vartype3: " << vartype3 << std::endl;
-
-  Rcout << "varnames_kk: " << varnames_kk << std::endl;
 
   // 1. create the list
   List df(kk);

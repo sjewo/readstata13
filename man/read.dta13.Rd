@@ -53,7 +53,8 @@ will be assigned to variables of type float and double.}
 
 \item{select.rows}{\emph{integer.} Vector of one or two numbers. If single
 value rows from 1:val are selected. If two values of a range are selected
-the rows in range will be selected.}
+the rows in range will be selected.
+@param select.cols \emph{character:} Vector of variables to select.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes

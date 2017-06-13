@@ -426,7 +426,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   if (noselectvars) {
     select = cvec;
   } else {
-    select = match(selectcols, varnames);
+    select = choose(selectcols, varnames);
   }
 
   // match returns r index
@@ -439,13 +439,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   IntegerVector vartype_kk = vartype[select_c];
   IntegerVector vartype3 = vartype;
 
-  // integer position of not selected variables
-  vector<int> vec = as<vector<int>>(cvec);
-  for (uint32_t i=0; i < select.size(); ++i){
-    vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
-  }
-  IntegerVector nselect = wrap(vec);
-  nselect = nselect -1;
+  IntegerVector nselect = which_pos(cvec, select);
 
   IntegerVector rlen2 = rlen[nselect];
   rlen2 = -rlen2;

@@ -804,3 +804,71 @@ test_that("select.rows = c(5,10)", {
 })
 
 # rm(list = files)
+
+#### select.cols ####
+
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+dd <- mtcars
+
+save.dta13(dd, "data/dta_119.dta", version = 119)
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+save.dta13(dd, "data/dta_115.dta", version = 115)
+save.dta13(dd, "data/dta_114.dta", version = 114)
+save.dta13(dd, "data/dta_113.dta", version = 113)
+save.dta13(dd, "data/dta_112.dta", version = 112)
+save.dta13(dd, "data/dta_111.dta", version = 111)
+save.dta13(dd, "data/dta_110.dta", version = 110)
+save.dta13(dd, "data/dta_108.dta", version = 108)
+save.dta13(dd, "data/dta_107.dta", version = 107)
+save.dta13(dd, "data/dta_106.dta", version = 106)
+save.dta13(dd, "data/dta_105.dta", version = 105)
+save.dta13(dd, "data/dta_104.dta", version = 104)
+save.dta13(dd, "data/dta_103.dta", version = 103)
+save.dta13(dd, "data/dta_102.dta", version = 102)
+
+dd119 <- read.dta13("data/dta_119.dta", select.cols = c("disp", "drat"))
+dd118 <- read.dta13("data/dta_118.dta", select.cols = c("disp", "drat"))
+dd117 <- read.dta13("data/dta_117.dta", select.cols = c("disp", "drat"))
+dd115 <- read.dta13("data/dta_115.dta", select.cols = c("disp", "drat"))
+dd114 <- read.dta13("data/dta_114.dta", select.cols = c("disp", "drat"))
+dd113 <- read.dta13("data/dta_113.dta", select.cols = c("disp", "drat"))
+dd112 <- read.dta13("data/dta_112.dta", select.cols = c("disp", "drat"))
+dd111 <- read.dta13("data/dta_111.dta", select.cols = c("disp", "drat"))
+dd110 <- read.dta13("data/dta_110.dta", select.cols = c("disp", "drat"))
+dd108 <- read.dta13("data/dta_108.dta", select.cols = c("disp", "drat"))
+dd107 <- read.dta13("data/dta_107.dta", select.cols = c("disp", "drat"))
+dd106 <- read.dta13("data/dta_106.dta", select.cols = c("disp", "drat"))
+dd105 <- read.dta13("data/dta_105.dta", select.cols = c("disp", "drat"))
+dd104 <- read.dta13("data/dta_104.dta", select.cols = c("disp", "drat"))
+dd103 <- read.dta13("data/dta_103.dta", select.cols = c("disp", "drat"))
+dd102 <- read.dta13("data/dta_102.dta", select.cols = c("disp", "drat"))
+
+unlink("data", recursive = TRUE)
+
+dd <- dd[,c("disp", "drat")]
+
+test_that("select.cols = c('disp', 'drat')", {
+  # check numerics
+  expect_true(datacompare(dd, dd119))
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+  expect_true(datacompare(dd, dd115))
+  expect_true(datacompare(dd, dd114))
+  expect_true(datacompare(dd, dd113))
+  expect_true(datacompare(dd, dd112))
+  expect_true(datacompare(dd, dd111))
+  expect_true(datacompare(dd, dd110))
+  expect_true(datacompare(dd, dd108))
+  expect_true(datacompare(dd, dd107))
+  expect_true(datacompare(dd, dd106))
+  expect_true(datacompare(dd, dd105))
+  expect_true(datacompare(dd, dd104))
+  expect_true(datacompare(dd, dd103))
+  expect_true(datacompare(dd, dd102))
+})
+
+# rm(list = files)

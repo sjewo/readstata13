@@ -135,9 +135,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
   if (!file.exists(filepath))
     return(message("File not found."))
-  
-  
-  
+
+
+
   # some select.row checks
   if (!is.null(select.rows)) {
     # check that it is a numeric
@@ -147,11 +147,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       # guard against negative values
       if (any(select.rows < 0) )
         select.rows <- abs(select.rows)
-      
+
       # check that lenght is not > 2
       if (length(select.rows) > 2)
         return(message("select.rows must be of length 1 or 2."))
-      
+
       # if lenght 1 start at row 1
       if (length(select.rows) == 1)
         select.rows <- c(1, select.rows)
@@ -159,7 +159,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # reorder if 2 is bigger than 1
     if (select.rows[2] < select.rows[1])
       select.rows <- c(select.rows[2], select.rows[1])
-    
+
     # make sure to start at index position 1 if select.rows[2] > 0
     if (select.rows[2] > 0 & select.rows[1] == 0)
       select.rows[1] <- 1
@@ -167,15 +167,15 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # set a value
     select.rows <- c(0,0)
   }
-  
+
   if (is.null(select.cols)){
     select.cols <- ""
   }
-  
+
   data <- stata_read(filepath, missing.type, select.rows, select.cols)
-  
+
   version <- attr(data, "version")
-  
+
   sstr     <- 2045
   sstrl    <- 32768
   sdouble  <- 65526
@@ -183,7 +183,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   slong    <- 65528
   sint     <- 65529
   sbyte    <- 65530
-  
+
   if (version < 117) {
     sstr    <- 244
     sstrl   <- 255
@@ -193,20 +193,20 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     sint    <- 252
     sbyte   <- 251
   }
-  
+
   if (convert.underscore)
     names(data) <- gsub("_", ".", names(data))
-  
+
   types <- attr(data, "types")
   val.labels <- attr(data, "val.labels")
   label <- attr(data, "label.table")
-  
+
   if (missing.type) {
     stata.na <- data.frame(type = sdouble:sbyte,
                            min = c(101, 32741, 2147483621, 2 ^ 127, 2 ^ 1023),
                            inc = c(1, 1, 1, 2 ^ 115, 2 ^ 1011)
     )
-    
+
     if (version >= 113L & version < 117L) {
       missings <- vector("list", length(data))
       names(missings) <- names(data)
@@ -240,33 +240,33 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         warning("'missing.type' only applicable to version >= 8 files")
     }
   }
-  
+
   var.labels <- attr(data, "var.labels")
-  
+
   ## Encoding
   if(!is.null(encoding)) {
-    
+
     # set from encoding by dta version
     if(is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
       if(attr(data, "version") >= 118L)
         fromEncoding <- "UTF-8"
     }
-    
+
     # varnames
     names(data) <- read.encoding(names(data), fromEncoding, encoding)
-    
+
     # var.labels
     attr(data, "var.labels") <- read.encoding(var.labels, fromEncoding,
                                               encoding)
-    
+
     # val.labels
     names(val.labels) <- read.encoding(val.labels, fromEncoding, encoding)
     attr(data, "val.labels") <- val.labels
-    
+
     # label
     names(label) <- read.encoding(names(label), fromEncoding, encoding)
-    
+
     if (length(label) > 0) {
       for (i in 1:length(label))  {
         names(label[[i]]) <- read.encoding(names(label[[i]]), fromEncoding,
@@ -274,12 +274,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       }
       attr(data, "label.table") <- label
     }
-    
+
     # recode character variables
     for (v in (1:ncol(data))[types <= sstr]) {
       data[, v] <- iconv(data[, v], from=fromEncoding, to=encoding, sub="byte")
     }
-    
+
     # expansion.field
     efi <- attr(data, "expansion.fields")
     if (length(efi) > 0) {
@@ -289,7 +289,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       }
       attr(data, "expansion.fields") <- efi
     }
-    
+
     if (version >= 117L) {
       #strl
       strl <- attr(data, "strl")
@@ -301,9 +301,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       }
     }
   }
-  
+
   var.labels <- attr(data, "var.labels")
-  
+
   if (replace.strl & version >= 117L) {
     strl <- c("")
     names(strl) <- "00000000000000000000"
@@ -314,19 +314,19 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     # if strls are in data.frame remove attribute strl
     attr(data, "strl") <- NULL
   }
-  
-  
+
+
   if (convert.dates) {
     convert_dt_c <- function(x)
       as.POSIXct((x + 0.1) / 1000, origin = "1960-01-01") # avoid rounding down
-    
+
     convert_dt_C <- function(x) {
       ls <- .leap.seconds + seq_along(.leap.seconds) + 315619200
       z <- (x + 0.1) / 1000 # avoid rounding down
       z <- z - rowSums(outer(z, ls, ">="))
       as.POSIXct(z, origin = "1960-01-01")
     }
-    
+
     ff <- attr(data, "formats")
     ## dates <- grep("%-*d", ff)
     ## Stata 12 introduced 'business dates'
@@ -336,16 +336,16 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     ## 'Stata has an old *%d* format notation and some datasets
     ##  still have them. Format *%d*... is equivalent to modern
     ##  format *%td*... and *%-d*... is equivalent to *%-td*...'
-    
+
     dates <- grep("^%(-|)(d|td)", ff)
     ## avoid as.Date in case strptime is messed up
     base <- structure(-3653L, class = "Date") # Stata dates are integer vars
     for (v in dates) data[[v]] <- structure(base + data[[v]], class = "Date")
-    
+
     for (v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]])
     for (v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]])
   }
-  
+
   if (convert.factors) {
     vnames <- names(data)
     for (i in seq_along(val.labels)) {
@@ -364,7 +364,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         varunique <- na.omit(unique(data[, i]))
         # assign label if label set is complete
         if (all(varunique %in% labtable)) {
-          
+
           #check for duplicated labels
           labcount <- table(names(labtable))
           if(any(labcount > 1)) {
@@ -373,28 +373,28 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
             # generate unique labels from assigned label and code number
             names(labtable)[labdups] <- paste0(names(labtable)[labdups], "_(", labtable[labdups], ")")
           }
-          
+
           data[, i] <- factor(data[, i], levels=labtable,
                               labels=names(labtable))
           # else generate labels from codes
         } else if (generate.factors) {
           names(varunique) <- as.character(varunique)
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
-          
+
           data[, i] <- factor(data[, i], levels=gen.lab,
                               labels=names(gen.lab))
-          
+
         } else {
           warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no labels assigned.\n  Set option generate.factors=T to generate labels."))
         }
       }
     }
   }
-  
+
   if (add.rownames) {
     rownames(data) <- data[[1]]
     data[[1]] <- NULL
   }
-  
+
   return(data)
 }

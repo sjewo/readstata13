@@ -72,9 +72,9 @@ T readuint48( T t , FILE * file, bool swapit)
   } else if (ferror(file)){
     Rcpp::warning("num: a binary read error occurred.");
   }
-  
+
   t = *(uint64_t *)&uint48;
-  
+
   if (swapit==0)
     return(t);
   else
@@ -90,7 +90,7 @@ static void readstring(std::string &mystring, FILE * fp, int nchar)
 inline void test(std::string testme, FILE * file)
 {
   std::string test(testme.size(), '\0');
-  
+
   readstring(test,file, test.size());
   if (testme.compare(test)!=0)
   {
@@ -116,19 +116,19 @@ static void writebin(T t, std::fstream& dta, bool swapit)
 template <typename T>
 static void writestr(std::string val_s, T len, std::fstream& dta)
 {
-  
+
   std::stringstream val_stream;
   val_stream << std::left << std::setw(len) << std::setfill('\0') << val_s;
   std::string val_strl = val_stream.str();
-  
+
   dta.write(val_strl.c_str(),val_strl.length());
-  
+
 }
 
 inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
-  
+
   uint32_t k = vartype.size();
-  
+
   Rcpp::IntegerVector rlen(k);
   // calculate row length in byte
   for (uint32_t i=0; i<k; ++i)
@@ -157,7 +157,7 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
     break;
     }
   }
-  
+
   return(rlen);
 }
 
@@ -165,18 +165,18 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
                                   Rcpp::CharacterVector y)
 {
   Rcpp::IntegerVector mm = Rcpp::match(x, y);
-  
+
   if (Rcpp::any(Rcpp::is_na(mm))) {
     Rcpp::LogicalVector ll = !Rcpp::is_na(mm);
-    
+
     Rcpp::CharacterVector ms = x[ll==0];
-    
+
     Rcpp::Rcout << "Variable " <<  ms <<
       " was not found in dta-file." << std::endl;
-    
+
     mm = mm[ll==1];
   }
-  
+
   return(mm);
 }
 
@@ -189,29 +189,29 @@ inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
   for (uint32_t i=0; i<select.size(); ++i) {
     vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
   }
-  
+
   Rcpp::IntegerVector nselect = Rcpp::wrap(vec);
   nselect = nselect -1;
-  
+
   return(nselect);
 }
 
 inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
-  
+
   // amount of
   Rcpp::IntegerVector vartype4;
   int64_t val = 0;
   bool last = 0;
-  
+
   uint32_t k = vartype3.size();
-  
+
   for (uint32_t i=0; i<k; ++i)
   {
-    
+
     int32_t value = vartype3(i);
-    
+
     if (value < 0) {
-      
+
       // after start or if last was pos fill to val
       if ( (i == 0) || (last == 1)) {
         val = value;
@@ -219,26 +219,26 @@ inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
         val += value;
       }
       last = 0;
-      
+
     } else {
-      
+
       // push back if last was neg
       if (i > 0 & last == 0)
         vartype4.push_back(val);
-      
+
       val = value;
       vartype4.push_back(val);
-      
+
       last = 1;
     }
-    
+
     if ((i+1 == k) & (last == 0)) {
       vartype4.push_back(val);
     }
-    
+
   }
-  
-  return(vartype4);
+
+    return(vartype4);
 }
 
 #endif

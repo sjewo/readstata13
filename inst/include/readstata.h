@@ -161,6 +161,9 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
   return(rlen);
 }
 
+// return only the matched positions. Either Rcpps in() can't handle Character-
+// Vectors or I could not make it work. Wanted to select the selected varname
+// position from the varnames vector.
 inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
                                   Rcpp::CharacterVector y)
 {
@@ -180,25 +183,32 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
   return(mm);
 }
 
-
+// return only the positions of variables, we have selected.
 inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
                                      Rcpp::IntegerVector select)
 {
   // integer position of not selected variables
+  // This drops all the positions we do not need. Initially I wanted something
+  // like cvec[select], but that somehow did not work, possibly this could be
+  // improved.
   std::vector<int> vec = Rcpp::as< std::vector<int> >(cvec);
   for (uint32_t i=0; i<select.size(); ++i) {
     vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
   }
-
   Rcpp::IntegerVector nselect = Rcpp::wrap(vec);
+
+  // return to C-index
   nselect = nselect -1;
 
   return(nselect);
 }
 
+// calculate the maximum jump. This calculates the maximum space we can skip if
+// reading only a single variable. Before we skipped over each variable. Now we
+// skip over them combined. Therefore if a value in vartype3 is positive push it
+// into a new vector. If negative, sum the length up.
 inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
 
-  // amount of
   Rcpp::IntegerVector vartype4;
   int64_t val = 0;
   bool last = 0;

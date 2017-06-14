@@ -25,20 +25,20 @@ List read_pre13_dta(FILE * file, const bool missing,
                     const CharacterVector selectcols)
 {
   int8_t release = 0;
-
+  
   rewind(file);
   release = readbin(release, file, 0);
-
+  
   if (release<102 || release == 109 || release>115)
     Rcpp::stop("First byte: Not a dta-file we can read.");
-
+  
   IntegerVector versionIV(1);
   versionIV(0) = release;
-
+  
   /*
   * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
   */
-
+  
   uint16_t ndlabel = 81;
   uint8_t nvarnameslen = 33;
   int8_t nformatslen = 49;
@@ -46,7 +46,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   uint16_t nvarLabelslen = 81;
   int32_t chlen = 33;
   uint8_t lbllen = 33;
-
+  
   switch(release)
   {
   case 102:
@@ -87,70 +87,70 @@ List read_pre13_dta(FILE * file, const bool missing,
     nformatslen = 12;
     break;
   }
-
+  
   CharacterVector byteorderC(1);
   IntegerVector byteorderI(1);
   bool swapit = 0;
-
+  
   int8_t byteorder = 0;
   byteorder = readbin(byteorder, file, 0);
   // 1 = MSF 2 = LSF
   swapit = std::abs(SBYTEORDER-byteorder);
   byteorderI(0) = byteorder;
-
+  
   // filetype: unnown?
   int8_t ft = 0;
   ft = readbin(ft, file, swapit);
-
+  
   int8_t unused = 0;
   unused = readbin(unused, file, swapit);
-
-
+  
+  
   /*
   * Number of Variables
   */
-
+  
   uint16_t k = 0;
   k = readbin(k, file, swapit);
-
-
+  
+  
   /*
   * Number of Observations
   */
-
+  
   uint32_t n = 0;
   n = readbin(n, file, swapit);
-
+  
   // dim to return original dim for partial read files
   IntegerVector dim(2);
   dim(0) = n;
   dim(1) = k;
-
+  
   /*
   * A dataset may have a label e.g. "Written by R".
   * First we read its length (ndlabel), later the actual label (datalabel).
   * ndlabel:   length of datalabel (excl. binary 0)
   * datalabel: string max length 80
   */
-
-
+  
+  
   CharacterVector datalabelCV(1);
-
+  
   std::string datalabel(ndlabel, '\0');
-
+  
   if (ndlabel > 0)
     readstring(datalabel, file, datalabel.size());
   else
     datalabel = "";
-
+  
   datalabelCV(0) = datalabel;
-
+  
   CharacterVector timestampCV(1);
   std::string timestamp(18, '\0');
-
+  
   switch (release)
   {
-
+    
   case 102:
   case 103:
   case 104:
@@ -158,16 +158,16 @@ List read_pre13_dta(FILE * file, const bool missing,
     timestamp = "";
     break;
   }
-
+    
   default:
   {
     readstring(timestamp, file, timestamp.size());
     break;
   }
   }
-
+  
   timestampCV(0) = timestamp;
-
+  
   /*
   * vartypes.
   * 0-2045: strf (String: Max length 2045)
@@ -178,12 +178,12 @@ List read_pre13_dta(FILE * file, const bool missing,
   * 65529:  int
   * 65530:  byte
   */
-
+  
   IntegerVector vartype(k);
-
+  
   switch (release)
   {
-
+    
   case 102:
   case 103:
   case 104:
@@ -195,11 +195,11 @@ List read_pre13_dta(FILE * file, const bool missing,
   case 112:
   {
     uint8_t nvartypec = 0;
-
+    
     for (uint16_t i=0; i<k; ++i)
     {
       nvartypec = readbin(nvartypec, file, swapit);
-
+      
       if(nvartypec== 98) // b
         vartype[i] = 251;
       if(nvartypec==105) // i
@@ -215,14 +215,14 @@ List read_pre13_dta(FILE * file, const bool missing,
     }
     break;
   }
-
+    
   case 111:
   case 113:
   case 114:
   case 115:
   {
     uint8_t nvartype = 0;
-
+    
     for (uint16_t i=0; i<k; ++i)
     {
       nvartype = readbin(nvartype, file, swapit);
@@ -230,34 +230,34 @@ List read_pre13_dta(FILE * file, const bool missing,
     }
     break;
   }
-
+    
   }
-
+  
   // FixMe: Needs clone otherwise missing.type would not work
   IntegerVector types = clone(vartype);
-
+  
   /*
   * varnames. Max length 33.
   */
-
+  
   std::string nvarnames(nvarnameslen, '\0');
-
+  
   CharacterVector varnames(k);
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nvarnames, file, nvarnames.size());
     varnames[i] = nvarnames;
   }
-
+  
   /*
   * sortlist. Stata stores the information which variable of a dataset was
   * sorted. Depending on byteorder sortlist is written different. Currently we
   * do not use this information.
   * Vector size is k+1.
   */
-
+  
   uint32_t big_k = k+1;
-
+  
   IntegerVector sortlist(big_k);
   for (uint32_t i=0; i<big_k; ++i)
   {
@@ -265,100 +265,100 @@ List read_pre13_dta(FILE * file, const bool missing,
     nsortlist = readbin(nsortlist, file, swapit);
     sortlist[i] = nsortlist;
   }
-
+  
   /*
   * formats handle how Stata prints a variable. Currently we do not use this
   * information.
   */
-
+  
   CharacterVector formats(k);
   std::string nformats(nformatslen, '\0');
-
+  
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nformats, file, nformats.size());
     formats[i] = nformats;
   }
-
+  
   /*
   * value_label_names. Stata stores variable labels by names.
   * nvalLabels: length of the value_label_name
   * valLabels:  Char of max length 33
   */
-
+  
   CharacterVector valLabels(k);
   std::string nvalLabels(nvalLabelslen, '\0');
-
+  
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nvalLabels, file, nvalLabels.size());
     valLabels[i] = nvalLabels;
   }
-
+  
   /*
   * variabel_labels
   */
-
+  
   CharacterVector varLabels(k);
   std::string nvarLabels (nvarLabelslen, '\0');
-
+  
   for (uint16_t i=0; i<k; ++i)
   {
     readstring(nvarLabels, file, nvarLabels.size());
     varLabels[i] = nvarLabels;
   }
-
+  
   /* <characteristics> ... </characteristics> */
-
+  
   List ch = List();
   if (release > 104)
   {
     int8_t datatype = 0;
     uint32_t len = 0;
-
+    
     datatype = readbin(datatype, file, swapit);
     if (release <= 108)
       len = readbin((uint16_t)len, file, swapit);
     else
       len = readbin(len, file, swapit);
-
-
+    
+    
     while (!(datatype==0) && !(len==0))
     {
       std::string chvarname(chlen, '\0');
       std::string chcharact(chlen, '\0');
       std::string nnocharacter(len-chlen*2, '\0');
-
+      
       readstring(chvarname, file, chvarname.size());
       readstring(chcharact, file, chcharact.size());
       readstring(nnocharacter, file, nnocharacter.size());
-
+      
       // chs vector
       CharacterVector chs(3);
       chs[0] = chvarname;
       chs[1] = chcharact;
       chs[2] = nnocharacter;
-
+      
       // add characteristics to the list
       ch.push_front( chs );
-
+      
       datatype = readbin(datatype, file, swapit);
-
+      
       if (release <= 108)
         len = readbin((uint16_t)len, file, swapit);
       else
         len = readbin(len, file, swapit);
     }
   }
-
-
+  
+  
   /*
   * data. First a list is created with vectors. The vector type is defined by
   * vartype. Stata stores data columnwise so we loop over it and store the
   * data in the list of the first step. Third variable- and row-names are
   * attatched and the list type is changed to data.frame.
   */
-
+  
   /* replace vartypes of Stata 8 - 12 with Stata 13 values. */
   // 117 contains new variable types (longer strings and strL)
   std::replace (vartype.begin(), vartype.end(), 251, STATA_BYTE);
@@ -366,42 +366,42 @@ List read_pre13_dta(FILE * file, const bool missing,
   std::replace (vartype.begin(), vartype.end(), 253, STATA_INT);
   std::replace (vartype.begin(), vartype.end(), 254, STATA_FLOAT);
   std::replace (vartype.begin(), vartype.end(), 255, STATA_DOUBLE);
-
-
+  
+  
   uint64_t nmin = selectrows(0);
   uint64_t nmax = selectrows(1);
   uint64_t nn   = 0;
-
+  
   // if  selectrows is c(0,0) use full data
   if ((nmin == 0) && (nmax == 0)){
     nmin = 1;
     nmax = n;
   }
-
+  
   // make sure that n is not greater nmax
   if (n < nmax)
     nmax = n;
-
+  
   // neither should nmin be greater
   if (n < nmin)
     nmin = n;
-
+  
   Rcpp::IntegerVector cvec = seq(1, k);
   Rcpp::IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
-
+  
   // use c indexing starting at 0
   nmin = nmin -1;
   nmax = nmax -1;
-
+  
   // calculate length of variables and of row
   IntegerVector rlen = calc_rowlength(vartype);
   uint64_t rlength = sum(rlen);
-
+  
   // check if vars are selected
   std::string selcols = as<std::string>(selectcols(0));
   bool noselectvars = selcols == "";
-
+  
   // select vars: either select every var or only matched cases
   IntegerVector select;
   if (noselectvars) {
@@ -409,60 +409,60 @@ List read_pre13_dta(FILE * file, const bool missing,
   } else {
     select = choose(selectcols, varnames);
   }
-
+  
   // match returns r index
   IntegerVector select_c = select -1;
-
+  
   uint32_t kk = select.size();
-
+  
   // shrink variables
   CharacterVector varnames_kk = varnames[select_c];
   IntegerVector vartype_kk = vartype[select_c];
   IntegerVector types_kk = types[select_c];
   IntegerVector vartype3 = vartype;
-
-
+  
+  
   IntegerVector nselect = which_pos(cvec, select);
-
+  
   IntegerVector rlen2 = rlen[nselect];
   rlen2 = -rlen2;
-
+  
   vartype3[nselect] = rlen2;
-
+  
   // 1. create the list
   List df(kk);
   for (uint32_t i=0; i<kk; ++i)
   {
     int const type = vartype_kk[i];
-
+    
     switch(type)
     {
     case STATA_DOUBLE:
     case STATA_FLOAT:
       SET_VECTOR_ELT(df, i, NumericVector(no_init(nn)));
       break;
-
+      
     case STATA_INT:
     case STATA_SHORTINT:
     case STATA_BYTE:
       SET_VECTOR_ELT(df, i, IntegerVector(no_init(nn)));
       break;
-
+      
     default:
       SET_VECTOR_ELT(df, i, CharacterVector(no_init(nn)));
     break;
     }
   }
-
+  
   // calulate jumpsize
   IntegerVector vartype4 = calc_jump(vartype3);
   kk = vartype4.size();
-
+  
   // 2. fill it with data
-
+  
   // skip into the data part
   fseeko64(file, rlength * nmin, SEEK_CUR);
-
+  
   uint32_t ii = 0;
   for(uint32_t j=0; j<nn; ++j)
   {
@@ -471,8 +471,8 @@ List read_pre13_dta(FILE * file, const bool missing,
     for (uint16_t i=0; i<kk; ++i)
     {
       int const type = vartype4[i];
-
-
+      
+      
       switch(((type >0) & (type < 244)) ? 244 : type)
       {
         // double
@@ -480,12 +480,12 @@ List read_pre13_dta(FILE * file, const bool missing,
       {
         double val_d = 0;
         val_d = readbin(val_d, file, swapit);
-
+        
         if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
           REAL(VECTOR_ELT(df,ii))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,ii))[j] = val_d;
-
+        
         break;
       }
         // float
@@ -493,12 +493,12 @@ List read_pre13_dta(FILE * file, const bool missing,
       {
         float val_f = 0;
         val_f = readbin(val_f, file, swapit);
-
+        
         if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
           REAL(VECTOR_ELT(df,ii))[j] = NA_REAL;
         else
           REAL(VECTOR_ELT(df,ii))[j] = val_f;
-
+        
         break;
       }
         // long
@@ -506,13 +506,13 @@ List read_pre13_dta(FILE * file, const bool missing,
       {
         int32_t val_l = 0;
         val_l = readbin(val_l, file, swapit);
-
-
+        
+        
         if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,ii))[j]  = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,ii))[j] = val_l;
-
+        
         break;
       }
         // int
@@ -520,12 +520,12 @@ List read_pre13_dta(FILE * file, const bool missing,
       {
         int16_t val_i = 0;
         val_i = readbin(val_i, file, swapit);
-
+        
         if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,ii))[j] = val_i;
-
+        
         break;
       }
         // byte
@@ -533,12 +533,12 @@ List read_pre13_dta(FILE * file, const bool missing,
       {
         int8_t val_b = 0;
         val_b = readbin(val_b, file, swapit);
-
+        
         if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
           INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
         else
           INTEGER(VECTOR_ELT(df,ii))[j] = val_b;
-
+        
         break;
       }
         // strings with 244 or fewer characters
@@ -547,11 +547,11 @@ List read_pre13_dta(FILE * file, const bool missing,
         int32_t len = 0;
         len = vartype[i];
         std::string val_s (len, '\0');
-
+        
         readstring(val_s, file, val_s.size());
-
+        
         as<CharacterVector>(df[ii])[j] = val_s;
-
+        
         break;
       }
         // case < 0:
@@ -562,20 +562,20 @@ List read_pre13_dta(FILE * file, const bool missing,
         break;
       }
       }
-
+      
       if (type >= 0) ii += 1;
       Rcpp::checkUserInterrupt();
     }
   }
-
+  
   // skip to end of data part
   fseeko64(file, rlength * (n - nmax -1), SEEK_CUR);
-
+  
   // 3. Create a data.frame
   df.attr("row.names") = rvec;
   df.attr("names") = varnames_kk;
   df.attr("class") = "data.frame";
-
+  
   /*
   * labels are seperated by <lbl>-tags. Labels may appear in any order e.g.
   * 2 "female" 1 "male 9 "missing". They are stored as tables.
@@ -585,39 +585,39 @@ List read_pre13_dta(FILE * file, const bool missing,
   * txtlen:   length of the label text.
   * off:      offset defines where to read a new label in txtlen.
   */
-
+  
   List labelList = List(); //put labels into this list
-
+  
   if (release>105) {
     // FixMe: the while statement differs and the final check
-
-
+    
+    
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
     std::string tag(5, '\0');
-
+    
     bool haslabel = false;
-
+    
     // length of value_label_table
     nlen = readbin(nlen, file, swapit);
-
+    
     if (!(feof(file) || ferror(file)))
       haslabel = true;
-
+    
     while(haslabel)
     {
-
+      
       // name of this label set
       std::string nlabname(lbllen, '\0');
-
+      
       readstring(nlabname, file, nlabname.size());
-
+      
       //padding
       fseek(file, 3, SEEK_CUR);
-
+      
       // value_label_table for actual label set
       labn = readbin(labn, file, swapit);
       txtlen = readbin(txtlen, file, swapit);
-
+      
       // offset for each label
       // off0 : label 0 starts at off0
       // off1 : label 1 starts at off1 ...
@@ -626,43 +626,43 @@ List read_pre13_dta(FILE * file, const bool missing,
         noff = readbin(noff, file, swapit);
         off[i] = noff;
       }
-
+      
       // needed for match
       IntegerVector laborder = clone(off);
       //laborder.erase(labn+1);
       IntegerVector labordersort = clone(off);
       //labordersort.erase(labn+1);
       std::sort(labordersort.begin(), labordersort.end());
-
+      
       // needs txtlen for loop
       off.push_back(txtlen);
-
+      
       // sort offsets so we can read labels sequentially
       std::sort(off.begin(), off.end());
-
+      
       // create an index to sort lables along the code values
       // this is done while factor creation
       IntegerVector indx(labn);
       indx = match(laborder,labordersort);
-
+      
       // code for each label
       IntegerVector code(labn);
       for (int i=0; i < labn; ++i) {
         val = readbin(val, file, swapit);
         code[i] = val;
       }
-
+      
       // label text
       CharacterVector label(labn);
       for (int i=0; i < labn; ++i) {
         int lablen = off[i+1]-off[i];
-
+        
         std::string lab (lablen, '\0');
-
+        
         readstring(lab, file, lablen);
         label[i] = lab;
       }
-
+      
       // sort labels according to indx
       CharacterVector labelo(labn);
       for (int i=0; i < labn; ++i) {
@@ -671,26 +671,26 @@ List read_pre13_dta(FILE * file, const bool missing,
       // create table for actual label set
       string const labset = nlabname;
       code.attr("names") = labelo;
-
+      
       // add this set to output list
       labelList.push_front( code, labset);
-
+      
       // length of value_label_table
       nlen = readbin(nlen, file, swapit);
-
+      
       if (feof(file) || ferror(file))
         break;
     }
   }
-
+  
   /*
    * assign attributes to the resulting data.frame
    */
-
+  
   formats = formats[select_c];
   valLabels = valLabels[select_c];
   varLabels = varLabels[select_c];
-
+  
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;
   df.attr("formats") = formats;
@@ -702,6 +702,6 @@ List read_pre13_dta(FILE * file, const bool missing,
   df.attr("expansion.fields") = ch;
   df.attr("byteorder") = byteorderI;
   df.attr("orig.dim") = dim;
-
+  
   return df;
 }

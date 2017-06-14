@@ -364,7 +364,7 @@ test_that("add.rownames TRUE", {
   expect_true(identical(rownames(dd), rownames(dd104)))
   expect_true(identical(rownames(dd), rownames(dd103)))
   expect_true(identical(rownames(dd), rownames(dd102)))
-
+  
   # Check that data is identical
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))

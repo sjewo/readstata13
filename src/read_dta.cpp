@@ -387,8 +387,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   * attatched and the list type is changed to data.frame.
   */
 
-  uint64_t nmin = selectrows(0);
-  uint64_t nmax = selectrows(1);
+  uint64_t nmin = selectrows(0), nmax = selectrows(1);
   uint64_t nn   = 0;
 
   // if  selectrows is c(0,0) use full data
@@ -397,15 +396,14 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     nmax = n;
   }
 
-  // make sure that n is not greater nmax
+  // make sure that n is not greater than nmax or nmin
   if (n < nmax)
     nmax = n;
-
-  // neither should nmin be greater
   if (n < nmin)
     nmin = n;
 
-  Rcpp::IntegerVector cvec = seq(1, k);
+  // sequences of colum and row
+  Rcpp::IntegerVector cvec = seq(0, (k-1));
   Rcpp::IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
 
@@ -413,38 +411,35 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   nmin = nmin -1;
   nmax = nmax -1;
 
-  // calculate length of variables and of row
+  // calculate length of each variable stored in file. Calculate row length
   IntegerVector rlen = calc_rowlength(vartype);
   uint64_t rlength = sum(rlen);
 
   // check if vars are selected
   std::string selcols = as<std::string>(selectcols(0));
-  bool noselectvars = selcols == "";
+  bool selectvars = selcols != "";
 
-  // select vars: either select every var or only matched cases
-  IntegerVector select;
-  if (noselectvars) {
-    select = cvec;
-  } else {
+  // select vars: either select every var or only matched cases. This will
+  // return index positions of the selected variables. If non are selected the
+  // index position is cvec
+  IntegerVector select = cvec;
+  if (selectvars)
     select = choose(selectcols, varnames);
-  }
-
-  // match returns r index
-  IntegerVector select_c = select -1;
 
   uint32_t kk = select.size();
 
-  // shrink variables
-  CharacterVector varnames_kk = varnames[select_c];
-  IntegerVector vartype_kk = vartype[select_c];
-  IntegerVector vartype3 = vartype;
+  // shrink variables to selected size
+  CharacterVector varnames_kk = varnames[select];
+  IntegerVector vartype_kk = vartype[select];
+  IntegerVector vartype_s = vartype;
 
+  // integer positions of variables not selected. Their position in vartype is
+  // filled with the negative size of their variable.
   IntegerVector nselect = which_pos(cvec, select);
 
   IntegerVector rlen2 = rlen[nselect];
   rlen2 = -rlen2;
-
-  vartype3[nselect] = rlen2;
+  vartype_s[nselect] = rlen2;
 
 
   // 1. create the list
@@ -472,9 +467,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     }
   }
 
-  // calulate jumpsize
-  IntegerVector vartype4 = calc_jump(vartype3);
-  kk = vartype4.size();
+  // Use vartype_s to calulate jumpsize
+  IntegerVector vartype_sj = calc_jump(vartype_s);
+  kk = vartype_sj.size();
 
   // 2. fill it with data
 
@@ -488,7 +483,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     ii = 0;
     for (uint32_t i=0; i<kk; ++i)
     {
-      int const type = vartype4[i];
+      int const type = vartype_sj[i];
 
       switch(((type >0) & (type < 2046)) ? 2045 : type)
       {
@@ -869,9 +864,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
    * assign attributes to the resulting data.frame
    */
 
-  formats = formats[select_c];
-  valLabels = valLabels[select_c];
-  varLabels = varLabels[select_c];
+  formats = formats[select];
+  valLabels = valLabels[select];
+  varLabels = varLabels[select];
 
   df.attr("datalabel") = datalabelCV;
   df.attr("time.stamp") = timestampCV;

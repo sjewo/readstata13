@@ -167,6 +167,9 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
 inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
                                   Rcpp::CharacterVector y)
 {
+  // ToDo: Maybe we can skip the select and nselect in read_dta.cpp if we match
+  // the other way around and use Rcpp::is_na on the result which then could be
+  // used as an additional index
   Rcpp::IntegerVector mm = Rcpp::match(x, y);
 
   if (Rcpp::any(Rcpp::is_na(mm))) {
@@ -179,6 +182,9 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
 
     mm = mm[ll==1];
   }
+
+  // match returns R index
+  mm = mm -1;
 
   return(mm);
 }
@@ -196,9 +202,6 @@ inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
     vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
   }
   Rcpp::IntegerVector nselect = Rcpp::wrap(vec);
-
-  // return to C-index
-  nselect = nselect -1;
 
   return(nselect);
 }

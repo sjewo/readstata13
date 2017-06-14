@@ -471,7 +471,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     break;
     }
   }
-    
+
   // calulate jumpsize
   IntegerVector vartype4 = calc_jump(vartype3);
   kk = vartype4.size();
@@ -857,9 +857,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   }
 
   /*
-   * Final test if we reached the end of the file
-   * close the file
-   */
+  * Final test if we reached the end of the file
+  * close the file
+  */
 
   // [</val]ue_labels>
   test("ue_labels>", file);

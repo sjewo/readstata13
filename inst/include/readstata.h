@@ -238,7 +238,7 @@ inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
 
   }
 
-    return(vartype4);
+  return(vartype4);
 }
 
 #endif

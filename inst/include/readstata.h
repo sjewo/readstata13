@@ -223,7 +223,7 @@ inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
     } else {
 
       // push back if last was neg
-      if (i > 0 & last == 0)
+      if ((i > 0) & (last == 0))
         vartype4.push_back(val);
 
       val = value;

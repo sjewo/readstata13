@@ -190,16 +190,16 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
 }
 
 // return only the positions of variables, we have selected.
-inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
-                                     Rcpp::IntegerVector select)
+inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector x,
+                                     Rcpp::IntegerVector y)
 {
   // integer position of not selected variables
   // This drops all the positions we do not need. Initially I wanted something
-  // like cvec[select], but that somehow did not work, possibly this could be
+  // like x[y], but that somehow did not work, possibly this could be
   // improved.
-  std::vector<int> vec = Rcpp::as< std::vector<int> >(cvec);
-  for (uint32_t i=0; i<select.size(); ++i) {
-    vec.erase(std::remove(vec.begin(), vec.end(), select(i)), vec.end());
+  std::vector<int> vec = Rcpp::as< std::vector<int> >(x);
+  for (uint32_t i=0; i<y.size(); ++i) {
+    vec.erase(std::remove(vec.begin(), vec.end(), y(i)), vec.end());
   }
   Rcpp::IntegerVector nselect = Rcpp::wrap(vec);
 
@@ -208,20 +208,20 @@ inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector cvec,
 
 // calculate the maximum jump. This calculates the maximum space we can skip if
 // reading only a single variable. Before we skipped over each variable. Now we
-// skip over them combined. Therefore if a value in vartype3 is positive push it
+// skip over them combined. Therefore if a value in x is positive push it
 // into a new vector. If negative, sum the length up.
-inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
+inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector x) {
 
-  Rcpp::IntegerVector vartype4;
+  Rcpp::IntegerVector y;
   int64_t val = 0;
   bool last = 0;
 
-  uint32_t k = vartype3.size();
+  uint32_t k = x.size();
 
   for (uint32_t i=0; i<k; ++i)
   {
 
-    int32_t value = vartype3(i);
+    int32_t value = x(i);
 
     if (value < 0) {
 
@@ -237,21 +237,21 @@ inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector vartype3) {
 
       // push back if last was neg
       if ((i > 0) & (last == 0))
-        vartype4.push_back(val);
+        y.push_back(val);
 
       val = value;
-      vartype4.push_back(val);
+      y.push_back(val);
 
       last = 1;
     }
 
     if ((i+1 == k) & (last == 0)) {
-      vartype4.push_back(val);
+      y.push_back(val);
     }
 
   }
 
-  return(vartype4);
+  return(y);
 }
 
 #endif

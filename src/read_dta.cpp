@@ -422,9 +422,14 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
-  IntegerVector select = cvec;
+  IntegerVector select = cvec, nselect;
   if (selectvars)
     select = choose(selectcols, varnames);
+
+  // separaet selected from not selected cases
+  LogicalVector ll = is_na(select);
+  nselect = cvec[ll == 1];
+  select = cvec[ll == 0];
 
   uint32_t kk = select.size();
 
@@ -433,10 +438,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   IntegerVector vartype_kk = vartype[select];
   IntegerVector vartype_s = vartype;
 
-  // integer positions of variables not selected. Their position in vartype is
-  // filled with the negative size of their variable.
-  IntegerVector nselect = which_pos(cvec, select);
-
+  // replace not selected cases with their negative size values
   IntegerVector rlen2 = rlen[nselect];
   rlen2 = -rlen2;
   vartype_s[nselect] = rlen2;

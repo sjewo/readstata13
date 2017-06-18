@@ -179,31 +179,15 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
 
     Rcpp::Rcout << "Variable " <<  ms <<
       " was not found in dta-file." << std::endl;
-
-    mm = mm[ll==1];
   }
 
-  // match returns R index
-  mm = mm -1;
+  // report position for found cases
+  mm = Rcpp::match(y, x);
+
+//   // match returns R index
+//   mm = mm -1;
 
   return(mm);
-}
-
-// return only the positions of variables, we have selected.
-inline Rcpp::IntegerVector which_pos(Rcpp::IntegerVector x,
-                                     Rcpp::IntegerVector y)
-{
-  // integer position of not selected variables
-  // This drops all the positions we do not need. Initially I wanted something
-  // like x[y], but that somehow did not work, possibly this could be
-  // improved.
-  std::vector<int> vec = Rcpp::as< std::vector<int> >(x);
-  for (uint32_t i=0; i<y.size(); ++i) {
-    vec.erase(std::remove(vec.begin(), vec.end(), y(i)), vec.end());
-  }
-  Rcpp::IntegerVector nselect = Rcpp::wrap(vec);
-
-  return(nselect);
 }
 
 // calculate the maximum jump. This calculates the maximum space we can skip if

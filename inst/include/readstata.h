@@ -184,9 +184,6 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
   // report position for found cases
   mm = Rcpp::match(y, x);
 
-//   // match returns R index
-//   mm = mm -1;
-
   return(mm);
 }
 

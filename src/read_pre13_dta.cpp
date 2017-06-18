@@ -30,7 +30,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   release = readbin(release, file, 0);
 
   if (release<102 || release == 109 || release>115)
-    Rcpp::stop("First byte: Not a dta-file we can read.");
+    stop("First byte: Not a dta-file we can read.");
 
   IntegerVector versionIV(1);
   versionIV(0) = release;
@@ -384,8 +384,8 @@ List read_pre13_dta(FILE * file, const bool missing,
     nmin = n;
 
   // sequences of colum and row
-  Rcpp::IntegerVector cvec = seq(0, (k-1));
-  Rcpp::IntegerVector rvec = seq(nmin, nmax);
+  IntegerVector cvec = seq(0, (k-1));
+  IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
 
   // use c indexing starting at 0
@@ -470,7 +470,7 @@ List read_pre13_dta(FILE * file, const bool missing,
       int const type = vartype_sj[i];
 
 
-      switch(((type >0) & (type < 244)) ? 244 : type)
+      switch(((type >0) & (type < 245)) ? STATA_SHORT_STR : type)
       {
         // double
       case STATA_DOUBLE:
@@ -539,7 +539,7 @@ List read_pre13_dta(FILE * file, const bool missing,
         break;
       }
         // strings with 244 or fewer characters
-      case 244:
+      case STATA_SHORT_STR:
       {
         int32_t len = 0;
         len = vartype[i];
@@ -561,7 +561,7 @@ List read_pre13_dta(FILE * file, const bool missing,
       }
 
       if (type >= 0) ii += 1;
-      Rcpp::checkUserInterrupt();
+      checkUserInterrupt();
     }
   }
 

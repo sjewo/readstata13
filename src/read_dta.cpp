@@ -44,7 +44,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   // check the release version.
   if (release<fversion || release>lversion)
   {
-    Rcpp::warning("File version is %d.\nVersion: Not a version 13/14 dta-file", release);
+    warning("File version is %d.\nVersion: Not a version 13/14 dta-file", release);
     return -1;
   }
 
@@ -403,8 +403,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     nmin = n;
 
   // sequences of colum and row
-  Rcpp::IntegerVector cvec = seq(0, (k-1));
-  Rcpp::IntegerVector rvec = seq(nmin, nmax);
+  IntegerVector cvec = seq(0, (k-1));
+  IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
 
   // use c indexing starting at 0
@@ -487,7 +487,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     {
       int const type = vartype_sj[i];
 
-      switch(((type >0) & (type < 2046)) ? 2045 : type)
+      switch(((type >0) & (type < 2046)) ? STATA_STR : type)
       {
         // double
       case STATA_DOUBLE:
@@ -555,7 +555,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
         break;
       }
         // strings with 2045 or fewer characters
-      case 2045:
+      case STATA_STR:
       {
         int32_t len = 0;
         len = vartype[i];
@@ -656,7 +656,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
       if (type >= 0) ii += 1;
 
-      Rcpp::checkUserInterrupt();
+      checkUserInterrupt();
     }
   }
 

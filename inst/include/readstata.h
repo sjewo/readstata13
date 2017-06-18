@@ -177,7 +177,8 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
 
     Rcpp::CharacterVector ms = x[ll==0];
 
-    Rcpp::Rcout << "Variable " <<  ms <<
+    // does not work if ms contains multiple names: Rcpp::as<std::string>(ms)
+    Rcpp::Rcout << "Variable " << ms <<
       " was not found in dta-file." << std::endl;
   }
 

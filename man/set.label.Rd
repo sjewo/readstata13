@@ -17,7 +17,7 @@ set.label(dat, var.name, lang = NA)
 Returns a labeled factor
 }
 \description{
-Assign value labels from a Stata label set to a variable. If duplicated labels are found, 
+Assign value labels from a Stata label set to a variable. If duplicated labels are found,
 unique labels will be generated according the following scheme: "label_(integer code)".
 }
 \examples{

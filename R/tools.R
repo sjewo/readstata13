@@ -27,10 +27,11 @@ isDta <- function(x) grepl(".dta$", x = x)
 # @author jmg
 isZip <- function(x) grepl(".zip$", x = x)
 
-# Extract archive and return dta-path
-#
-# @param x filepath of archive
-# @author jmg
+#' Extract archive and return dta-path
+#'
+#' @param x filepath of archive
+#' @importFrom utils unzip
+#' @author jmg
 extract <- function(x) {
   tmpdir <- tempdir()
 
@@ -221,7 +222,7 @@ get.label <- function(dat, label.name) {
 
 #' Assign Stata Labels to a Variable
 #'
-#' Assign value labels from a Stata label set to a variable. If duplicated labels are found, 
+#' Assign value labels from a Stata label set to a variable. If duplicated labels are found,
 #' unique labels will be generated according the following scheme: "label_(integer code)".
 #'
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
@@ -250,14 +251,14 @@ set.label <- function(dat, var.name, lang=NA) {
   #check for duplicated labels
   labcount <- table(names(labtable))
   if(any(labcount > 1)) {
-    
-    
+
+
     warning(paste0("\n  ",var.name, ":\n  Duplicated factor levels detected - generating unique labels.\n"))
     labdups <- names(labtable) %in% names(labcount[labcount > 1])
     # generate unique labels from assigned label and code number
     names(labtable)[labdups] <- paste0(names(labtable)[labdups], "_(", labtable[labdups], ")")
   }
-  
+
   return(factor(tmp, levels=labtable,
                 labels=names(labtable))
   )

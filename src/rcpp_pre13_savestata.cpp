@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,8 +15,7 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "readstata.h"
-
+#include <readstata.h>
 
 using namespace Rcpp;
 using namespace std;
@@ -445,7 +444,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         writebin(nlen, dta, swapit);
 
         writestr(labname, nvarnameslen, dta);
-        dta.write((char*)&padding,3);
+        writestr((char*)&padding, 3, dta);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
 

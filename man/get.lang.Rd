@@ -30,4 +30,3 @@ Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
 Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
-

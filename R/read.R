@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
 # Copyright (C) of 'convert.dates' and 'missing.types' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -23,7 +23,8 @@
 #' @param convert.factors \emph{logical.} If \code{TRUE}, factors from Stata
 #'  value labels are created.
 #' @param generate.factors \emph{logical.} If \code{TRUE} and convert.factors is
-#'  TRUE, missing factor labels are created from integers.
+#'  TRUE, missing factor labels are created from integers. If duplicated labels are found,
+#'  unique labels will be generated according the following scheme: "label_(integer code)".
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252 or UTF-8
 #'  to system encoding. Options are "latin1" or "UTF-8" to specify target
 #'  encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
@@ -50,6 +51,7 @@
 #' @param select.rows \emph{integer.} Vector of one or two numbers. If single
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
+#' @param select.cols \emph{character:} Vector of variables to select.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -100,6 +102,8 @@
 #'    and the contents of Stata characteristic field.}
 #'   \item{missing:}{List of numeric vectors with Stata missing type for each
 #'    variable.}
+#'   \item{byteorder:}{Byteorder of the dta-file. LSF or MSF.}
+#'   \item{orig.dim:}{Dimension recorded inside the dta-file.}
 #' }
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 #'  from foreign::read.dta().
@@ -118,7 +122,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE,
-                       select.rows = NULL) {
+                       select.rows = NULL, select.cols = NULL) {
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -168,7 +172,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     select.rows <- c(0,0)
   }
 
-  data <- stata_read(filepath, missing.type, select.rows)
+  if (is.null(select.cols)){
+    select.cols <- ""
+  }
+
+  data <- stata_read(filepath, missing.type, select.rows, select.cols)
 
   version <- attr(data, "version")
 
@@ -304,7 +312,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     strl <- c("")
     names(strl) <- "00000000000000000000"
     strl <- c(strl, attr(data,"strl"))
-    for (j in seq(ncol(data))[types == 32768] ) {
+    for (j in seq(ncol(data))[types == sstrl] ) {
       data[, j] <- strl[data[,j]]
     }
     # if strls are in data.frame remove attribute strl
@@ -352,7 +360,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if (labname %in% names(label)) {
         if((vartype == sdouble | vartype == sfloat)) {
           if(!nonint.factors) {
-            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double or float detected - no labels assigned.\n  Set option nonint.factors to TRUE to assign labels anyway."))
+            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double or float detected - no labels assigned.\n  Set option nonint.factors to TRUE to assign labels anyway.\n"))
             next
           }
         }
@@ -360,6 +368,16 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         varunique <- na.omit(unique(data[, i]))
         # assign label if label set is complete
         if (all(varunique %in% labtable)) {
+
+          #check for duplicated labels
+          labcount <- table(names(labtable))
+          if(any(labcount > 1)) {
+            warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels detected - generating unique labels.\n"))
+            labdups <- names(labtable) %in% names(labcount[labcount > 1])
+            # generate unique labels from assigned label and code number
+            names(labtable)[labdups] <- paste0(names(labtable)[labdups], "_(", labtable[labdups], ")")
+          }
+
           data[, i] <- factor(data[, i], levels=labtable,
                               labels=names(labtable))
           # else generate labels from codes
@@ -369,6 +387,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
           data[, i] <- factor(data[, i], levels=gen.lab,
                               labels=names(gen.lab))
+
         } else {
           warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no labels assigned.\n  Set option generate.factors=T to generate labels."))
         }

@@ -11,13 +11,12 @@ Function to read the Stata file format into a data.frame.
 \note{
 If you catch a bug, please do not sue us, we do not have any money.
 }
+\seealso{
+\code{\link[foreign]{read.dta}} and \code{memisc} for dta files from Stata
+Versions < 13
+}
 \author{
 Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
 Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
 }
-\seealso{
-\code{\link{read.dta}} and \code{memisc} for dta files from Stata
-Versions < 13
-}
-

@@ -185,4 +185,3 @@ test_that("Reading of strls", {
   ddstrl <- read.dta13(strl, replace.strl = T)
   expect_equal(ddstrl$model, ddstrl$modelStrL)
 })
-

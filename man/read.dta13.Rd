@@ -7,7 +7,8 @@
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = "UTF-8", fromEncoding = NULL, convert.underscore = FALSE,
   missing.type = FALSE, convert.dates = TRUE, replace.strl = TRUE,
-  add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL)
+  add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL,
+  select.cols = NULL)
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
@@ -16,7 +17,8 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 value labels are created.}
 
 \item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is
-TRUE, missing factor labels are created from integers.}
+TRUE, missing factor labels are created from integers. If duplicated labels are found,
+unique labels will be generated according the following scheme: "label_(integer code)".}
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252 or UTF-8
 to system encoding. Options are "latin1" or "UTF-8" to specify target
@@ -52,6 +54,8 @@ will be assigned to variables of type float and double.}
 \item{select.rows}{\emph{integer.} Vector of one or two numbers. If single
 value rows from 1:val are selected. If two values of a range are selected
 the rows in range will be selected.}
+
+\item{select.cols}{\emph{character:} Vector of variables to select.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes
@@ -73,6 +77,8 @@ The function returns a data.frame with attributes. The attributes
    and the contents of Stata characteristic field.}
   \item{missing:}{List of numeric vectors with Stata missing type for each
    variable.}
+  \item{byteorder:}{Byteorder of the dta-file. LSF or MSF.}
+  \item{orig.dim:}{Dimension recorded inside the dta-file.}
 }
 }
 \description{
@@ -115,11 +121,6 @@ Reading dta-files of older and newer versions than 13 was introduced
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
  from foreign::read.dta().
 }
-\author{
-Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
-
-Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
-}
 \references{
 Stata Corp (2014): Description of .dta file format
  \url{http://www.stata.com/help.cgi?dta}
@@ -128,4 +129,8 @@ Stata Corp (2014): Description of .dta file format
 \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
 versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
 }
+\author{
+Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}
 
+Sebastian Jeworutzki \email{sebastian.jeworutzki@ruhr-uni-bochum.de}
+}

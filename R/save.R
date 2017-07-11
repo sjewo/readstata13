@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014-2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -39,7 +39,7 @@
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will
 #'  use all of Statas numeric-vartypes.
 #' @param version \emph{numeric.} Stata format for the resulting dta-file either
-#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.
+#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 15.
 #' @return The function writes a dta-file to disk. The following features of the
 #'  dta file format are supported:
 #' \describe{
@@ -75,6 +75,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     stop("Path is invalid. Possibly a non existend directory.")
 
   # Allow writing version as Stata version not Stata format
+  if (version==15L)
+    version <- 119
   if (version==14L)
     version <- 118
   if (version==13L)
@@ -90,7 +92,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (version==6)
     version <- 108
 
-  if (version<102 | version == 109 | version == 116 | version>118)
+  if (version<102 | version == 109 | version == 116 | version>119)
     stop("Version missmatch abort execution. No Data was saved.")
 
   sstr     <- 2045
@@ -278,7 +280,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[empty] <- sbyte
   }
 
-  # recode character variables. 118 wants utf-8, so encoding may be required
+  # recode character variables. >118 wants utf-8, so encoding may be required
   if(doRecode) {
     #TODO: use seq_len ?
     for(v in (1:ncol(data))[vartypen == "character"]) {

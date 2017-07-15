@@ -117,9 +117,21 @@ get.label.name <- function(dat, var.name=NULL, lang=NA) {
     names(labelsets) <- vnames
   } else if (is.character(lang)) {
     ex <- attr(dat, "expansion.fields")
-    varname <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
+
+    test_lang_v <-
+      identical(integer(0),
+                unlist(lapply(ex, grep, pattern ="_lang_l_"))
+      )
+
+    langstr <- "_lang_l_"
+
+    if (test_lang_v)
+      langstr <- "_lang_v_"
+
+    varname <- sapply(ex[grep(paste0(langstr, lang), ex)],
                       function(x) x[1])
-    labelsets.tmp <- sapply(ex[grep(paste0("_lang_l_", lang), ex)],
+
+    labelsets.tmp <- sapply(ex[grep(paste0(langstr, lang), ex)],
                             function(x) x[3])
     names(labelsets.tmp) <- varname
 

@@ -2,14 +2,14 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 stata_pre13_save <- function(filePath, dat) {
-    .Call(readstata13_stata_pre13_save, filePath, dat)
+    .Call(`_readstata13_stata_pre13_save`, filePath, dat)
 }
 
 stata_read <- function(filePath, missing, selectrows, selectcols) {
-    .Call(readstata13_stata_read, filePath, missing, selectrows, selectcols)
+    .Call(`_readstata13_stata_read`, filePath, missing, selectrows, selectcols)
 }
 
 stata_save <- function(filePath, dat) {
-    .Call(readstata13_stata_save, filePath, dat)
+    .Call(`_readstata13_stata_save`, filePath, dat)
 }
 

@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // stata_pre13_save
 int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat);
-RcppExport SEXP readstata13_stata_pre13_save(SEXP filePathSEXP, SEXP datSEXP) {
+RcppExport SEXP _readstata13_stata_pre13_save(SEXP filePathSEXP, SEXP datSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 // stata_read
 List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows, const CharacterVector selectcols);
-RcppExport SEXP readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcolsSEXP) {
+RcppExport SEXP _readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcolsSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -33,7 +33,7 @@ END_RCPP
 }
 // stata_save
 int stata_save(const char * filePath, Rcpp::DataFrame dat);
-RcppExport SEXP readstata13_stata_save(SEXP filePathSEXP, SEXP datSEXP) {
+RcppExport SEXP _readstata13_stata_save(SEXP filePathSEXP, SEXP datSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,4 +42,16 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(stata_save(filePath, dat));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_readstata13_stata_pre13_save", (DL_FUNC) &_readstata13_stata_pre13_save, 2},
+    {"_readstata13_stata_read", (DL_FUNC) &_readstata13_stata_read, 4},
+    {"_readstata13_stata_save", (DL_FUNC) &_readstata13_stata_save, 2},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_readstata13(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

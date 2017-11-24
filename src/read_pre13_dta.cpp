@@ -436,42 +436,16 @@ List read_pre13_dta(FILE * file, const bool missing,
   vartype_s[nselect] = rlen2;
 
 
-  // 1. create the list
-  List df(kk);
-  for (uint32_t i=0; i<kk; ++i)
-  {
-    int const type = vartype_kk[i];
-
-    switch(type)
-    {
-    case STATA_DOUBLE:
-    case STATA_FLOAT:
-      SET_VECTOR_ELT(df, i, NumericVector(no_init(nn)));
-      break;
-
-    case STATA_INT:
-    case STATA_SHORTINT:
-    case STATA_BYTE:
-      SET_VECTOR_ELT(df, i, IntegerVector(no_init(nn)));
-      break;
-
-    default:
-      SET_VECTOR_ELT(df, i, CharacterVector(no_init(nn)));
-    break;
-    }
-  }
-
   // Use vartype_s to calulate jump
   IntegerVector vartype_sj = calc_jump(vartype_s);
-  kk = vartype_sj.size();
 
   // 2. fill it with data
 
   // skip into the data part
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
-  df = read_data(file, df, missing, release, nn, kk,
-                 vartype_sj, byteorder, swapit);
+  List df = read_data(file, vartype_kk, missing, release, nn, kk,
+                      vartype_sj, byteorder, swapit);
 
   // skip to end of data part
   fseeko64(file, rlength * (n - nmax -1), SEEK_CUR);

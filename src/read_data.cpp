@@ -20,10 +20,40 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_data(FILE * file, List df, const bool missing, const int8_t release,
-               const uint64_t nn, const uint32_t kk,
+List read_data(FILE * file,
+               const IntegerVector vartype_kk,
+               const bool missing, const int8_t release,
+               const uint64_t nn, uint32_t kk,
                const IntegerVector vartype_sj,
                const std::string byteorder, const bool swapit) {
+
+  // 1. create the list
+  List df(kk);
+  for (uint32_t i=0; i<kk; ++i)
+  {
+    int const type = vartype_kk[i];
+
+    switch(type)
+    {
+    case STATA_DOUBLE:
+    case STATA_FLOAT:
+      SET_VECTOR_ELT(df, i, NumericVector(no_init(nn)));
+      break;
+
+    case STATA_INT:
+    case STATA_SHORTINT:
+    case STATA_BYTE:
+      SET_VECTOR_ELT(df, i, IntegerVector(no_init(nn)));
+      break;
+
+    default:
+      SET_VECTOR_ELT(df, i, CharacterVector(no_init(nn)));
+    break;
+    }
+  }
+
+  // updated kk to reflect the jump size
+  kk = vartype_sj.size();
 
   uint32_t ii = 0;
   for (uint64_t j=0; j<nn; ++j)

@@ -18,9 +18,11 @@
 #ifndef READDATA_H
 #define READDATA_H
 
-Rcpp::List read_data(FILE * file, Rcpp::List df, const bool missing,
+Rcpp::List read_data(FILE * file,
+                     const Rcpp::IntegerVector vartype_kk,
+                     const bool missing,
                      const int8_t release,
-                     const uint64_t nn, const uint32_t kk,
+                     const uint64_t nn, uint32_t kk,
                      const Rcpp::IntegerVector vartype_sj,
                      const std::string byteorder, const bool swapit);
 

@@ -558,7 +558,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
       case STATA_STR:
       {
         int32_t len = 0;
-        len = vartype[i];
+        len = vartype_sj[i];
         std::string val_s (len, '\0');
 
         readstring(val_s, file, val_s.size());

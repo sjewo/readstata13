@@ -16,6 +16,7 @@
  */
 
 #include "readstata.h"
+#include "read_data.h"
 
 using namespace Rcpp;
 using namespace std;
@@ -94,11 +95,18 @@ List read_pre13_dta(FILE * file, const bool missing,
   IntegerVector byteorderI(1);
   bool swapit = 0;
 
-  int8_t byteorder = 0;
-  byteorder = readbin(byteorder, file, 0);
+  int8_t byteorder_i = 0;
+  byteorder_i = readbin(byteorder_i, file, 0);
   // 1 = MSF 2 = LSF
-  swapit = std::abs(SBYTEORDER-byteorder);
-  byteorderI(0) = byteorder;
+  swapit = std::abs(SBYTEORDER-byteorder_i);
+  byteorderI(0) = byteorder_i;
+
+  std::string byteorder(3, '\0');
+
+  if (byteorder_i == 1)
+    byteorder = "MSF";
+  else
+    byteorder = "LSF";
 
   // filetype: unknown?
   int8_t ft = 0;
@@ -462,110 +470,8 @@ List read_pre13_dta(FILE * file, const bool missing,
   // skip into the data part
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
-  uint32_t ii = 0;
-  for(uint32_t j=0; j<nn; ++j)
-  {
-    // reset partial index
-    ii = 0;
-    for (uint16_t i=0; i<kk; ++i)
-    {
-      int const type = vartype_sj[i];
-
-
-      switch(((type >0) & (type < 245)) ? STATA_SHORT_STR : type)
-      {
-        // double
-      case STATA_DOUBLE:
-      {
-        double val_d = 0;
-        val_d = readbin(val_d, file, swapit);
-
-        if ((missing == FALSE) & !(val_d == R_NegInf) & ((val_d<STATA_DOUBLE_NA_MIN) | (val_d>STATA_DOUBLE_NA_MAX)) )
-          REAL(VECTOR_ELT(df,ii))[j] = NA_REAL;
-        else
-          REAL(VECTOR_ELT(df,ii))[j] = val_d;
-
-        break;
-      }
-        // float
-      case STATA_FLOAT:
-      {
-        float val_f = 0;
-        val_f = readbin(val_f, file, swapit);
-
-        if ((missing == FALSE) & ((val_f<STATA_FLOAT_NA_MIN) | (val_f>STATA_FLOAT_NA_MAX)) )
-          REAL(VECTOR_ELT(df,ii))[j] = NA_REAL;
-        else
-          REAL(VECTOR_ELT(df,ii))[j] = val_f;
-
-        break;
-      }
-        // long
-      case STATA_INT:
-      {
-        int32_t val_l = 0;
-        val_l = readbin(val_l, file, swapit);
-
-
-        if ((missing == FALSE) & ((val_l<STATA_INT_NA_MIN) | (val_l>STATA_INT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,ii))[j]  = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,ii))[j] = val_l;
-
-        break;
-      }
-        // int
-      case STATA_SHORTINT:
-      {
-        int16_t val_i = 0;
-        val_i = readbin(val_i, file, swapit);
-
-        if ((missing == FALSE) & ((val_i<STATA_SHORTINT_NA_MIN) | (val_i>STATA_SHORTINT_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,ii))[j] = val_i;
-
-        break;
-      }
-        // byte
-      case STATA_BYTE:
-      {
-        int8_t val_b = 0;
-        val_b = readbin(val_b, file, swapit);
-
-        if ((missing == FALSE) & ( (val_b<STATA_BYTE_NA_MIN) | (val_b>STATA_BYTE_NA_MAX)) )
-          INTEGER(VECTOR_ELT(df,ii))[j] = NA_INTEGER;
-        else
-          INTEGER(VECTOR_ELT(df,ii))[j] = val_b;
-
-        break;
-      }
-        // strings with 244 or fewer characters
-      case STATA_SHORT_STR:
-      {
-        int32_t len = 0;
-        len = vartype[i];
-        std::string val_s (len, '\0');
-
-        readstring(val_s, file, val_s.size());
-
-        as<CharacterVector>(df[ii])[j] = val_s;
-
-        break;
-      }
-        // case < 0:
-      default:
-      {
-        // skip to the next valid case
-        fseeko64(file, abs(type), SEEK_CUR);
-        break;
-      }
-      }
-
-      if (type >= 0) ii += 1;
-      checkUserInterrupt();
-    }
-  }
+  df = read_data(file, df, missing, release, nn, kk,
+                 vartype_sj, byteorder, swapit);
 
   // skip to end of data part
   fseeko64(file, rlength * (n - nmax -1), SEEK_CUR);

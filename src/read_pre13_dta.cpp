@@ -75,6 +75,7 @@ List read_pre13_dta(FILE * file, const bool missing,
     break;
   case 107:
   case 108:
+    chlen = 9;
     nvarnameslen = 9;
     nformatslen = 12;
     nvalLabelslen = 9;

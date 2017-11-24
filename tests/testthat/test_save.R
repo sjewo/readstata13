@@ -872,3 +872,91 @@ test_that("select.cols = c('disp', 'drat')", {
 })
 
 # rm(list = files)
+
+
+#### expansion.fields ####
+
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+dd <- mtcars
+
+# create expansion.fields: In stata use command notes: They are constructed as
+# follows:
+#
+# 1. on what is the note : can be _dta or a variable name
+# 2. string "note" + number of note
+# 3. the note
+
+# initializiation of a one line note on a dta-file is done using: Ordering does
+# not matter:
+#
+# line1: _dta note0 1
+#
+# line2: _dta note1 a note attached to the dta
+
+ef <- list(
+  c("_dta", "note1", "note written in R"),
+  c("_dta", "note0", "1"),
+  c("mpg", "note1", "Miles/(US) gallon"),
+  c("mpg", "note0", "1")
+)
+
+attr(dd, "expansion.fields") <- ef
+
+save.dta13(dd, "data/dta_119.dta", version = 119)
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+save.dta13(dd, "data/dta_115.dta", version = 115)
+save.dta13(dd, "data/dta_114.dta", version = 114)
+save.dta13(dd, "data/dta_113.dta", version = 113)
+save.dta13(dd, "data/dta_112.dta", version = 112)
+save.dta13(dd, "data/dta_111.dta", version = 111)
+save.dta13(dd, "data/dta_110.dta", version = 110)
+save.dta13(dd, "data/dta_108.dta", version = 108)
+save.dta13(dd, "data/dta_107.dta", version = 107)
+save.dta13(dd, "data/dta_106.dta", version = 106)
+save.dta13(dd, "data/dta_105.dta", version = 105)
+# save.dta13(dd, "data/dta_104.dta", version = 104)
+# save.dta13(dd, "data/dta_103.dta", version = 103)
+# save.dta13(dd, "data/dta_102.dta", version = 102)
+
+dd119 <- attr(read.dta13("data/dta_119.dta"), "expansion.fields")
+dd118 <- attr(read.dta13("data/dta_118.dta"), "expansion.fields")
+dd117 <- attr(read.dta13("data/dta_117.dta"), "expansion.fields")
+dd115 <- attr(read.dta13("data/dta_115.dta"), "expansion.fields")
+dd114 <- attr(read.dta13("data/dta_114.dta"), "expansion.fields")
+dd113 <- attr(read.dta13("data/dta_113.dta"), "expansion.fields")
+dd112 <- attr(read.dta13("data/dta_112.dta"), "expansion.fields")
+dd111 <- attr(read.dta13("data/dta_111.dta"), "expansion.fields")
+dd110 <- attr(read.dta13("data/dta_110.dta"), "expansion.fields")
+dd108 <- attr(read.dta13("data/dta_108.dta"), "expansion.fields")
+dd107 <- attr(read.dta13("data/dta_107.dta"), "expansion.fields")
+dd106 <- attr(read.dta13("data/dta_106.dta"), "expansion.fields")
+dd105 <- attr(read.dta13("data/dta_105.dta"), "expansion.fields")
+# dd104 <- read.dta13("data/dta_104.dta")
+# dd103 <- read.dta13("data/dta_103.dta")
+# dd102 <- read.dta13("data/dta_102.dta")
+
+unlink("data", recursive = TRUE)
+
+test_that("expansinon.fields", {
+  # check numerics
+  expect_equal(ef, dd119)
+  expect_equal(ef, dd118)
+  expect_equal(ef, dd117)
+  expect_equal(ef, dd115)
+  expect_equal(ef, dd114)
+  expect_equal(ef, dd113)
+  expect_equal(ef, dd112)
+  expect_equal(ef, dd111)
+  expect_equal(ef, dd110)
+  expect_equal(ef, dd108)
+  expect_equal(ef, dd107)
+  expect_equal(ef, dd106)
+  expect_equal(ef, dd105)
+  # expect_equal(ef, dd104)
+  # expect_equal(ef, dd103)
+  # expect_equal(ef, dd102)
+})

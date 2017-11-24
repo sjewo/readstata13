@@ -36,7 +36,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   versionIV(0) = release;
 
   /*
-  * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
+  * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-endian.
   */
 
   uint16_t ndlabel = 81;
@@ -66,6 +66,7 @@ List read_pre13_dta(FILE * file, const bool missing,
     break;
   case 105:
   case 106:
+    chlen = 9;
     ndlabel = 32;
     nvarnameslen = 9;
     nformatslen = 12;
@@ -75,6 +76,7 @@ List read_pre13_dta(FILE * file, const bool missing,
     break;
   case 107:
   case 108:
+    chlen = 9;
     nvarnameslen = 9;
     nformatslen = 12;
     nvalLabelslen = 9;
@@ -98,7 +100,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   swapit = std::abs(SBYTEORDER-byteorder);
   byteorderI(0) = byteorder;
 
-  // filetype: unnown?
+  // filetype: unknown?
   int8_t ft = 0;
   ft = readbin(ft, file, swapit);
 
@@ -251,7 +253,7 @@ List read_pre13_dta(FILE * file, const bool missing,
 
   /*
   * sortlist. Stata stores the information which variable of a dataset was
-  * sorted. Depending on byteorder sortlist is written different. Currently we
+  * sorted. Depending on byteorder sortlist is written differently. Currently we
   * do not use this information.
   * Vector size is k+1.
   */
@@ -356,7 +358,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   * data. First a list is created with vectors. The vector type is defined by
   * vartype. Stata stores data columnwise so we loop over it and store the
   * data in the list of the first step. Third variable- and row-names are
-  * attatched and the list type is changed to data.frame.
+  * attached and the list type is changed to data.frame.
   */
 
   /* replace vartypes of Stata 8 - 12 with Stata 13 values. */
@@ -383,7 +385,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   if (n < nmin)
     nmin = n;
 
-  // sequences of colum and row
+  // sequences of column and row
   IntegerVector cvec = seq(0, (k-1));
   IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
@@ -407,7 +409,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   if (selectvars)
     select = choose(selectcols, varnames);
 
-  // separaet selected from not selected cases
+  // separate the selected from the not selected cases
   LogicalVector ll = is_na(select);
   nselect = cvec[ll == 1];
   select = cvec[ll == 0];
@@ -451,7 +453,7 @@ List read_pre13_dta(FILE * file, const bool missing,
     }
   }
 
-  // Use vartype_s to calulate jumpsize
+  // Use vartype_s to calulate jump
   IntegerVector vartype_sj = calc_jump(vartype_s);
   kk = vartype_sj.size();
 
@@ -542,7 +544,7 @@ List read_pre13_dta(FILE * file, const bool missing,
       case STATA_SHORT_STR:
       {
         int32_t len = 0;
-        len = vartype[i];
+        len = vartype_sj[i];
         std::string val_s (len, '\0');
 
         readstring(val_s, file, val_s.size());
@@ -574,7 +576,7 @@ List read_pre13_dta(FILE * file, const bool missing,
   df.attr("class") = "data.frame";
 
   /*
-  * labels are seperated by <lbl>-tags. Labels may appear in any order e.g.
+  * labels are separated by <lbl>-tags. Labels may appear in any order e.g.
   * 2 "female" 1 "male 9 "missing". They are stored as tables.
   * nlen:     length of label.
   * nlabname: label name.
@@ -637,7 +639,7 @@ List read_pre13_dta(FILE * file, const bool missing,
       // sort offsets so we can read labels sequentially
       std::sort(off.begin(), off.end());
 
-      // create an index to sort lables along the code values
+      // create an index to sort labels along the code values
       // this is done while factor creation
       IntegerVector indx(labn);
       indx = match(laborder,labordersort);

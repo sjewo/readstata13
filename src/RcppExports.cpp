@@ -5,18 +5,6 @@
 
 using namespace Rcpp;
 
-// stata_pre13_save
-int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat);
-RcppExport SEXP _readstata13_stata_pre13_save(SEXP filePathSEXP, SEXP datSEXP) {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
-    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP);
-    rcpp_result_gen = Rcpp::wrap(stata_pre13_save(filePath, dat));
-    return rcpp_result_gen;
-END_RCPP
-}
 // stata_read
 List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows, const CharacterVector selectcols);
 RcppExport SEXP _readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcolsSEXP) {
@@ -43,11 +31,23 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// stata_pre13_save
+int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat);
+RcppExport SEXP _readstata13_stata_pre13_save(SEXP filePathSEXP, SEXP datSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
+    Rcpp::traits::input_parameter< Rcpp::DataFrame >::type dat(datSEXP);
+    rcpp_result_gen = Rcpp::wrap(stata_pre13_save(filePath, dat));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_readstata13_stata_pre13_save", (DL_FUNC) &_readstata13_stata_pre13_save, 2},
     {"_readstata13_stata_read", (DL_FUNC) &_readstata13_stata_read, 4},
     {"_readstata13_stata_save", (DL_FUNC) &_readstata13_stata_save, 2},
+    {"_readstata13_stata_pre13_save", (DL_FUNC) &_readstata13_stata_pre13_save, 2},
     {NULL, NULL, 0}
 };
 

@@ -9,18 +9,22 @@ get.label.name(dat, var.name = NULL, lang = NA)
 \arguments{
 \item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
-\item{var.name}{\emph{character vector.} Variable names. If \code{NULL}, get names of all label sets.}
+\item{var.name}{\emph{character vector.} Variable names. If \code{NULL}, get
+names of all label sets.}
 
-\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by
+\code{\link{get.lang}} is used if NA}
 }
 \value{
 Returns an named vector of variable labels
 }
 \description{
-Retrieves the Stata label set in the dataset for all or an vector of variable names.
+Retrieves the Stata label set in the dataset for all or an vector of variable
+names.
 }
 \details{
-Stata stores factor labels in variable independent labels sets.  This function retrieves the name of the label set for a variable.
+Stata stores factor labels in variable independent labels sets. This
+ function retrieves the name of the label set for a variable.
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

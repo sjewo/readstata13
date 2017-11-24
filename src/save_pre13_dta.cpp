@@ -47,7 +47,6 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
   List varLabels = dat.attr("var.labels");
   List vartypes = dat.attr("types");
 
-
   int8_t version = as<int>(dat.attr("version"));
 
 
@@ -85,6 +84,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       break;
     case 105:
     case 106:// unknown version (SE?)
+      chlen = 9;
       ndlabel = 32;
       nvarnameslen = 9;
       nformatslen = 12;
@@ -93,6 +93,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       break;
     case 107: // unknown version (SE?)
     case 108:
+      chlen = 9;
       nvarnameslen = 9;
       nformatslen = 12;
       nvalLabelslen = 9;
@@ -245,8 +246,8 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       int8_t datatype = 0;
       uint32_t len = 0;
 
-      if (chs.size()>0){
-        for (int32_t i = 0; i<chs.size(); ++i){
+      if (chs.size()>0) {
+        for (int32_t i = 0; i<chs.size(); ++i) {
 
           CharacterVector ch = as<CharacterVector>(chs[i]);
 

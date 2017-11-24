@@ -81,7 +81,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   test("<byteorder>", file);
 
   /*
-  * byteorder is a 4 byte character e.g. "LSF". MSF referes to big-memory data.
+  * byteorder is a 4 byte character e.g. "LSF". MSF refers to big-endian.
   */
 
   std::string byteorder(3, '\0');
@@ -137,10 +137,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   uint16_t ndlabel = 0;
 
-  if ((release == 118) | (release == 119))
-    ndlabel = readbin(ndlabel, file, swapit);
   if (release == 117)
     ndlabel = readbin((int8_t)ndlabel, file, swapit);
+  if ((release == 118) | (release == 119))
+    ndlabel = readbin(ndlabel, file, swapit);
 
   std::string datalabel(ndlabel, '\0');
 
@@ -255,7 +255,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   /*
   * sortlist. Stata stores the information which variable of a dataset was
-  * sorted. Depending on byteorder sortlist is written different. Currently we
+  * sorted. Depending on byteorder sortlist is written differently. Currently we
   * do not use this information.
   * Vector size is k+1.
   */
@@ -332,7 +332,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   * characteristics. Stata can store additional information this way. It may
   * contain notes (for the dataset or a variable) or about label language sets.
   * Characteristics are not documented. We export them as attribute:
-  * expansion.fields. Characteristics are seperated by <ch> tags. Each <ch> has:
+  * expansion.fields. Characteristics are separated by <ch> tags. Each <ch> has:
   * nocharacter:  length of the characteristics
   * chvarname:    varname (binary 0 terminated)
   * chcharact:    characteristicsname (binary 0 terminated)
@@ -384,7 +384,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   * data. First a list is created with vectors. The vector type is defined by
   * vartype. Stata stores data columnwise so we loop over it and store the
   * data in the list of the first step. Third variable- and row-names are
-  * attatched and the list type is changed to data.frame.
+  * attached and the list type is changed to data.frame.
   */
 
   uint64_t nmin = selectrows(0), nmax = selectrows(1);
@@ -402,7 +402,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   if (n < nmin)
     nmin = n;
 
-  // sequences of colum and row
+  // sequences of column and row
   IntegerVector cvec = seq(0, (k-1));
   IntegerVector rvec = seq(nmin, nmax);
   nn = rvec.size();
@@ -426,7 +426,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   if (selectvars)
     select = choose(selectcols, varnames);
 
-  // separaet selected from not selected cases
+ // separate the selected from the not selected cases
   LogicalVector ll = is_na(select);
   nselect = cvec[ll == 1];
   select = cvec[ll == 0];
@@ -469,7 +469,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     }
   }
 
-  // Use vartype_s to calulate jumpsize
+  // Use vartype_s to calculate jump
   IntegerVector vartype_sj = calc_jump(vartype_s);
   kk = vartype_sj.size();
 
@@ -479,7 +479,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
   uint32_t ii = 0;
-  for(uint64_t j=0; j<nn; ++j)
+  for (uint64_t j=0; j<nn; ++j)
   {
     // reset partial index
     ii = 0;
@@ -558,7 +558,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
       case STATA_STR:
       {
         int32_t len = 0;
-        len = vartype[i];
+        len = vartype_sj[i];
         std::string val_s (len, '\0');
 
         readstring(val_s, file, val_s.size());
@@ -673,8 +673,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   test("<strls>", file);
 
   /*
-  * strL. Stata 13 introduced long strings up to 2 billon characters. strLs are
-  * sperated by "GSO".
+  * strL. Stata 13 introduced long strings up to 2 billion characters. strLs are
+  * separated by "GSO".
   * (v,o): Position in the data.frame.
   * t:     129/130 defines whether or not the strL is stored with a binary 0.
   * len:   length of the strL.
@@ -690,7 +690,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   CharacterVector strlvalues(0);
   CharacterVector strlnames(0);
 
-  while(gso.compare(tags)==0)
+  while (gso.compare(tags)==0)
   {
     CharacterVector strls(2);
     string ref;
@@ -728,16 +728,18 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     }
     }
 
-    // (129 = binary) | (130 = ascii)
+    // (129 = binary) | (130 = ascii) Note:
+    // if 130 full len contains the string. if 130 len includes trailing \0.
+    // that does not affect us. we read the full len, and if \0 occurs R
+    // will print only the string up to that position. we write 129
     uint8_t t = 0;
     t = readbin(t, file, swapit);
 
     uint32_t len = 0;
     len = readbin(len, file, swapit);
 
-    // 129 len = len; 130 len = len +'\0';
-
     std::string strl(len, '\0');
+
     readstring(strl, file, strl.size());
 
     strlvalues.push_back( strl );
@@ -755,7 +757,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   test("<value_labels>", file);
 
   /*
-  * labels are seperated by <lbl>-tags. Labels may appear in any order e.g.
+  * labels are separated by <lbl>-tags. Labels may appear in any order e.g.
   * 2 "female" 1 "male 9 "missing". They are stored as tables.
   * nlen:     length of label.
   * nlabname: label name.
@@ -771,7 +773,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   List labelList = List(); //put labels into this list
 
-  while(lbltag.compare(tag)==0)
+  while (lbltag.compare(tag)==0)
   {
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
 

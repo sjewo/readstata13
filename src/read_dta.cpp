@@ -137,10 +137,10 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   uint16_t ndlabel = 0;
 
-  if ((release == 118) | (release == 119))
-    ndlabel = readbin(ndlabel, file, swapit);
   if (release == 117)
     ndlabel = readbin((int8_t)ndlabel, file, swapit);
+  if ((release == 118) | (release == 119))
+    ndlabel = readbin(ndlabel, file, swapit);
 
   std::string datalabel(ndlabel, '\0');
 
@@ -479,7 +479,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   fseeko64(file, rlength * nmin, SEEK_CUR);
 
   uint32_t ii = 0;
-  for(uint64_t j=0; j<nn; ++j)
+  for (uint64_t j=0; j<nn; ++j)
   {
     // reset partial index
     ii = 0;
@@ -690,7 +690,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   CharacterVector strlvalues(0);
   CharacterVector strlnames(0);
 
-  while(gso.compare(tags)==0)
+  while (gso.compare(tags)==0)
   {
     CharacterVector strls(2);
     string ref;
@@ -773,7 +773,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   List labelList = List(); //put labels into this list
 
-  while(lbltag.compare(tag)==0)
+  while (lbltag.compare(tag)==0)
   {
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
 

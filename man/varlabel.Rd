@@ -13,9 +13,11 @@ varlabel(dat) <- value
 \arguments{
 \item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
-\item{var.name}{\emph{character vector.} Variable names. If NULL, get label for all variables.}
+\item{var.name}{\emph{character vector.} Variable names. If NULL, get label
+for all variables.}
 
-\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by
+\code{\link{get.lang}} is used if NA}
 
 \item{value}{\emph{character vector.} Vector of variable names.}
 }

@@ -9,7 +9,8 @@ get.lang(dat, print = T)
 \arguments{
 \item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
-\item{print}{\emph{logical.} If \code{TRUE}, print available languages and default language.}
+\item{print}{\emph{logical.} If \code{TRUE}, print available languages and
+default language.}
 }
 \value{
 Returns a list with two components:
@@ -22,8 +23,9 @@ Returns a list with two components:
 Displays informations about the defined label languages.
 }
 \details{
-Stata allows to define multiple label sets in different languages. This functions reports the
-available languages and the selected default language.
+Stata allows to define multiple label sets in different languages.
+ This functions reports the available languages and the selected default
+ language.
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

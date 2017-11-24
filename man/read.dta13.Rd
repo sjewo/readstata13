@@ -17,14 +17,15 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
 value labels are created.}
 
 \item{generate.factors}{\emph{logical.} If \code{TRUE} and convert.factors is
-TRUE, missing factor labels are created from integers. If duplicated labels are found,
-unique labels will be generated according the following scheme: "label_(integer code)".}
+TRUE, missing factor labels are created from integers. If duplicated labels
+are found, unique labels will be generated according the following scheme:
+"label_(integer code)".}
 
-\item{encoding}{\emph{character.} Strings can be converted from Windows-1252 or UTF-8
-to system encoding. Options are "latin1" or "UTF-8" to specify target
-encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
- which can't be displayed in the current locale.
- Set encoding=NULL to stop reencoding.}
+\item{encoding}{\emph{character.} Strings can be converted from Windows-1252
+or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
+target encoding explicitly. Stata 14 files are UTF-8 encoded and may contain
+strings which can't be displayed in the current locale.
+Set encoding=NULL to stop reencoding.}
 
 \item{fromEncoding}{\emph{character.} We expect strings to be encoded as
 "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
@@ -71,8 +72,8 @@ The function returns a data.frame with attributes. The attributes
   \item{var.labels:}{Variable labels}
   \item{version:}{dta file format version}
   \item{label.table:}{List of value labels.}
-  \item{strl:}{Character vector with long strings for the new strl string variable
-   type. The name of every element is the identifier.}
+  \item{strl:}{Character vector with long strings for the new strl string
+   variable type. The name of every element is the identifier.}
   \item{expansion.fields:}{list providing variable name, characteristic name
    and the contents of Stata characteristic field.}
   \item{missing:}{List of numeric vectors with Stata missing type for each
@@ -89,8 +90,9 @@ The function returns a data.frame with attributes. The attributes
 If the filename is a url, the file will be downloaded as a temporary
  file and read afterwards.
 
-Stata files are encoded in ansinew. Depending on your system's default encoding
- certain characters may appear wrong. Using a correct encoding may fix these.
+Stata files are encoded in ansinew. Depending on your system's default
+ encoding certain characters may appear wrong. Using a correct encoding may
+ fix these.
 
 Variable names stored in the dta-file will be used in the resulting
  data.frame. Stata types char, byte, and int will become integer; float and
@@ -104,15 +106,15 @@ dates.
 
 Stata 13 introduced a new character type called strL. strLs are able to store
  strings up to 2 billion characters.  While R is able to store
- strings of this size in a character vector, the printed representation of such
- vectors looks rather cluttered, so it's possible to save only a reference in the
- data.frame with option \code{replace.strl=FALSE}.
+ strings of this size in a character vector, the printed representation of
+ such vectors looks rather cluttered, so it's possible to save only a
+ reference in the data.frame with option \code{replace.strl=FALSE}.
 
 In R, you may use rownames to store characters (see for instance
  \code{data(swiss)}). In Stata, this is not possible and rownames have to be
  stored as a variable. If you want to use rownames, set add.rownames to TRUE.
- Then the first variable of the dta-file will hold the rownames of the resulting
- data.frame.
+ Then the first variable of the dta-file will hold the rownames of the
+ resulting data.frame.
 
 Reading dta-files of older and newer versions than 13 was introduced
  with version 0.8.
@@ -126,8 +128,10 @@ Stata Corp (2014): Description of .dta file format
  \url{http://www.stata.com/help.cgi?dta}
 }
 \seealso{
-\code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
+\code{\link[foreign]{read.dta}} in package \code{foreign} and
+ \code{memisc} for dta files from Stata
+versions < 13 and \code{read_dta} in package \code{haven} for Stata version
+ >= 13.
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

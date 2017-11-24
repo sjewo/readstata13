@@ -11,6 +11,6 @@
 #' @useDynLib readstata13, .registration = TRUE
 #' @import Rcpp
 #' @note If you catch a bug, please do not sue us, we do not have any money.
-#' @seealso \code{\link[foreign]{read.dta}} and \code{memisc} for dta files from Stata
-#' Versions < 13
+#' @seealso \code{\link[foreign]{read.dta}} and \code{memisc} for dta files from
+#'  Stata Versions < 13
 NULL

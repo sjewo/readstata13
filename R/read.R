@@ -23,13 +23,14 @@
 #' @param convert.factors \emph{logical.} If \code{TRUE}, factors from Stata
 #'  value labels are created.
 #' @param generate.factors \emph{logical.} If \code{TRUE} and convert.factors is
-#'  TRUE, missing factor labels are created from integers. If duplicated labels are found,
-#'  unique labels will be generated according the following scheme: "label_(integer code)".
-#' @param encoding \emph{character.} Strings can be converted from Windows-1252 or UTF-8
-#'  to system encoding. Options are "latin1" or "UTF-8" to specify target
-#'  encoding explicitly. Stata 14 files are UTF-8 encoded and may contain strings
-#'   which can't be displayed in the current locale.
-#'   Set encoding=NULL to stop reencoding.
+#'  TRUE, missing factor labels are created from integers. If duplicated labels
+#'  are found, unique labels will be generated according the following scheme:
+#'  "label_(integer code)".
+#' @param encoding \emph{character.} Strings can be converted from Windows-1252
+#'  or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
+#'  target encoding explicitly. Stata 14 files are UTF-8 encoded and may contain
+#'  strings which can't be displayed in the current locale.
+#'  Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
 #'  "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
 #'  or newer "UTF-8" is used. In some situation the used encoding can differ for
@@ -56,8 +57,9 @@
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
 #'
-#' Stata files are encoded in ansinew. Depending on your system's default encoding
-#'  certain characters may appear wrong. Using a correct encoding may fix these.
+#' Stata files are encoded in ansinew. Depending on your system's default
+#'  encoding certain characters may appear wrong. Using a correct encoding may
+#'  fix these.
 #'
 #' Variable names stored in the dta-file will be used in the resulting
 #'  data.frame. Stata types char, byte, and int will become integer; float and
@@ -71,15 +73,15 @@
 #'
 #' Stata 13 introduced a new character type called strL. strLs are able to store
 #'  strings up to 2 billion characters.  While R is able to store
-#'  strings of this size in a character vector, the printed representation of such
-#'  vectors looks rather cluttered, so it's possible to save only a reference in the
-#'  data.frame with option \code{replace.strl=FALSE}.
+#'  strings of this size in a character vector, the printed representation of
+#'  such vectors looks rather cluttered, so it's possible to save only a
+#'  reference in the data.frame with option \code{replace.strl=FALSE}.
 #'
 #' In R, you may use rownames to store characters (see for instance
 #'  \code{data(swiss)}). In Stata, this is not possible and rownames have to be
 #'  stored as a variable. If you want to use rownames, set add.rownames to TRUE.
-#'  Then the first variable of the dta-file will hold the rownames of the resulting
-#'  data.frame.
+#'  Then the first variable of the dta-file will hold the rownames of the
+#'  resulting data.frame.
 #'
 #' Reading dta-files of older and newer versions than 13 was introduced
 #'  with version 0.8.
@@ -96,8 +98,8 @@
 #'   \item{var.labels:}{Variable labels}
 #'   \item{version:}{dta file format version}
 #'   \item{label.table:}{List of value labels.}
-#'   \item{strl:}{Character vector with long strings for the new strl string variable
-#'    type. The name of every element is the identifier.}
+#'   \item{strl:}{Character vector with long strings for the new strl string
+#'    variable type. The name of every element is the identifier.}
 #'   \item{expansion.fields:}{list providing variable name, characteristic name
 #'    and the contents of Stata characteristic field.}
 #'   \item{missing:}{List of numeric vectors with Stata missing type for each
@@ -107,8 +109,10 @@
 #' }
 #' @note read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 #'  from foreign::read.dta().
-#' @seealso \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-#' versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
+#' @seealso \code{\link[foreign]{read.dta}} in package \code{foreign} and
+#'  \code{memisc} for dta files from Stata
+#' versions < 13 and \code{read_dta} in package \code{haven} for Stata version
+#'  >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
@@ -356,7 +360,10 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if (labname %in% names(label)) {
         if((vartype == sdouble | vartype == sfloat)) {
           if(!nonint.factors) {
-            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double or float detected - no labels assigned.\n  Set option nonint.factors to TRUE to assign labels anyway.\n"))
+            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double",
+                           "or float detected - no labels assigned.\n  Set",
+                           "option nonint.factors to TRUE to assign labels",
+                           "anyway.\n"))
             next
           }
         }
@@ -368,10 +375,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           #check for duplicated labels
           labcount <- table(names(labtable))
           if(any(labcount > 1)) {
-            warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels detected - generating unique labels.\n"))
+            warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels",
+                           "detected - generating unique labels.\n"))
             labdups <- names(labtable) %in% names(labcount[labcount > 1])
             # generate unique labels from assigned label and code number
-            names(labtable)[labdups] <- paste0(names(labtable)[labdups], "_(", labtable[labdups], ")")
+            names(labtable)[labdups] <- paste0(names(labtable)[labdups],
+                                               "_(", labtable[labdups], ")")
           }
 
           data[, i] <- factor(data[, i], levels=labtable,
@@ -385,7 +394,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                               labels=names(gen.lab))
 
         } else {
-          warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no labels assigned.\n  Set option generate.factors=T to generate labels."))
+          warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no",
+                         "labels assigned.\n  Set option generate.factors=T to",
+                         "generate labels."))
         }
       }
     }

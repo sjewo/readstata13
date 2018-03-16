@@ -216,6 +216,7 @@ get.label <- function(dat, label.name) {
 #' get.label.tables(dat)
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
+#' @importFrom stats setNames
 #' @export
 get.label.tables <- function(dat) {
   varnames <- setNames(names(dat), names(dat))

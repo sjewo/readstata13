@@ -193,6 +193,25 @@ get.label <- function(dat, label.name) {
   return(attr(dat, "label.table")[label.name][[1]])
 }
 
+#' Get all Stata Label Sets for a Data.frame
+#'
+#' Retrieve the value labels for all variables.
+#'
+#' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
+#' @return Returns a named list of label tables
+#' @details This function returns the factor levels which represent
+#'  a Stata label set for all variables.
+#' @examples
+#' dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))
+#' get.label.tables(dat)
+#' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+#' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
+#' @export
+get.label.tables <- function(dat) {
+  varnames <- setNames(names(dat), names(dat))
+  lapply(varnames, function(varname) get.label(dat, get.label.name(dat, varname)))
+}
+
 #' Assign Stata Labels to a Variable
 #'
 #' Assign value labels from a Stata label set to a variable. If duplicated

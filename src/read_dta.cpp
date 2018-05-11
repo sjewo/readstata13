@@ -547,7 +547,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
       std::string path = Rcpp::as<std::string>(strlpath);
       std::string outputpath = path + "/" + ref;
 
-      ofstream file1(outputpath, ios::out | ios::binary);
+      ofstream file1(outputpath.c_str(), ios::out | ios::binary);
       if (file1.good()) {
         file1.write(strl.c_str(), strl.size());
         file1.close();

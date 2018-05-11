@@ -8,7 +8,7 @@ read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
   encoding = "UTF-8", fromEncoding = NULL, convert.underscore = FALSE,
   missing.type = FALSE, convert.dates = TRUE, replace.strl = TRUE,
   add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL,
-  select.cols = NULL)
+  select.cols = NULL, strlexport = FALSE, strlpath = ".")
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
@@ -57,6 +57,11 @@ value rows from 1:val are selected. If two values of a range are selected
 the rows in range will be selected.}
 
 \item{select.cols}{\emph{character:} Vector of variables to select.}
+
+\item{strlexport}{\emph{logical:} Should strl content be exported as binary
+files?}
+
+\item{strlpath}{\emph{cahracter:} Path for strl export.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes

@@ -378,7 +378,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 
         # get old codes
         if (is.factor(dat[, varname])) {
-          oldlabname <- oldlabname_f[oldlabname_f == varname]
+          oldlabname <- oldlabname_f[names(oldlabname_f) == varname]
           oldlabtab <- oldlabtab_f[[names(oldlabname)]]
           codes <- get.origin.codes(dat[,varname], oldlabtab)
           varunique <- na.omit(unique(codes))

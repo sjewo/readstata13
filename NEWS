@@ -2,6 +2,7 @@
 - allow reading only pre-selected variables
 - experimental support for format 119
 - improve partial reading
+- export of binary data from dta-files
 
 [0.9.0]
 - generate unique factor labels to prevent errors in factor definition

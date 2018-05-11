@@ -59,6 +59,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 * [testing] Allow reading only pre-selected variables
 * [testing] Experimental support for format 119
 * [testing] Improvements to partial reading. Idea by Kevin Jin
+* [testing] Export of binary data from dta-files
 * [0.9.0] Generate unique factor labels to prevent errors in factor definition
 * [0.9.0] check interrupt for long read. Patch by Giovanni Righi
 * [0.9.0] updates to notes, roxygen and register

@@ -369,8 +369,8 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     oldlabname_f <- get.label.name(dat)
     oldlabtab_f <- lapply(oldlabname_f, function(x) get.label(dat, x))
 
-    for (i in seq_along(val.labels)) {
-      if (val.labels[i]!="") {
+    for (i in which(val.labels != "")) {
+
         labname <- val.labels[i]
         vartype <- types[i]
         labtable <- label[[labname]]
@@ -407,7 +407,6 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
         }
 
         setTxtProgressBar(pb, i)
-        }
     }
     close(pb)
 

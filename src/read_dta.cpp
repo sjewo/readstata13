@@ -552,7 +552,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
         file1.write(strl.c_str(), strl.size());
         file1.close();
       } else {
-        std::cout << "file error write" << endl;
+        Rcpp::Rcout << "strl export failed" << std::endl;
       }
 
     }

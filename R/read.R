@@ -53,6 +53,9 @@
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
 #' @param select.cols \emph{character:} Vector of variables to select.
+#' @param strlexport \emph{logical:} Should strl content be exported as binary
+#'  files?
+#' @param strlpath \emph{cahracter:} Path for strl export.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -126,7 +129,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE,
-                       select.rows = NULL, select.cols = NULL) {
+                       select.rows = NULL, select.cols = NULL,
+                       strlexport = FALSE, strlpath = ".") {
+
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -176,7 +181,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     select.cols <- ""
   }
 
-  data <- stata_read(filepath, missing.type, select.rows, select.cols)
+  data <- stata_read(filepath, missing.type, select.rows, select.cols,
+                     strlexport, strlpath)
 
   version <- attr(data, "version")
 

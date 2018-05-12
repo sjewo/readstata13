@@ -22,7 +22,9 @@ using namespace Rcpp;
 using namespace std;
 
 List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
-              const CharacterVector selectcols) {
+              const CharacterVector selectcols,
+              const bool strlexport, const CharacterVector strlpath)
+{
   // stata_dta><header>
   test("stata_dta><header>", file);
   test("<release>", file);
@@ -427,7 +429,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   if (selectvars)
     select = choose(selectcols, varnames);
 
- // separate the selected from the not selected cases
+  // separate the selected from the not selected cases
   LogicalVector ll = is_na(select);
   nselect = cvec[ll == 1];
   select = cvec[ll == 0];
@@ -538,6 +540,22 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     std::string strl(len, '\0');
 
     readstring(strl, file, strl.size());
+
+    // write strl to file. Stata allows binary files in strls
+    if (strlexport) {
+
+      std::string path = Rcpp::as<std::string>(strlpath);
+      std::string outputpath = path + "/" + ref;
+
+      ofstream file1(outputpath.c_str(), ios::out | ios::binary);
+      if (file1.good()) {
+        file1.write(strl.c_str(), strl.size());
+        file1.close();
+      } else {
+        Rcpp::Rcout << "strl export failed" << std::endl;
+      }
+
+    }
 
     strlvalues.push_back( strl );
     strlnames.push_back( ref );
@@ -653,9 +671,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   }
 
   /*
-  * Final test if we reached the end of the file
-  * close the file
-  */
+   * Final test if we reached the end of the file
+   * close the file
+   */
 
   // [</val]ue_labels>
   test("ue_labels>", file);

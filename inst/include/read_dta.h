@@ -20,6 +20,8 @@
 
 Rcpp::List read_dta(FILE * file, const bool missing,
                     const Rcpp::IntegerVector selectrows,
-                    const Rcpp::CharacterVector selectcols);
+                    const Rcpp::CharacterVector selectcols,
+                    const bool strlexport,
+                    const Rcpp::CharacterVector strlpath);
 
 #endif

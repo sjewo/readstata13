@@ -365,8 +365,12 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     cat("Replacing value labels. This might take some time...\n")
     pb <- txtProgressBar(min=1,max=length(val.labels)+1)
 
-    for (i in seq_along(val.labels)) {
-      if (val.labels[i]!="") {
+
+    oldlabname_f <- get.label.name(dat)
+    oldlabtab_f <- lapply(oldlabname_f, function(x) get.label(dat, x))
+
+    for (i in which(val.labels != "")) {
+
         labname <- val.labels[i]
         vartype <- types[i]
         labtable <- label[[labname]]
@@ -374,8 +378,8 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 
         # get old codes
         if (is.factor(dat[, varname])) {
-          oldlabname <- get.label.name(dat, varname)
-          oldlabtab <- get.label(dat, oldlabname)
+          oldlabname <- oldlabname_f[names(oldlabname_f) == varname]
+          oldlabtab <- oldlabtab_f[[names(oldlabname)]]
           codes <- get.origin.codes(dat[,varname], oldlabtab)
           varunique <- na.omit(unique(codes))
         } else {
@@ -403,7 +407,6 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
         }
 
         setTxtProgressBar(pb, i)
-        }
     }
     close(pb)
 

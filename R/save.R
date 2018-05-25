@@ -39,7 +39,9 @@
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will
 #'  use all of Statas numeric-vartypes.
 #' @param version \emph{numeric.} Stata format for the resulting dta-file either
-#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 15.
+#'  Stata version number (6 - 15) or the internal Stata dta-format (e.g. 117 for Stata 13). 
+#'  Experimental support for large datasets: Use version="15mp" to save the dataset
+#'  in the new Stata 15/MP file format. This feature is not thoroughly tested yet.
 #' @return The function writes a dta-file to disk. The following features of the
 #'  dta file format are supported:
 #' \describe{
@@ -76,8 +78,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     stop("Path is invalid. Possibly a non-existing directory.")
 
   # Allow writing version as Stata version not Stata format
-  if (version==15L)
+  if (version=="15mp")
     version <- 119
+  if (version==15L)
+    version <- 118
   if (version==14L)
     version <- 118
   if (version==13L)
@@ -92,6 +96,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     version <- 110
   if (version==6)
     version <- 108
+
+  if (version == 119)
+    message("Support for Stata 15/MP (119) format is experimental and not thoroughly tested.")
 
   if (version<102 | version == 109 | version == 116 | version>119)
     stop("Version mismatch abort execution. No Data was saved.")

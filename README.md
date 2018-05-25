@@ -1,7 +1,7 @@
 # readstata13
 
 Package to read and write all Stata file formats (version 15 and older) into a
-R data.frame. The dta file format versions 102 to 119 are supported.
+R data.frame. The dta file format versions 102 to 118 are supported.
 
 The function ```read.dta``` from the foreign package imports only dta files from
 Stata versions <= 12. Due to the different structure and features of dta 117

@@ -40,6 +40,7 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_15mp.dta", version = "15mp")
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -57,6 +58,7 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd15mp<- read.dta13("data/dta_15mp.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -78,6 +80,7 @@ dd102 <- read.dta13("data/dta_102.dta")
 unlink("data", recursive = TRUE)
 
 test_that("version", {
+  expect_true(datacompare(dd, dd15mp))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))

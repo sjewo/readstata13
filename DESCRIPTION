@@ -6,7 +6,7 @@ Authors@R: c(
     person("Jan Marvin", "Garbuszus",
     email = "jan.garbuszus@ruhr-uni-bochum.de", role = c("aut")),
     person("Sebastian", "Jeworutzki",
-    email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = c("aut", "cre")),
+    email="Sebastian.Jeworutzki@ruhr-uni-bochum.de", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-2671-5253")),
     person("R Core Team", role="cph"),
     person("Magnus Thor", "Torfason", role="ctb"),
     person("Luke M.", "Olson", role="ctb"),

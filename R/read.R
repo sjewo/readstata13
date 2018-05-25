@@ -398,6 +398,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
           data[, i] <- factor(data[, i], levels=gen.lab,
                               labels=names(gen.lab))
+          
+          # add generated labels to label.table
+          gen.lab.name <- paste0("gen_",vnames[i])
+          attr(data, "label.table")[[gen.lab.name]] <- gen.lab 
+          attr(data, "val.labels")[i] <- gen.lab.name
 
         } else {
           warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no ",

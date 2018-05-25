@@ -400,7 +400,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
           names(varunique) <- as.character(varunique)
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-          dat[,varname] <- factor(dat[,varname], levels=gen.lab,
+          dat[,varname] <- factor(codes, levels=gen.lab,
                                   labels=names(gen.lab))
         } else {
           warning(paste(vnames[i], "Missing factor labels - no labels assigned.

@@ -227,7 +227,7 @@ get.label.tables <- function(dat) {
 #'
 #' Assign value labels from a Stata label set to a variable. If duplicated
 #'  labels are found, unique labels will be generated according the following
-#'  scheme: "label_(integer code)".
+#'  scheme: "label_(integer code)". Levels without labels will become <NA>.
 #'
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param var.name \emph{character.} Name of the variable in the data.frame
@@ -328,7 +328,8 @@ varlabel <- function(dat, var.name=NULL, lang=NA) {
 
 #' Assign Stata Language Labels
 #'
-#' Changes default label language for a dataset.
+#' Changes default label language for a dataset. 
+#' Variables with generated labels (option generate.labels=TRUE) are kept unchanged.
 #'
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
 #' @param lang \emph{character.} Label language. Default language defined by

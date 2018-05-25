@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.9.0")
+devtools::install_github("sjewo/readstata13", ref="0.9.1")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.9.0")
+install_github("readstata13", username="sjewo", ref="0.9.1")
 ```
 
 To install the current development version from github:
@@ -56,10 +56,14 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 ### Working features
-* [testing] Allow reading only pre-selected variables
-* [testing] Experimental support for format 119
-* [testing] Improvements to partial reading. Idea by Kevin Jin
-* [testing] Export of binary data from dta-files
+
+* [0.9.1] Allow reading only pre-selected variables
+* [0.9.1] Experimental support for format 119
+* [0.9.1] Improvements to partial reading. Idea by Kevin Jin
+* [0.9.1] Export of binary data from dta-files
+* [0.9.1] new function get.label.tables() to show all Stata label sets
+* [0.9.1] fix check for duplicate labels
+
 * [0.9.0] Generate unique factor labels to prevent errors in factor definition
 * [0.9.0] check interrupt for long read. Patch by Giovanni Righi
 * [0.9.0] updates to notes, roxygen and register
@@ -67,22 +71,28 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 * [0.9.0] fix saving characters containing missings. Bug reported by Eivind H. Olsen
 * [0.9.0] adjustments to convert.underscore. Patch by luke-m-olson
 * [0.9.0] alow partial reading of selected rows
+
 * [0.8.5] fix errors on big-endians systems
+
 * [0.8.4] fix valgrind errors. converting from dta.write to writestr
 * [0.8.4] fix for empty data label
 * [0.8.4] make replace.strl default
+
 * [0.8.3] restrict length of varnames to 32 chars for compatibility with Stata 14
 * [0.8.3] add many function tests
 * [0.8.3] avoid converting of double to floats while writing compressed files
+
 * [0.8.2] save NA values in character vector as empty string
 * [0.8.2] convert.underscore=T will convert all non-literal characters to underscores
 * [0.8.2] fix saving of Dates
 * [0.8.2] save with convert.factors by default
 * [0.8.2] test for NaN and inf values while writing missing values and replace with NA
 * [0.8.2] remove message about saving factors
+
 * [0.8.1] convert non-integer variables to factors (```nonint.factors=T```) 
 * [0.8.1] handle large datasets
 * [0.8.1] working with strL variables is now a lot faster
+
 * reading data files from disk or url and create a data.frame
 * saving dta files to disk - most features of the dta file format are supported
 * assign variable names

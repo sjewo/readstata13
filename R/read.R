@@ -157,11 +157,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if (any(select.rows < 0) )
         select.rows <- abs(select.rows)
 
-      # check that lenght is not > 2
+      # check that length is not > 2
       if (length(select.rows) > 2)
         return(message("select.rows must be of length 1 or 2."))
 
-      # if lenght 1 start at row 1
+      # if length 1 start at row 1
       if (length(select.rows) == 1)
         select.rows <- c(1, select.rows)
     }

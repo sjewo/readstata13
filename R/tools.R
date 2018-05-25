@@ -387,8 +387,8 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
           varunique <- na.omit(unique(dat[,varname]))
         }
 
-        if (labname %in% names(label) & vartype > 65527 &
-           is.factor(dat[,varname])) {
+        if (labname %in% names(label) & is.factor(dat[,varname])) {
+                     
           # assign label if label set is complete
           if (all(varunique %in% labtable)) {
 

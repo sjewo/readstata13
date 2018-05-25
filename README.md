@@ -64,7 +64,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 | 0.9.1   | Improvements to partial reading. Idea by Kevin Jin                            |
 | 0.9.1   | Export of binary data from dta-files                                          |
 | 0.9.1   | new function get.label.tables() to show all Stata label sets                  |
-| 0.9.1   | fix check for duplicate labels                                                |
+| 0.9.1   | fix check for duplicate labels and in set.lang()                              |
 |         |
 | 0.9.0   | Generate unique factor labels to prevent errors in factor definition          |
 | 0.9.0   | check interrupt for long read. Patch by Giovanni Righi                        |

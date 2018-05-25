@@ -23,7 +23,7 @@ are found, unique labels will be generated according the following scheme:
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252
 or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
-target encoding explicitly. Stata 14 files are UTF-8 encoded and may contain
+target encoding explicitly. Stata 14 and 15 files are UTF-8 encoded and may contain
 strings which can't be displayed in the current locale.
 Set encoding=NULL to stop reencoding.}
 

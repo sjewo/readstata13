@@ -11,17 +11,20 @@ set.label(dat, var.name, lang = NA)
 
 \item{var.name}{\emph{character.} Name of the variable in the data.frame}
 
-\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by
+\code{\link{get.lang}} is used if NA}
 }
 \value{
 Returns a labeled factor
 }
 \description{
-Assign value labels from a Stata label set to a variable. If duplicated labels are found, 
-unique labels will be generated according the following scheme: "label_(integer code)".
+Assign value labels from a Stata label set to a variable. If duplicated
+ labels are found, unique labels will be generated according the following
+ scheme: "label_(integer code)". Levels without labels will become <NA>.
 }
 \examples{
-dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"), convert.factors=FALSE)
+dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"),
+                  convert.factors=FALSE)
 
 # compare vectors
 set.label(dat, "type")

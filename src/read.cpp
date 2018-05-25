@@ -27,7 +27,9 @@ using namespace Rcpp;
 // @export
 // [[Rcpp::export]]
 List stata_read(const char * filePath, const bool missing,
-                const IntegerVector selectrows)
+                const IntegerVector selectrows,
+                const CharacterVector selectcols,
+                const bool strlexport, const CharacterVector strlpath)
 {
   FILE *file = NULL;    // File pointer
 
@@ -53,9 +55,10 @@ List stata_read(const char * filePath, const bool missing,
   List df(0);
 
   if (fbit.compare(expfbit) == 0)
-    df = read_dta(file, missing, selectrows);
+    df = read_dta(file, missing, selectrows, selectcols,
+                  strlexport, strlpath);
   else
-    df = read_pre13_dta(file, missing, selectrows);
+    df = read_pre13_dta(file, missing, selectrows, selectcols);
 
   fclose(file);
 

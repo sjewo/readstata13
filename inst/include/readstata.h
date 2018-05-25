@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -30,12 +30,12 @@
 
 /* Test for GCC < 4.9.0 */
 #if GCC_VERSION < 40900 & !__clang__
-    typedef signed char int8_t;
-    typedef unsigned char uint8_t;
-    typedef signed short int16_t;
-    typedef unsigned short uint16_t;
-    typedef signed int int32_t;
-    typedef unsigned int uint32_t;
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef signed short int16_t;
+typedef unsigned short uint16_t;
+typedef signed int int32_t;
+typedef unsigned int uint32_t;
 #else
 #include <stdint.h>
 #endif
@@ -123,6 +123,117 @@ static void writestr(std::string val_s, T len, std::fstream& dta)
 
   dta.write(val_strl.c_str(),val_strl.length());
 
+}
+
+inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
+
+  uint32_t k = vartype.size();
+
+  Rcpp::IntegerVector rlen(k);
+  // calculate row length in byte
+  for (uint32_t i=0; i<k; ++i)
+  {
+    int const type = vartype[i];
+    switch(type)
+    {
+    case STATA_DOUBLE:
+      rlen(i) = 8;
+      break;
+    case STATA_FLOAT:
+    case STATA_INT:
+      rlen(i) = 4;
+      break;
+    case STATA_SHORTINT:
+      rlen(i) = 2;
+      break;
+    case STATA_BYTE:
+      rlen(i) = 1;
+      break;
+    case STATA_STRL:
+      rlen(i) = 8;
+      break;
+    default:
+      rlen(i) = type;
+    break;
+    }
+  }
+
+  return(rlen);
+}
+
+// return only the matched positions. Either Rcpps in() can't handle Character-
+// Vectors or I could not make it work. Wanted to select the selected varname
+// position from the varnames vector.
+inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
+                                  Rcpp::CharacterVector y)
+{
+  // ToDo: Maybe we can skip the select and nselect in read_dta.cpp if we match
+  // the other way around and use Rcpp::is_na on the result which then could be
+  // used as an additional index
+  Rcpp::IntegerVector mm = Rcpp::match(x, y);
+
+  if (Rcpp::any(Rcpp::is_na(mm))) {
+    Rcpp::LogicalVector ll = !Rcpp::is_na(mm);
+
+    Rcpp::CharacterVector ms = x[ll==0];
+
+    // does not work if ms contains multiple names: Rcpp::as<std::string>(ms)
+    Rcpp::Rcout << "Variable " << ms <<
+      " was not found in dta-file." << std::endl;
+  }
+
+  // report position for found cases
+  mm = Rcpp::match(y, x);
+
+  return(mm);
+}
+
+// calculate the maximum jump. This calculates the maximum space we can skip if
+// reading only a single variable. Before we skipped over each variable. Now we
+// skip over them combined. Therefore if a value in x is positive push it
+// into a new vector. If negative, sum the length up.
+inline Rcpp::IntegerVector calc_jump(Rcpp::IntegerVector x) {
+
+  Rcpp::IntegerVector y;
+  int64_t val = 0;
+  bool last = 0;
+
+  uint32_t k = x.size();
+
+  for (uint32_t i=0; i<k; ++i)
+  {
+
+    int32_t value = x(i);
+
+    if (value < 0) {
+
+      // after start or if last was pos fill to val
+      if ( (i == 0) || (last == 1)) {
+        val = value;
+      } else {
+        val += value;
+      }
+      last = 0;
+
+    } else {
+
+      // push back if last was neg
+      if ((i > 0) & (last == 0))
+        y.push_back(val);
+
+      val = value;
+      y.push_back(val);
+
+      last = 1;
+    }
+
+    if ((i+1 == k) & (last == 0)) {
+      y.push_back(val);
+    }
+
+  }
+
+  return(y);
 }
 
 #endif

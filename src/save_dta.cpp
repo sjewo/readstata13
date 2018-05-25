@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -28,7 +28,7 @@ using namespace std;
 // [[Rcpp::export]]
 int stata_save(const char * filePath, Rcpp::DataFrame dat)
 {
-  uint16_t k = dat.size();
+  uint32_t k = dat.size();
   uint64_t n = dat.nrows();
 
   const string timestamp = dat.attr("timestamp");
@@ -65,6 +65,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     lbllen = 33;
     break;
   case 118:
+  case 119:
     nvarnameslen = 129;
     nformatslen = 57;
     nvalLabelslen = 129;
@@ -141,17 +142,20 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     writestr(byteord, byteord.size(), dta);
     writestr(sbyteorder, 3, dta); // LSF
     writestr(K, K.size(), dta);
-    writebin(k, dta, swapit);
+    if (release < 119)
+      writebin((int16_t)k, dta, swapit);
+    if (release == 119)
+      writebin(k, dta, swapit);
     writestr(num, num.size(), dta);
-    if (release==117)
+    if (release == 117)
       writebin((int32_t)n, dta, swapit);
-    if (release==118)
+    if ((release == 118) | (release == 119))
       writebin(n, dta, swapit);
     writestr(lab, lab.size(), dta);
 
 
     /* write a datalabel */
-    if(!datalabel.empty())
+    if (!datalabel.empty())
     {
       if (datalabel.size() > maxdatalabelsize)
       {
@@ -162,9 +166,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       }
       ndlabel = datalabel.size();
 
-      if (release==117)
+      if (release == 117)
         writebin((uint8_t)ndlabel, dta, swapit);
-      if (release==118)
+      if ((release == 118) | (release == 119))
         writebin(ndlabel, dta, swapit);
 
       writestr(datalabel,datalabel.size(), dta);
@@ -175,7 +179,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       if (release == 117) {
         writebin(zero, dta, swapit);
       }
-      if (release == 118) {
+      if ((release == 118) | (release == 119)) {
         writebin(zero, dta, swapit);
         writebin(zero, dta, swapit);
       }
@@ -207,7 +211,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     map(2) = dta.tellg();
     writestr(startvart, startvart.size(), dta);
     uint16_t nvartype;
-    for (uint16_t i = 0; i < k; ++i)
+    for (uint32_t i = 0; i < k; ++i)
     {
       nvartype = as<uint16_t>(vartypes[i]);
 
@@ -219,7 +223,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <varnames> ... </varnames> */
     map(3) = dta.tellg();
     writestr(startvarn, startvarn.size(), dta);
-    for (uint16_t i = 0; i < k; ++i )
+    for (uint32_t i = 0; i < k; ++i )
     {
       string nvarname = as<string>(nvarnames[i]);
       nvarname[nvarname.size()] = '\0';
@@ -237,9 +241,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     map(4) = dta.tellg();
     writestr(startsor, startsor.size(), dta);
 
-    uint32_t big_k = k+1;
+    uint64_t big_k = k+1;
 
-    for (uint32_t i = 0; i < big_k; ++i)
+    for (uint64_t i = 0; i < big_k; ++i)
     {
       uint16_t nsortlist = 0;
       writebin(nsortlist, dta, swapit);
@@ -250,7 +254,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <formats> ... </formats> */
     map(5) = dta.tellg();
     writestr(startform, startform.size(), dta);
-    for (uint16_t i = 0; i < k; ++i )
+    for (uint32_t i = 0; i < k; ++i )
     {
       string nformats = as<string>(formats[i]);
 
@@ -266,7 +270,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <value_label_names> ... </value_label_names> */
     map(6) = dta.tellg();
     writestr(startvalLabel, startvalLabel.size(), dta);
-    for (uint16_t i = 0; i < k; ++i)
+    for (uint32_t i = 0; i < k; ++i)
     {
       string nvalLabels = as<string>(valLabels[i]);
       nvalLabels[nvalLabels.size()] = '\0';
@@ -283,7 +287,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     /* <variable_labels> ... </variable_labels> */
     map(7) = dta.tellg();
     writestr(startvarlabel, startvarlabel.size(), dta);
-    for (uint16_t i = 0; i < k; ++i)
+    for (uint32_t i = 0; i < k; ++i)
     {
       if (!Rf_isNull(varLabels) && Rf_length(varLabels) > 1) {
         string nvarLabels = as<string>(varLabels[i]);
@@ -345,7 +349,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
     for(uint64_t j = 0; j < n; ++j)
     {
-      for (uint16_t i = 0; i < k; ++i)
+      for (uint32_t i = 0; i < k; ++i)
       {
         int const type = vartypes[i];
         switch(type < 2046 ? 2045 : type)
@@ -436,7 +440,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
           string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
 
-          if(val_s == "NA")
+          if (val_s == "NA")
             val_s.clear();
 
           writestr(val_s, len, dta);
@@ -489,6 +493,29 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
             break;
           }
+            case 119:
+          {
+            int32_t v = i+1;
+            int64_t o = j+1;
+            char    z[8];
+
+            // push back every v, o and val_strl
+            V.push_back(v);
+            O.push_back(o);
+
+            // z is 'vv-- ----'
+            memcpy(&z[0], &v, sizeof(v));
+            if (SBYTEORDER == 1) {
+              o <<= 24;
+            }
+            memcpy(&z[3], &o, 5);
+            // z is 'vvvo oooo'
+
+            dta.write((char*)&z, sizeof(z));
+            // writestr((char*)&z, sizeof(z), dta);
+
+            break;
+          }
             }
             STRL.push_back(val_strl);
           } else {
@@ -518,9 +545,9 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       writestr(gso, gso.size(), dta);
       writebin(v, dta, swapit);
-      if (release==117)
+      if (release == 117)
         writebin((uint32_t)o, dta, swapit);
-      if (release==118)
+      if ((release == 118) | (release == 119))
         writebin(o, dta, swapit);
       writebin(t, dta, swapit);
       writebin(len, dta, swapit);

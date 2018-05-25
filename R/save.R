@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014-2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -39,7 +39,9 @@
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will
 #'  use all of Statas numeric-vartypes.
 #' @param version \emph{numeric.} Stata format for the resulting dta-file either
-#'  the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.
+#'  Stata version number (6 - 15) or the internal Stata dta-format (e.g. 117 for Stata 13). 
+#'  Experimental support for large datasets: Use version="15mp" to save the dataset
+#'  in the new Stata 15/MP file format. This feature is not thoroughly tested yet.
 #' @return The function writes a dta-file to disk. The following features of the
 #'  dta file format are supported:
 #' \describe{
@@ -54,8 +56,9 @@
 #'    type. The first element is the identifier and the second element the
 #'    string.}
 #' }
-#' @seealso \code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-#' versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
+#' @seealso \code{\link[foreign]{read.dta}} in package \code{foreign} and
+#'  \code{memisc} for dta files from Stata versions < 13 and \code{read_dta} in
+#'  package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
@@ -72,9 +75,13 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (!is.data.frame(data))
     stop("The object \"data\" must have class data.frame")
   if (!dir.exists13(dirname(file)))
-    stop("Path is invalid. Possibly a non existend directory.")
+    stop("Path is invalid. Possibly a non-existing directory.")
 
   # Allow writing version as Stata version not Stata format
+  if (version=="15mp")
+    version <- 119
+  if (version==15L)
+    version <- 118
   if (version==14L)
     version <- 118
   if (version==13L)
@@ -90,8 +97,11 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (version==6)
     version <- 108
 
-  if (version<102 | version == 109 | version == 116 | version>118)
-    stop("Version missmatch abort execution. No Data was saved.")
+  if (version == 119)
+    message("Support for Stata 15/MP (119) format is experimental and not thoroughly tested.")
+
+  if (version<102 | version == 109 | version == 116 | version>119)
+    stop("Version mismatch abort execution. No Data was saved.")
 
   sstr     <- 2045
   sstrl    <- 32768
@@ -168,7 +178,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
       hasfactors <- sapply(data, is.factor)
 
       if (any(hasfactors))
-        warning("dta-format < 106 does not handle factors. Labels are not saved!")
+        warning(paste("dta-format < 106 can not handle factors.",
+                      "Labels are not saved!"))
     }
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
@@ -278,7 +289,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[empty] <- sbyte
   }
 
-  # recode character variables. 118 wants utf-8, so encoding may be required
+  # recode character variables. >118 wants utf-8, so encoding may be required
   if(doRecode) {
     #TODO: use seq_len ?
     for(v in (1:ncol(data))[vartypen == "character"]) {

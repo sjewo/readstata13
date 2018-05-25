@@ -126,8 +126,12 @@ stbcal <- function(stbcalfile) {
   # In case centerdate is not rangestart:
   stbcal$buisdays <- NA
   stbcal$buisdays[stbcal$range==centerdate] <- 0
-  stbcal$buisdays[stbcal$range<centerdate] <- seq(from=-length(stbcal$range[stbcal$range<centerdate]), to=-1)
-  stbcal$buisdays[stbcal$range>centerdate] <- seq(from=1, to=length(stbcal$range[stbcal$range>centerdate]))
+  stbcal$buisdays[stbcal$range<centerdate] <- seq(
+    from=-length(stbcal$range[stbcal$range<centerdate]),
+    to=-1)
+  stbcal$buisdays[stbcal$range>centerdate] <- seq(
+    from=1,
+    to=length(stbcal$range[stbcal$range>centerdate]))
 
   # Add purpose
   if (any(grepl("purpose", x))) {

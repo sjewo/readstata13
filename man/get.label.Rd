@@ -18,8 +18,9 @@ Returns a named vector of code numbers
 Retrieve the value labels for a specific Stata label set.
 }
 \details{
-This function returns the table of factor levels which represent a Stata label set.
-The name of a label set for a variable can be obtained by \code{\link{get.label.name}}.
+This function returns the table of factor levels which represent
+ a Stata label set. The name of a label set for a variable can be obtained
+ by \code{\link{get.label.name}}.
 }
 \examples{
 dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))

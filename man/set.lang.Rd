@@ -9,15 +9,18 @@ set.lang(dat, lang = NA, generate.factors = FALSE)
 \arguments{
 \item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}
 
-\item{lang}{\emph{character.} Label language. Default language defined by \code{\link{get.lang}} is used if NA}
+\item{lang}{\emph{character.} Label language. Default language defined by
+\code{\link{get.lang}} is used if NA}
 
-\item{generate.factors}{\emph{logical.} If \code{TRUE}, missing factor levels are generated.}
+\item{generate.factors}{\emph{logical.} If \code{TRUE}, missing factor levels
+are generated.}
 }
 \value{
 Returns a data.frame with value labels in language "lang".
 }
 \description{
-Changes default label language for a dataset.
+Changes default label language for a dataset. 
+Variables with generated labels (option generate.labels=TRUE) are kept unchanged.
 }
 \examples{
 dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))

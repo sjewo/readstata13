@@ -9,7 +9,8 @@ get.origin.codes(x, label.table)
 \arguments{
 \item{x}{\emph{factor.} Factor to obtain code for}
 
-\item{label.table}{\emph{table.} Table with factor levels obtained by \code{\link{get.label}}.}
+\item{label.table}{\emph{table.} Table with factor levels obtained by
+\code{\link{get.label}}.}
 }
 \value{
 Returns an integer with original codes
@@ -18,7 +19,9 @@ Returns an integer with original codes
 Recreates the code numbers of a factor as stored in the Stata dataset.
 }
 \details{
-While converting numeric variables into factors, the original code numbers are lost.  This function reconstructs the codes from the attribute \code{label.table}.
+While converting numeric variables into factors, the original code
+ numbers are lost. This function reconstructs the codes from the attribute
+ \code{label.table}.
 }
 \examples{
 dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"))

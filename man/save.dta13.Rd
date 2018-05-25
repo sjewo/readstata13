@@ -37,7 +37,9 @@ will be added to the dta-file.}
 use all of Statas numeric-vartypes.}
 
 \item{version}{\emph{numeric.} Stata format for the resulting dta-file either
-the internal Stata dta-format (e.g. 117 for Stata 13) or versions 6 - 14.}
+Stata version number (6 - 15) or the internal Stata dta-format (e.g. 117 for Stata 13). 
+Experimental support for large datasets: Use version="15mp" to save the dataset
+in the new Stata 15/MP file format. This feature is not thoroughly tested yet.}
 
 \item{convert.underscore}{\emph{logical.} If \code{TRUE}, all non numerics or
 non alphabet characters will be converted to underscores.}
@@ -67,8 +69,9 @@ Stata Corp (2014): Description of .dta file format
  \url{http://www.stata.com/help.cgi?dta}
 }
 \seealso{
-\code{\link[foreign]{read.dta}} in package \code{foreign} and \code{memisc} for dta files from Stata
-versions < 13 and \code{read_dta} in package \code{haven} for Stata version >= 13.
+\code{\link[foreign]{read.dta}} in package \code{foreign} and
+ \code{memisc} for dta files from Stata versions < 13 and \code{read_dta} in
+ package \code{haven} for Stata version >= 13.
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

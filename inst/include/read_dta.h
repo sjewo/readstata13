@@ -18,6 +18,10 @@
 #ifndef READDTA_H
 #define READDTA_H
 
-Rcpp::List read_dta(FILE * file, const bool missing, const Rcpp::IntegerVector selectrows);
+Rcpp::List read_dta(FILE * file, const bool missing,
+                    const Rcpp::IntegerVector selectrows,
+                    const Rcpp::CharacterVector selectcols,
+                    const bool strlexport,
+                    const Rcpp::CharacterVector strlpath);
 
 #endif

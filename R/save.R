@@ -73,7 +73,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (!is.data.frame(data))
     stop("The object \"data\" must have class data.frame")
   if (!dir.exists13(dirname(file)))
-    stop("Path is invalid. Possibly a non existend directory.")
+    stop("Path is invalid. Possibly a non-existing directory.")
 
   # Allow writing version as Stata version not Stata format
   if (version==15L)
@@ -94,7 +94,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     version <- 108
 
   if (version<102 | version == 109 | version == 116 | version>119)
-    stop("Version missmatch abort execution. No Data was saved.")
+    stop("Version mismatch abort execution. No Data was saved.")
 
   sstr     <- 2045
   sstrl    <- 32768

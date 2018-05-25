@@ -28,7 +28,7 @@
 #'  "label_(integer code)".
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252
 #'  or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
-#'  target encoding explicitly. Stata 14 files are UTF-8 encoded and may contain
+#'  target encoding explicitly. Stata 14 and 15 files are UTF-8 encoded and may contain
 #'  strings which can't be displayed in the current locale.
 #'  Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
@@ -366,9 +366,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if (labname %in% names(label)) {
         if((vartype == sdouble | vartype == sfloat)) {
           if(!nonint.factors) {
-            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double",
-                           "or float detected - no labels assigned.\n  Set",
-                           "option nonint.factors to TRUE to assign labels",
+            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double ",
+                           "or float detected - no labels assigned.\n  Set ",
+                           "option nonint.factors to TRUE to assign labels ",
                            "anyway.\n"))
             next
           }
@@ -379,7 +379,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         #check for duplicated labels
         labcount <- table(names(labtable))
         if(any(labcount > 1)) {
-          warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels",
+          warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels ",
                          "detected - generating unique labels.\n"))
           labdups <- names(labtable) %in% names(labcount[labcount > 1])
           # generate unique labels from assigned label and code number
@@ -400,8 +400,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                               labels=names(gen.lab))
 
         } else {
-          warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no",
-                         "labels assigned.\n  Set option generate.factors=T to",
+          warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no ",
+                         "labels assigned.\n  Set option generate.factors=T to ",
                          "generate labels."))
         }
       }

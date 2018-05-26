@@ -107,10 +107,6 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 | <0.8.1  | convert dates                                                                 |
 | <0.8.1  | reading business calendar files                                               |
 
-### Todo
-
-* cleanup of Rcpp code
-
 ### Test
 Since our attributes differ from foreign::read.dta all.equal and identical
 report false. If you check the values, everything is identical.

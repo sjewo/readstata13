@@ -42,7 +42,7 @@ typedef unsigned int uint32_t;
 
 #ifdef __APPLE__
 #  define off64_t off_t
-#  define fseek64 fseek
+#  define fseeko64 fseeko
 #endif
 
 

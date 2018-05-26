@@ -9,6 +9,10 @@ matrix:
     - os: osx
       osx_image: xcode9.2
       disable_homebrew: true    
+      r: devel
+    - os: osx
+      osx_image: xcode9.2
+      disable_homebrew: true    
     - os: osx
       osx_image: xcode8.3
       disable_homebrew: true

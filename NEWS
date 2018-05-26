@@ -1,3 +1,6 @@
+[0.9.2]
+- fix build on OSX
+
 [0.9.1]
 - allow reading only pre-selected variables
 - experimental support for format 119

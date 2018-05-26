@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.9.1")
+devtools::install_github("sjewo/readstata13", ref="0.9.2")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.9.1")
+install_github("readstata13", username="sjewo", ref="0.9.2")
 ```
 
 To install the current development version from github:
@@ -57,59 +57,57 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
 ### Changelog and Features
 
-| Version | Changes                                                                       |
-| ------  | ----------------------------------------------------                          |
-| 0.9.1   | Allow reading only pre-selected variables                                     |
-| 0.9.1   | Experimental support for format 119                                           |
-| 0.9.1   | Improvements to partial reading. Idea by Kevin Jin                            |
-| 0.9.1   | Export of binary data from dta-files                                          |
-| 0.9.1   | new function get.label.tables() to show all Stata label sets                  |
-| 0.9.1   | fix check for duplicate labels and in set.lang()                              |
-|         |
-| 0.9.0   | Generate unique factor labels to prevent errors in factor definition          |
-| 0.9.0   | check interrupt for long read. Patch by Giovanni Righi                        |
-| 0.9.0   | updates to notes, roxygen and register                                        |
-| 0.9.0   | fixed size of character length. Bug reported by Yiming (Paul) Li              |
-| 0.9.0   | fix saving characters containing missings. Bug reported by Eivind H. Olsen    |
-| 0.9.0   | adjustments to convert.underscore. Patch by luke-m-olson                      |
-| 0.9.0   | alow partial reading of selected rows                                         |
-|         |
-| 0.8.5   | fix errors on big-endians systems                                             |
-|         |
-| 0.8.4   | fix valgrind errors. converting from dta.write to writestr                    |
-| 0.8.4   | fix for empty data label                                                      |
-| 0.8.4   | make replace.strl default                                                     |
-|         |
-| 0.8.3   | restrict length of varnames to 32 chars for compatibility with Stata 14       |
-| 0.8.3   | add many function tests                                                       |
-| 0.8.3   | avoid converting of double to floats while writing compressed files           |
-|         |
-| 0.8.2   | save NA values in character vector as empty string                            |
-| 0.8.2   | convert.underscore=T will convert all non-literal characters to underscores   |
-| 0.8.2   | fix saving of Dates                                                           |
-| 0.8.2   | save with convert.factors by default                                          |
-| 0.8.2   | test for NaN and inf values while writing missing values and replace with NA  |
-| 0.8.2   | remove message about saving factors                                           |
-|         |
-| 0.8.1   | convert non-integer variables to factors (```nonint.factors=T```)             |
-| 0.8.1   | handle large datasets                                                         |
-| 0.8.1   | working with strL variables is now a lot faster                               |
-|         |                                                                               |
-| <0.8.1  | reading data files from disk or url and create a data.frame                   |
-| <0.8.1  | saving dta files to disk - most features of the dta file format are supported |
-| <0.8.1  | assign variable names                                                         |
-| <0.8.1  | read the new strL strings and save them as attribute                          |
-| <0.8.1  | convert stata label to factors and save them as attribute                     |
-| <0.8.1  | read some meta data (timestamp, dataset label, formats,...)                   |
-| <0.8.1  | convert strings to system encoding                                            |
-| <0.8.1  | handle different NA values                                                    |
-| <0.8.1  | handle multiple label languages                                               |
-| <0.8.1  | convert dates                                                                 |
-| <0.8.1  | reading business calendar files                                               |
-
-### Todo
-
-* cleanup of Rcpp code
+ | Version | Changes                                                                       | 
+ | ------  | ----------------------------------------------------                          | 
+ | 0.9.2   | Fix Build on MacOS X                                                          | 
+ |         |                                                                               | 
+ | 0.9.1   | Allow reading only pre-selected variables                                     | 
+ | 0.9.1   | Experimental support for format 119                                           | 
+ | 0.9.1   | Improvements to partial reading. Idea by Kevin Jin                            | 
+ | 0.9.1   | Export of binary data from dta-files                                          | 
+ | 0.9.1   | new function get.label.tables() to show all Stata label sets                  | 
+ | 0.9.1   | Fix check for duplicate labels and in set.lang()                              | 
+ |         | 
+ | 0.9.0   | Generate unique factor labels to prevent errors in factor definition          | 
+ | 0.9.0   | check interrupt for long read. Patch by Giovanni Righi                        | 
+ | 0.9.0   | Updates to notes, roxygen and register                                        | 
+ | 0.9.0   | Fixed size of character length. Bug reported by Yiming (Paul) Li              | 
+ | 0.9.0   | Fix saving characters containing missings. Bug reported by Eivind H. Olsen    | 
+ | 0.9.0   | Adjustments to convert.underscore. Patch by luke-m-olson                      | 
+ | 0.9.0   | Allow partial reading of selected rows                                        | 
+ |         | 
+ | 0.8.5   | Fix errors on big-endians systems                                             | 
+ |         | 
+ | 0.8.4   | Fix valgrind errors. converting from dta.write to writestr                    | 
+ | 0.8.4   | Fix for empty data label                                                      | 
+ | 0.8.4   | Make replace.strl default                                                     | 
+ |         | 
+ | 0.8.3   | Restrict length of varnames to 32 chars for compatibility with Stata 14       | 
+ | 0.8.3   | Add many function tests                                                       | 
+ | 0.8.3   | Avoid converting of double to floats while writing compressed files           | 
+ |         | 
+ | 0.8.2   | Save NA values in character vector as empty string                            | 
+ | 0.8.2   | Convert.underscore=T will convert all non-literal characters to underscores   | 
+ | 0.8.2   | Fix saving of Dates                                                           | 
+ | 0.8.2   | Save with convert.factors by default                                          | 
+ | 0.8.2   | Test for NaN and inf values while writing missing values and replace with NA  | 
+ | 0.8.2   | Remove message about saving factors                                           | 
+ |         | 
+ | 0.8.1   | Convert non-integer variables to factors (```nonint.factors=T```)             | 
+ | 0.8.1   | Handle large datasets                                                         | 
+ | 0.8.1   | Working with strL variables is now a lot faster                               | 
+ |         |                                                                               | 
+ | <0.8.1  | Reading data files from disk or url and create a data.frame                   | 
+ | <0.8.1  | Saving dta files to disk - most features of the dta file format are supported | 
+ | <0.8.1  | Assign variable names                                                         | 
+ | <0.8.1  | Read the new strL strings and save them as attribute                          | 
+ | <0.8.1  | Convert stata label to factors and save them as attribute                     | 
+ | <0.8.1  | Read some meta data (timestamp, dataset label, formats,...)                   | 
+ | <0.8.1  | Convert strings to system encoding                                            | 
+ | <0.8.1  | Handle different NA values                                                    | 
+ | <0.8.1  | Handle multiple label languages                                               | 
+ | <0.8.1  | Convert dates                                                                 | 
+ | <0.8.1  | Reading business calendar files                                               | 
 
 ### Test
 Since our attributes differ from foreign::read.dta all.equal and identical

@@ -2,10 +2,25 @@
 #
 # https://github.com/craigcitro/r-travis/wiki/Porting-to-native-R-support-in-Travis
 language: r
+
+matrix:
+  include:
+    - dist: trusty
+    - os: osx
+      osx_image: xcode9.2
+      disable_homebrew: true    
+    - os: osx
+      osx_image: xcode8.3
+      disable_homebrew: true
+    - os: osx
+      osx_image: xcode7.3
+      disable_homebrew: true
+
 r:
   - oldrel
   - release
   - devel
+  
 sudo: false
 cache: packages
 

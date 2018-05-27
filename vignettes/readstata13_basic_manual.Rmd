@@ -143,7 +143,7 @@ dat4 <- read.dta13("res/Stata.dta", strlexport = TRUE, strlpath = "res/")
 
 We do not append a file ending during our export, since a specific file type is not known (and can be different for every cell). Therefore the binary file is only named after its position in the data (15_1 is 15th variable and 1st observation) and leaves the user the choice how to open it. In this example the first one is a txt-file and the second one a png. For now, both - the blog post and this example - are merely a prove of concept and none of us has come across such a file. This leaves space for improvements coming in the future on both the Stata and the R side.^[In Stata format 116 they already experimented with blobs (binary large objects), now they are possible, so who knows what the future might bring.]
 
-```{r}
+```{r include=FALSE}
 unlink("res/", recursive = TRUE)
 ```
 

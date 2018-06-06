@@ -374,7 +374,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           }
         }
         # get unique values / omit NA
-        varunique <- na.omit(unique(data[, i]))
+        varunique <- unique(as.character(na.omit(data[, i])))
 
         #check for duplicated labels
         labcount <- table(names(labtable))
@@ -393,15 +393,16 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                               labels=names(labtable))
           # else generate labels from codes
         } else if (generate.factors) {
-          names(varunique) <- as.character(varunique)
+
+          names(varunique) <- varunique
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
           data[, i] <- factor(data[, i], levels=gen.lab,
                               labels=names(gen.lab))
-          
+
           # add generated labels to label.table
           gen.lab.name <- paste0("gen_",vnames[i])
-          attr(data, "label.table")[[gen.lab.name]] <- gen.lab 
+          attr(data, "label.table")[[gen.lab.name]] <- gen.lab
           attr(data, "val.labels")[i] <- gen.lab.name
 
         } else {

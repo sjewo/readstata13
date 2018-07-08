@@ -61,7 +61,7 @@ the rows in range will be selected.}
 \item{strlexport}{\emph{logical:} Should strl content be exported as binary
 files?}
 
-\item{strlpath}{\emph{cahracter:} Path for strl export.}
+\item{strlpath}{\emph{character:} Path for strl export.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes

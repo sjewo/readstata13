@@ -55,7 +55,7 @@
 #' @param select.cols \emph{character:} Vector of variables to select.
 #' @param strlexport \emph{logical:} Should strl content be exported as binary
 #'  files?
-#' @param strlpath \emph{cahracter:} Path for strl export.
+#' @param strlpath \emph{character:} Path for strl export.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.

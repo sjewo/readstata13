@@ -7,13 +7,13 @@
 stbcal(stbcalfile)
 }
 \arguments{
-\item{stbcalfile}{\emph{stbcal-file} Stata buisness calendar file created by
+\item{stbcalfile}{\emph{stbcal-file} Stata business calendar file created by
 Stata.}
 }
 \value{
 Returns a data.frame with two cols:
 \describe{
-\item{range:}{The date matching the buisnesdate. Date format.}
+\item{range:}{The date matching the businessdate. Date format.}
 \item{buisdays:}{The Stata business calendar day. Integer format.}
 }
 }
@@ -21,7 +21,7 @@ Returns a data.frame with two cols:
 Create conversion table for business calendar dates.
 }
 \details{
-Stata 12 introduced business calender format. Business dates are
+Stata 12 introduced business calendar format. Business dates are
 integer numbers in a certain range of days, weeks, months or years. In this
 range some days are omitted (e.g. weekends or holidays). If a business
 calendar was created, a stbcal file matching this calendar was created. This

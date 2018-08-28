@@ -213,7 +213,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     }
     attr(data, "label.table") <- rev(label.table)
     if (doRecode) {
-      valLabel <- save.encoding(valLabel, toEncoding)
+      valLabel <- sapply(valLabel, save.encoding, toEncoding)
     }
     attr(data, "vallabels") <- valLabel
   } else {

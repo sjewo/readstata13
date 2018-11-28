@@ -45,6 +45,10 @@ typedef unsigned int uint32_t;
 #  define fseeko64 fseeko
 #endif
 
+#ifdef __FreeBSD__
+#  define off64_t off_t
+#  define fseeko64 fseeko
+#endif
 
 #include "read_dta.h"
 #include "read_pre13_dta.h"

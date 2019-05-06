@@ -55,7 +55,7 @@
 #' @param select.cols \emph{character:} Vector of variables to select.
 #' @param strlexport \emph{logical:} Should strl content be exported as binary
 #'  files?
-#' @param strlpath \emph{cahracter:} Path for strl export.
+#' @param strlpath \emph{character:} Path for strl export.
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -118,6 +118,11 @@
 #'  >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
+#' @examples
+#' \dontrun{
+#'   library(readstata13)
+#'   r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+#' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13

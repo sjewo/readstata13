@@ -245,8 +245,14 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
     for (uint64_t i = 0; i < big_k; ++i)
     {
-      uint16_t nsortlist = 0;
-      writebin(nsortlist, dta, swapit);
+      uint32_t nsortlist = 0;
+      
+      if ((release == 117) | (release == 118)) {
+        writebin((uint16_t)nsortlist, dta, swapit);
+      }
+      if (release == 119) {
+        writebin(nsortlist, dta, swapit);
+      }
     }
     writestr(endsor, endsor.size(), dta);
 

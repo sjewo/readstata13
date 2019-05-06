@@ -2,7 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{saveToExport}
 \alias{saveToExport}
-\title{Check if numeric vector can be expressed as interger vector}
+\title{Check if numeric vector can be expressed as integer vector}
 \usage{
 saveToExport(x)
 }

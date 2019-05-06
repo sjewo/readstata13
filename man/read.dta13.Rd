@@ -62,7 +62,7 @@ the rows in range will be selected.}
 \item{strlexport}{\emph{logical:} Should strl content be exported as binary
 files?}
 
-\item{strlpath}{\emph{cahracter:} Path for strl export.}
+\item{strlpath}{\emph{character:} Path for strl export.}
 }
 \value{
 The function returns a data.frame with attributes. The attributes
@@ -128,6 +128,12 @@ Reading dta-files of older and newer versions than 13 was introduced
 \note{
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
  from foreign::read.dta().
+}
+\examples{
+\dontrun{
+  library(readstata13)
+  r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+} 
 }
 \references{
 Stata Corp (2014): Description of .dta file format

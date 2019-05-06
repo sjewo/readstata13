@@ -64,6 +64,12 @@ The function writes a dta-file to disk. The following features of the
 \code{save.dta13} writes a Stata dta-file bytewise and saves the data
 into a dta-file.
 }
+\examples{
+\dontrun{
+  library(readstata13)
+  save.dta13(cars, file="cars.dta")
+} 
+}
 \references{
 Stata Corp (2014): Description of .dta file format
  \url{http://www.stata.com/help.cgi?dta}

@@ -61,6 +61,11 @@
 #'  package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
+#' @examples
+#' \dontrun{
+#'   library(readstata13)
+#'   save.dta13(cars, file="cars.dta")
+#' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
@@ -340,6 +345,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   formats[formats == sbyte]    <- "%9.0g"
   formats[vartypen >= 0 & vartypen <= sstr] <-
     paste0("%", formats[vartypen >= 0 & vartypen <= sstr], "s")
+  formats[formats == sstrl]    <- "%9s"
 
   attr(data, "formats") <- formats
 

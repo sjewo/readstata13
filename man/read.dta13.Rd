@@ -5,10 +5,11 @@
 \title{Read Stata Binary Files}
 \usage{
 read.dta13(file, convert.factors = TRUE, generate.factors = FALSE,
-  encoding = "UTF-8", fromEncoding = NULL, convert.underscore = FALSE,
-  missing.type = FALSE, convert.dates = TRUE, replace.strl = TRUE,
-  add.rownames = FALSE, nonint.factors = FALSE, select.rows = NULL,
-  select.cols = NULL, strlexport = FALSE, strlpath = ".")
+  encoding = "UTF-8", fromEncoding = NULL,
+  convert.underscore = FALSE, missing.type = FALSE,
+  convert.dates = TRUE, replace.strl = TRUE, add.rownames = FALSE,
+  nonint.factors = FALSE, select.rows = NULL, select.cols = NULL,
+  strlexport = FALSE, strlpath = ".")
 }
 \arguments{
 \item{file}{\emph{character.} Path to the dta file you want to import.}
@@ -127,6 +128,12 @@ Reading dta-files of older and newer versions than 13 was introduced
 \note{
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
  from foreign::read.dta().
+}
+\examples{
+\dontrun{
+  library(readstata13)
+  r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+} 
 }
 \references{
 Stata Corp (2014): Description of .dta file format

@@ -118,6 +118,11 @@
 #'  >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
+#' @examples
+#' \dontrun{
+#'   library(readstata13)
+#'   r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+#' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13

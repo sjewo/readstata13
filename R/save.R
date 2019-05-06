@@ -61,6 +61,11 @@
 #'  package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
 #'  \url{http://www.stata.com/help.cgi?dta}
+#' @examples
+#' \dontrun{
+#'   library(readstata13)
+#'   save.dta13(cars, file="cars.dta")
+#' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13

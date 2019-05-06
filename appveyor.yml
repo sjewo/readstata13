@@ -6,6 +6,7 @@ init:
         $ErrorActionPreference = "Stop"
         Invoke-WebRequest http://raw.github.com/krlmlr/r-appveyor/master/scripts/appveyor-tool.ps1 -OutFile "..\appveyor-tool.ps1"
         Import-Module '..\appveyor-tool.ps1'
+
 install:
   ps: Bootstrap
 
@@ -18,18 +19,13 @@ environment:
     WARNINGS_ARE_ERRORS: 1
   matrix:
   - R_VERSION: devel
-    GCC_PATH: mingw_32
-
-  - R_VERSION: devel
     R_ARCH: x64
-    GCC_PATH: mingw_64
 
   - R_VERSION: release
     R_ARCH: x64
 
   - R_VERSION: oldrel
-    RTOOLS_VERSION: 33
-    CRAN: http://cran.rstudio.com
+    R_ARCH: x64
 
 matrix:
   fast_finish: true

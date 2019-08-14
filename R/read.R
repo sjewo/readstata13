@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
 # Copyright (C) of 'convert.dates' and 'missing.types' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -28,8 +28,8 @@
 #'  "label_(integer code)".
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252
 #'  or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
-#'  target encoding explicitly. Stata 14 and 15 files are UTF-8 encoded and may contain
-#'  strings which can't be displayed in the current locale.
+#'  target encoding explicitly. Stata 14, 15 and 16 files are UTF-8 encoded and
+#'  may contain strings which can't be displayed in the current locale.
 #'  Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
 #'  "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14

@@ -1,6 +1,6 @@
 # readstata13
 
-Package to read and write all Stata file formats (version 15 and older) into a
+Package to read and write all Stata file formats (version 16 and older) into a
 R data.frame. The dta file format versions 102 to 118 are supported.
 
 The function ```read.dta``` from the foreign package imports only dta files from
@@ -121,16 +121,13 @@ library("foreign")
 r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta")
 r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
 
-Map(identical,r12,r13)
+all.equal(r12, r13, check.attributes = FALSE)
 
-att <- names(attributes(r12))
-for (i in seq(att))
-	cat(att[i],":", all.equal(attr(r12,att[i]),attr(r13,att[i])),"\n")
 
 r12 <- read.dta("http://www.stata-press.com/data/r12/auto.dta",convert.factors=F)
 r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta",convert.factors=F)
 
-Map(identical,r12,r13)
+all.equal(r12, r13, check.attributes = FALSE)
 ```
 
 ## Authors

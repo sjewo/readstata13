@@ -346,6 +346,18 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       as.POSIXct(z, origin = "1960-01-01")
     }
     
+    convert_dt_m <- function(x) {
+      z <- x / 12
+      mth <- z - floor(z)
+      z <- 1960 + floor(z)
+      
+      for (i in 1:12)
+        z[mth == (i-1)/12] <- paste0(z[mth == (i-1)/12], "-",i, "-1")
+      
+      z <- as.Date(z, "%Y-%m-%d")
+      z
+    }
+    
     convert_dt_q <- function(x) { 
       z <- x / 4 
       qrt <- z - floor(z)
@@ -357,6 +369,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       z[qrt == 0.75] <- paste0(z[qrt == 0.75], "-10-1")
       
       z <- as.Date(z, "%Y-%m-%d")
+      z
+    }
+    
+    convert_dt_y <- function(x) {
+      z <- as.Date(paste0(x, "-1-1"), "%Y-%m-%d")
       z
     }
 
@@ -377,7 +394,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
     for (v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]])
     for (v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]])
+    for (v in grep("%tm", ff)) data[[v]] <- convert_dt_m(data[[v]])
     for (v in grep("%tq", ff)) data[[v]] <- convert_dt_q(data[[v]])
+    for (v in grep("%ty", ff)) data[[v]] <- convert_dt_y(data[[v]])
   }
 
   if (convert.factors) {

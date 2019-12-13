@@ -148,7 +148,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     filepath <- get.filepath(file)
   }
   if (!file.exists(filepath))
-    return(message("File not found."))
+    stop("File not found.")
 
 
 

@@ -10,3 +10,4 @@ src/*.dll
 .*.Rnb.cached
 tests/*
 docs
+vignettes/res/*

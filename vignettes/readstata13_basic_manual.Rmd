@@ -122,7 +122,7 @@ In a blog post Stata explained how it is possible to store binary data in strls.
 ```{r}
 # download an example created for demonstration purposes
 file <- "https://github.com/sjewo/readstata13/files/1995152/Stata.dta.zip"
-download.file(file, destfile = "res/Stata_dta.zip", method = "curl")
+curl::curl_download(url = file, destfile = "res/Stata_dta.zip")
 
 unzip("res/Stata_dta.zip", exdir = "res/")
 

@@ -21,6 +21,6 @@ Imports:
     Rcpp (>= 0.11.5)
 LinkingTo: Rcpp
 ByteCompile: yes
-Suggests: testthat, knitr, rmarkdown
+Suggests: testthat, knitr, rmarkdown, curl
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0

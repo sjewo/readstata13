@@ -390,8 +390,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   # label which will crash our Rcpp code. Since varlabels do not respect the
   # ordering inside the data frame, we simply drop them.
   varlabels <- attr(data, "var.labels")
+
   if (doRecode) {
-      varlabels <- save.encoding(varlabels, toEncoding)
+      attr(data, "var.labels") <- save.encoding(varlabels, toEncoding)
   } 
   if (!is.null(varlabels) & (length(varlabels)!=ncol(data))) {
     attr(data, "var.labels") <- NULL

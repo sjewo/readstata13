@@ -1,11 +1,10 @@
 # .travis.yml for readstata13.
-#
-# https://github.com/craigcitro/r-travis/wiki/Porting-to-native-R-support-in-Travis
 language: r
 
 matrix:
   include:
-    - dist: trusty
+    - dist: bionic
+    - os: osx
    
 r:
   - oldrel

@@ -1,18 +1,17 @@
 # .travis.yml for readstata13.
 language: r
+cache: packages
+
+r:
+  - oldrel
+  - devel
 
 matrix:
   include:
-    - dist: bionic
+    - os: linux
+      r: release
     - os: osx
-   
-r:
-  - oldrel
-  - release
-  - devel
-  
-sudo: false
-cache: packages
+      r: release
 
 notifications:
 email:

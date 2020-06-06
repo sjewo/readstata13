@@ -331,9 +331,15 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   varnames <- names(data)
   lenvarnames <- sapply(varnames, nchar)
 
-  if (any (lenvarnames > 32) & version >= 117) {
-    message ("Varname to long. Resizing. Max size is 32.")
-    names(data) <- sapply(varnames, strtrim, width = 32)
+  maxlen <- 32
+  if (version <= 108)
+    maxlen <- 8
+  if (version >= 118)
+    maxlen <- 128
+  
+  if (any (lenvarnames > maxlen)) {
+    message ("Varname to long. Resizing. Max size is ", maxlen, ".")
+    names(data) <- sapply(varnames, strtrim, width = maxlen)
   }
 
   # Stata format "%9,0g" means european format

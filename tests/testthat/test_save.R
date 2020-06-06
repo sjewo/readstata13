@@ -963,3 +963,71 @@ test_that("expansinon.fields", {
   # expect_equal(ef, dd103)
   # expect_equal(ef, dd102)
 })
+
+#### select.cols ####
+
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+dd <- cars
+varlabels <- c('cars1', 'cars2')
+
+save.dta13(dd, "data/dta_119.dta", version = 119, varlabels = varlabels)
+save.dta13(dd, "data/dta_118.dta", version = 118, varlabels = varlabels)
+save.dta13(dd, "data/dta_117.dta", version = 117, varlabels = varlabels)
+save.dta13(dd, "data/dta_115.dta", version = 115, varlabels = varlabels)
+save.dta13(dd, "data/dta_114.dta", version = 114, varlabels = varlabels)
+save.dta13(dd, "data/dta_113.dta", version = 113, varlabels = varlabels)
+save.dta13(dd, "data/dta_112.dta", version = 112, varlabels = varlabels)
+save.dta13(dd, "data/dta_111.dta", version = 111, varlabels = varlabels)
+save.dta13(dd, "data/dta_110.dta", version = 110, varlabels = varlabels)
+save.dta13(dd, "data/dta_108.dta", version = 108, varlabels = varlabels)
+save.dta13(dd, "data/dta_107.dta", version = 107, varlabels = varlabels)
+save.dta13(dd, "data/dta_106.dta", version = 106, varlabels = varlabels)
+save.dta13(dd, "data/dta_105.dta", version = 105, varlabels = varlabels)
+save.dta13(dd, "data/dta_104.dta", version = 104, varlabels = varlabels)
+save.dta13(dd, "data/dta_103.dta", version = 103, varlabels = varlabels)
+save.dta13(dd, "data/dta_102.dta", version = 102, varlabels = varlabels)
+
+dd119 <- attr(read.dta13("data/dta_119.dta"), "var.labels")
+dd118 <- attr(read.dta13("data/dta_118.dta"), "var.labels")
+dd117 <- attr(read.dta13("data/dta_117.dta"), "var.labels")
+dd115 <- attr(read.dta13("data/dta_115.dta"), "var.labels")
+dd114 <- attr(read.dta13("data/dta_114.dta"), "var.labels")
+dd113 <- attr(read.dta13("data/dta_113.dta"), "var.labels")
+dd112 <- attr(read.dta13("data/dta_112.dta"), "var.labels")
+dd111 <- attr(read.dta13("data/dta_111.dta"), "var.labels")
+dd110 <- attr(read.dta13("data/dta_110.dta"), "var.labels")
+dd108 <- attr(read.dta13("data/dta_108.dta"), "var.labels")
+dd107 <- attr(read.dta13("data/dta_107.dta"), "var.labels")
+dd106 <- attr(read.dta13("data/dta_106.dta"), "var.labels")
+dd105 <- attr(read.dta13("data/dta_105.dta"), "var.labels")
+dd104 <- attr(read.dta13("data/dta_104.dta"), "var.labels")
+dd103 <- attr(read.dta13("data/dta_103.dta"), "var.labels")
+dd102 <- attr(read.dta13("data/dta_102.dta"), "var.labels")
+
+unlink("data", recursive = TRUE)
+
+test_that("varlabels = c('cars1', 'cars2')", {
+  # check numerics
+  expect_equal(varlabels, dd119)
+  expect_equal(varlabels, dd118)
+  expect_equal(varlabels, dd117)
+  expect_equal(varlabels, dd115)
+  expect_equal(varlabels, dd114)
+  expect_equal(varlabels, dd113)
+  expect_equal(varlabels, dd112)
+  expect_equal(varlabels, dd111)
+  expect_equal(varlabels, dd110)
+  expect_equal(varlabels, dd108)
+  expect_equal(varlabels, dd107)
+  expect_equal(varlabels, dd106)
+  expect_equal(varlabels, dd105)
+  expect_equal(varlabels, dd104)
+  expect_equal(varlabels, dd103)
+  expect_equal(varlabels, dd102)
+})
+
+# rm(list = files)
+

@@ -38,6 +38,7 @@
 #'  will be added to the dta-file.
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will
 #'  use all of Statas numeric-vartypes.
+#' @param varlabels \emph{character.} Character vector of size ncol(data).
 #' @param version \emph{numeric.} Stata format for the resulting dta-file either
 #'  Stata version number (6 - 16) or the internal Stata dta-format (e.g. 117 for
 #'  Stata 13). Experimental support for large datasets: Use version="15mp" to 
@@ -72,7 +73,7 @@
 #' @useDynLib readstata13
 #' @importFrom utils localeToCharset
 #' @export
-save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
+save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
                        convert.factors=TRUE, convert.dates=TRUE, tz="GMT",
                        add.rownames=FALSE, compress=FALSE, version=117,
                        convert.underscore=FALSE){
@@ -395,7 +396,12 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   # attached. In this case the last variable label has a non existing variable
   # label which will crash our Rcpp code. Since varlabels do not respect the
   # ordering inside the data frame, we simply drop them.
-  varlabels <- attr(data, "var.labels")
+  
+  if (missing(varlabels)) {
+    varlabels <- attr(data, "var.labels")
+  } else {
+    attr(data, "var.labels") <- varlabels
+  }
 
   if (doRecode) {
       attr(data, "var.labels") <- save.encoding(varlabels, toEncoding)

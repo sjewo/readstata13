@@ -8,6 +8,7 @@ save.dta13(
   data,
   file,
   data.label = NULL,
+  varlabels,
   time.stamp = TRUE,
   convert.factors = TRUE,
   convert.dates = TRUE,
@@ -24,6 +25,8 @@ save.dta13(
 \item{file}{\emph{character.} Path to the dta file you want to export.}
 
 \item{data.label}{\emph{character.} Name of the dta-file.}
+
+\item{varlabels}{\emph{character.} Character vector of size ncol(data).}
 
 \item{time.stamp}{\emph{logical.} If \code{TRUE}, add a time.stamp to the
 dta-file.}

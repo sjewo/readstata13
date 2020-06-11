@@ -257,6 +257,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
 
   var.labels <- attr(data, "var.labels")
+  datalabel <- attr(data, "data.label")
 
   ## Encoding
   if(!is.null(encoding)) {
@@ -267,6 +268,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if(attr(data, "version") >= 118L)
         fromEncoding <- "UTF-8"
     }
+    
+    attr(data, "data.label") <- read.encoding(datalabel, fromEncoding,
+                                              encoding)
 
     # varnames
     names(data) <- read.encoding(names(data), fromEncoding, encoding)

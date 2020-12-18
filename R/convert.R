@@ -1,15 +1,15 @@
 
-convert_dt_c <- function(x) {
+convert_dt_c <- function(x, tz) {
   as.POSIXct((x + 0.1) / 1000, # avoid rounding down
              origin = "1960-01-01",
-             tz = "GMT")
+             tz = tz)
 }
 
-convert_dt_C <- function(x) {
+convert_dt_C <- function(x, tz) {
   ls <- .leap.seconds + seq_along(.leap.seconds) + 315619200
   z <- (x + 0.1) / 1000 # avoid rounding down
   z <- z - rowSums(outer(z, ls, ">="))
-  as.POSIXct(z, origin = "1960-01-01", tz = "GMT")
+  as.POSIXct(z, origin = "1960-01-01", tz = tz)
 }
 
 convert_dt_m <- function(x) {

@@ -339,7 +339,6 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
 
   if (convert.dates) {
-
     ff <- attr(data, "formats")
     ## dates <- grep("%-*d", ff)
     ## Stata 12 introduced 'business dates'
@@ -355,8 +354,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     base <- structure(-3653L, class = "Date") # Stata dates are integer vars
     for (v in dates) data[[v]] <- structure(base + data[[v]], class = "Date")
 
-    for (v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]])
-    for (v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]])
+    for (v in grep("%tc", ff)) data[[v]] <- convert_dt_c(data[[v]], tz)
+    for (v in grep("%tC", ff)) data[[v]] <- convert_dt_C(data[[v]], tz)
     for (v in grep("%tm", ff)) data[[v]] <- convert_dt_m(data[[v]])
     for (v in grep("%tq", ff)) data[[v]] <- convert_dt_q(data[[v]])
     for (v in grep("%ty", ff)) data[[v]] <- convert_dt_y(data[[v]])

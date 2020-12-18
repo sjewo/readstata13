@@ -135,7 +135,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors=FALSE,
                        select.rows = NULL, select.cols = NULL,
-                       strlexport = FALSE, strlpath = ".") {
+                       strlexport = FALSE, strlpath = ".", tz="UTC") {
 
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
@@ -337,7 +337,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   if (convert.dates) {
     convert_dt_c <- function(x)
-      as.POSIXct((x + 0.1) / 1000, origin = "1960-01-01") # avoid rounding down
+      as.POSIXct((x + 0.1) / 1000, origin = "1960-01-01", tz = tz) # avoid rounding down
 
     convert_dt_C <- function(x) {
       ls <- .leap.seconds + seq_along(.leap.seconds) + 315619200

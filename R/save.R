@@ -179,6 +179,17 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
     data[[v]] <- as.integer(data[[v]])
   vartypen <- vtyp <- sapply(data, class)
 
+  # Identify POSIXt
+  posix_datetime <- which(sapply(data, 
+                         function(x) inherits(x, "POSIXt")))
+  vartypen[posix_datetime] <- vtyp[posix_datetime] <- "POSIXt"
+
+  # Change origin to 1960-01-01
+  # times: seconds from 1970-01-01 + 10 years (new origin 1960-01-01) * 1000 = miliseconds
+  # go back 1h
+  for (v in names(vartypen[vartypen == "POSIXt"]))
+    data[[v]] <- (as.double(data[[v]]) + 315622800 - 60*60)*1000
+
   if (convert.factors){
     if (version < 106) {
 
@@ -230,13 +241,6 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
     for (v in dates)
       data[[v]] <- as.vector(
         julian(data[[v]],as.Date("1960-1-1", tz = "GMT"))
-      )
-    dates <- which(
-      sapply(data, function(x) inherits(x,"POSIXt"))
-    )
-    for (v in dates)
-      data[[v]] <- as.vector(
-        round(julian(data[[v]], ISOdate(1960, 1, 1, tz = tz)))
       )
   }
 
@@ -308,6 +312,7 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
   str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
   str.length[str.length > sstr] <- sstrl
 
+  # vartypen for character
   for (v in names(vartypen[vartypen == "character"]))
   {
    # str.length[str.length > sstr] <- sstrl # no loop necessary!
@@ -346,6 +351,7 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
   # Stata format "%9,0g" means european format
   formats <- vartypen
   formats[vtyp == "Date"]      <- "%td"
+  formats[vtyp == "POSIXt"]    <- "%tc"
   formats[formats == sdouble]  <- "%9.0g"
   formats[formats == sfloat]   <- "%9.0g"
   formats[formats == slong]    <- "%9.0g"

@@ -3,7 +3,6 @@
 \docType{package}
 \name{readstata13}
 \alias{readstata13}
-\alias{readstata13-package}
 \title{Import Stata Data Files}
 \description{
 Function to read the Stata file format into a data.frame.

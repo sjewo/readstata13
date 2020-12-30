@@ -4,10 +4,19 @@
 \alias{save.dta13}
 \title{Write Stata Binary Files}
 \usage{
-save.dta13(data, file, data.label = NULL, time.stamp = TRUE,
-  convert.factors = TRUE, convert.dates = TRUE, tz = "GMT",
-  add.rownames = FALSE, compress = FALSE, version = 117,
-  convert.underscore = FALSE)
+save.dta13(
+  data,
+  file,
+  data.label = NULL,
+  time.stamp = TRUE,
+  convert.factors = TRUE,
+  convert.dates = TRUE,
+  tz = "GMT",
+  add.rownames = FALSE,
+  compress = FALSE,
+  version = 117,
+  convert.underscore = FALSE
+)
 }
 \arguments{
 \item{data}{\emph{data.frame.} A data.frame Object.}

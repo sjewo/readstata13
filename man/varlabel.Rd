@@ -2,6 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{varlabel}
 \alias{varlabel}
+\alias{'varlabel<-'}
 \alias{varlabel<-}
 \title{Get and assign Stata Variable Labels}
 \usage{

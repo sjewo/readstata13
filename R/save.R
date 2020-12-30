@@ -71,7 +71,6 @@
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13
-#' @importFrom utils localeToCharset
 #' @export
 save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
                        convert.factors=TRUE, convert.dates=TRUE, tz="GMT",
@@ -134,13 +133,15 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
   if(!is.data.frame(data)) {
     stop("Object is not of class data.frame.")
   }
+  
+  is_utf8 <- l10n_info()[["UTF-8"]]
 
   # Is recoding necessary?
   if (version<=117) {
     # Reencoding is always needed
     doRecode <- TRUE
     toEncoding <- "CP1252"
-  } else if (toupper(localeToCharset()[1])!="UTF-8") {
+  } else if (!is_utf8) {
     # If R runs in a non UTF-8 locale and Stata > 13
     doRecode <- TRUE
     toEncoding <- "UTF-8"

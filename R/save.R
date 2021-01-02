@@ -33,7 +33,9 @@
 #'  to Stata date time format. Code from \code{foreign::write.dta}
 #' @param convert.underscore \emph{logical.} If \code{TRUE}, all non numerics or
 #' non alphabet characters will be converted to underscores.
-#' @param tz \emph{character.} The name of the timezone convert.dates will use.
+#' @param tz \emph{character.} time zone specification to be used for 
+#'  POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current 
+#'  time zone, and ‘"GMT"’ is UTC  (Universal Time, Coordinated).
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames
 #'  will be added to the dta-file.
 #' @param compress \emph{logical.} If \code{TRUE}, the resulting dta-file will

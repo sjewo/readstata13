@@ -52,10 +52,13 @@
 #' @param select.rows \emph{integer.} Vector of one or two numbers. If single
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
-#' @param select.cols \emph{character:} Vector of variables to select.
-#' @param strlexport \emph{logical:} Should strl content be exported as binary
+#' @param select.cols \emph{character.} Vector of variables to select.
+#' @param strlexport \emph{logical.} Should strl content be exported as binary
 #'  files?
-#' @param strlpath \emph{character:} Path for strl export.
+#' @param strlpath \emph{character.} Path for strl export.
+#' @param tz \emph{character.} time zone specification to be used for 
+#'  POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC 
+#'  (Universal Time, Coordinated).
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
 #'  file and read afterwards.
@@ -133,9 +136,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        encoding = "UTF-8", fromEncoding=NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
-                       add.rownames = FALSE, nonint.factors=FALSE,
+                       add.rownames = FALSE, nonint.factors = FALSE,
                        select.rows = NULL, select.cols = NULL,
-                       strlexport = FALSE, strlpath = ".", tz="UTC") {
+                       strlexport = FALSE, strlpath = ".", tz = "GMT") {
 
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {

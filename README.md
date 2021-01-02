@@ -53,8 +53,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 ## Current Status
 
 [![CRAN status](http://www.r-pkg.org/badges/version/readstata13)](https://cran.r-project.org/package=readstata13)
-[![Build Status](https://travis-ci.org/sjewo/readstata13.svg?branch=master)](https://travis-ci.org/sjewo/readstata13)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/sjewo/readstata13?branch=master&svg=true)](https://ci.appveyor.com/project/sjewo/readstata13)
+[![Build status](https://github.com/sjewo/readstata13/workflows/R-CMD-check/badge.svg)](https://github.com/sjewo/readstata13/actions?workflow=R-CMD-check)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 

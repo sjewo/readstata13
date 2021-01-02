@@ -23,4 +23,4 @@ LinkingTo: Rcpp
 ByteCompile: yes
 Suggests: testthat, knitr, rmarkdown, curl
 VignetteBuilder: knitr
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

@@ -124,10 +124,10 @@ In a blog post Stata explained how it is possible to store binary data in strls.
 file <- "https://github.com/sjewo/readstata13/files/1995152/Stata.dta.zip"
 curl::curl_download(url = file, destfile = "res/Stata_dta.zip")
 
-unzip("res/Stata_dta.zip", exdir = "res/")
+unzip("res/Stata_dta.zip", exdir = "res")
 
 # export the strl as binary file to the current working directory
-dat4 <- read.dta13("res/Stata.dta", strlexport = TRUE, strlpath = "res/")
+dat4 <- read.dta13("res/Stata.dta", strlexport = TRUE, strlpath = "res")
 
 
 ## content of both. First is a txt file second a png.

@@ -9,10 +9,12 @@ on:
     branches:
       - master
       - testing
+      - POSIXct
   pull_request:
     branches:
       - master
       - testing
+      - POSIXct
 
 name: R-CMD-check
 

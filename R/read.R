@@ -57,7 +57,7 @@
 #'  files?
 #' @param strlpath \emph{character.} Path for strl export.
 #' @param tz \emph{character.} time zone specification to be used for 
-#'  POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC 
+#'  POSIXct values. "" is the current time zone, and "GMT" is UTC 
 #'  (Universal Time, Coordinated).
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary

@@ -19,7 +19,8 @@ read.dta13(
   select.rows = NULL,
   select.cols = NULL,
   strlexport = FALSE,
-  strlpath = "."
+  strlpath = ".",
+  tz = "GMT"
 )
 }
 \arguments{
@@ -68,12 +69,16 @@ will be assigned to variables of type float and double.}
 value rows from 1:val are selected. If two values of a range are selected
 the rows in range will be selected.}
 
-\item{select.cols}{\emph{character:} Vector of variables to select.}
+\item{select.cols}{\emph{character.} Vector of variables to select.}
 
-\item{strlexport}{\emph{logical:} Should strl content be exported as binary
+\item{strlexport}{\emph{logical.} Should strl content be exported as binary
 files?}
 
-\item{strlpath}{\emph{character:} Path for strl export.}
+\item{strlpath}{\emph{character.} Path for strl export.}
+
+\item{tz}{\emph{character.} time zone specification to be used for 
+POSIXct values. "" is the current time zone, and "GMT" is UTC 
+(Universal Time, Coordinated).}
 }
 \value{
 The function returns a data.frame with attributes. The attributes

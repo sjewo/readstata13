@@ -37,7 +37,9 @@ hexcode.}
 \item{convert.dates}{\emph{logical.} If \code{TRUE}, dates will be converted
 to Stata date time format. Code from \code{foreign::write.dta}}
 
-\item{tz}{\emph{character.} The name of the timezone convert.dates will use.}
+\item{tz}{\emph{character.} time zone specification to be used for 
+POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current 
+time zone, and ‘"GMT"’ is UTC  (Universal Time, Coordinated).}
 
 \item{add.rownames}{\emph{logical.} If \code{TRUE}, a new variable rownames
 will be added to the dta-file.}

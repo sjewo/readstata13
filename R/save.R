@@ -202,16 +202,21 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
         warning(paste("dta-format < 106 can not handle factors.",
                       "Labels are not saved!"))
     }
+    
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
     f.names <- attr(factors,"names")
 
-    label.table <- vector("list", length(f.names))
-    names(label.table) <- f.names
+    # we also create entries for labelled variables
+    labelled <- which(sapply(data, function(x) any("haven_labelled" %in% class(x))))
+    l.names <- attr(labelled,"names")
+      
+    label.table <- vector("list", length(f.names) + length(l.names))
+    names(label.table) <- c(f.names, l.names)
 
     valLabel <- sapply(data, class)
-    valLabel[valLabel != "factor"] <- ""
-
+    valLabel[!sapply(data, function(x) any("factor" %in% class(x) | "haven_labelled" %in% class(x)))] <- ""
+    
     i <- 0
     for (v in factors)  {
       i <- i + 1
@@ -227,6 +232,23 @@ save.dta13 <- function(data, file, data.label=NULL, varlabels, time.stamp=TRUE,
 
       valLabel[v] <- f.names[i]
     }
+    
+    i <- 0
+    for (v in labelled)  {
+      i <- i + 1
+      if (doRecode) {
+        l.levels <- save.encoding(names(attr(data[[v]], "labels")), toEncoding)
+      } else {
+        l.levels <- names(attr(data[[v]], "labels"))
+      }
+      l.labels <-  attr(data[[v]], "labels")
+      attr(l.labels, "names") <- l.levels
+      l.labels <- l.labels[names(l.labels) != ".."]
+      label.table[[ (l.names[i]) ]] <- l.labels
+      
+      valLabel[v] <- l.names[i]
+    }
+    
     attr(data, "label.table") <- rev(label.table)
     if (doRecode) {
       valLabel <- sapply(valLabel, save.encoding, toEncoding)

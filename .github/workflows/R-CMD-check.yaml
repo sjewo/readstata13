@@ -10,11 +10,13 @@ on:
       - master
       - testing
       - POSIXct
+      - label
   pull_request:
     branches:
       - master
       - testing
       - POSIXct
+      - label
 
 name: R-CMD-check
 

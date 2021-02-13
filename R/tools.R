@@ -462,7 +462,9 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 #'
 #' @param x vector of data frame
 saveToExport <- function(x) {
-  isTRUE(all.equal(x, as.integer(x)))
+  ifelse(any(is.infinite(x)), FALSE, 
+         ifelse(any(!is.na(x) & (x > .Machine$integer.max | x < -.Machine$integer.max)), FALSE, 
+                isTRUE(all.equal(x, as.integer(x)))))
 }
 
 

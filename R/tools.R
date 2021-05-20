@@ -28,9 +28,16 @@ read.encoding <- function(x, fromEncoding, encoding) {
 }
 
 save.encoding <- function(x, encoding) {
-  iconv(x,
-        to=encoding,
-        sub="byte")
+  sapply(x, function(s)
+           ifelse(Encoding(s) == "unknown",
+                    iconv(s,
+                          to=encoding,
+                          sub="byte"),
+                    iconv(s,  from=Encoding(s),
+                          to=encoding,
+                          sub="byte")
+           )
+        )
 }
 
 # Function to check if directory exists
@@ -455,7 +462,9 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 #'
 #' @param x vector of data frame
 saveToExport <- function(x) {
-  isTRUE(all.equal(x, as.integer(x)))
+  ifelse(any(is.infinite(x)), FALSE, 
+         ifelse(any(!is.na(x) & (x > .Machine$integer.max | x < -.Machine$integer.max)), FALSE, 
+                isTRUE(all.equal(x, as.integer(x)))))
 }
 
 

@@ -9,6 +9,7 @@ on:
     branches:
       - master
       - testing
+      - prepare_release
   pull_request:
     branches:
       - master

@@ -261,10 +261,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
-
+    
     if (any(numToCompress)) {
-      saveToConvert <- names(ff[numToCompress])
-      # replace numerics as intergers
+      saveToConvert <- names(data[ff])[numToCompress]
+      # replace numerics as integers
       data[saveToConvert] <- sapply(data[saveToConvert], as.integer)
 
       # recheck after update
@@ -391,6 +391,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   # label which will crash our Rcpp code. Since varlabels do not respect the
   # ordering inside the data frame, we simply drop them.
   varlabels <- attr(data, "var.labels")
+  
+  if (doRecode) {
+      attr(data, "var.labels") <- save.encoding(varlabels, toEncoding)
+  } 
   if (!is.null(varlabels) & (length(varlabels)!=ncol(data))) {
     attr(data, "var.labels") <- NULL
     warning("Number of variable labels does not match number of variables.

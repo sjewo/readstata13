@@ -35,12 +35,12 @@ users need to install
 
 ```R
 # install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.9.2")
+devtools::install_github("sjewo/readstata13", ref="0.10.0")
 ```
 
 Older Versions of devtools require a username option:
 ```R
-install_github("readstata13", username="sjewo", ref="0.9.2")
+install_github("readstata13", username="sjewo", ref="0.10.0")
 ```
 
 To install the current development version from github:
@@ -61,6 +61,12 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
  | Version | Changes                                                                       | 
  | ------  | ----------------------------------------------------                          | 
+ | 0.10.0  | fix sortlist attribute for dta format 119                                     |
+ | 0.10.0  | fix wrong test for compress option. In the past unwanted conversions to integer type might have happened.|
+ | 0.10.0  | fix encoding issues in variable and data labels                               |
+ |         |                                                                               |
+ | 0.9.3   | fix for reading/writing of format 119                                         |
+ |         |                                                                               |
  | 0.9.2   | Fix Build on MacOS X                                                          | 
  |         |                                                                               | 
  | 0.9.1   | Allow reading only pre-selected variables                                     | 

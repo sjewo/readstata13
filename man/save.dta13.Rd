@@ -15,8 +15,7 @@ save.dta13(
   add.rownames = FALSE,
   compress = FALSE,
   version = 117,
-  convert.underscore = FALSE,
-  varlabels = NULL
+  convert.underscore = FALSE
 )
 }
 \arguments{
@@ -54,8 +53,6 @@ thoroughly tested yet.}
 
 \item{convert.underscore}{\emph{logical.} If \code{TRUE}, all non numerics or
 non alphabet characters will be converted to underscores.}
-
-\item{varlabels}{\emph{character.} Character vector of size ncol(data).}
 }
 \value{
 The function writes a dta-file to disk. The following features of the

@@ -1,4 +1,4 @@
-[0.1.0]
+[0.10.0]
 - fix sortlist attribute for dta format 119
 - fix wrong test for compress option. In the past unwanted conversions to integer type might have happened.
 - fix encoding issues in variable and data labels

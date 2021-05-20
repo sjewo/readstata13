@@ -61,9 +61,9 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
  | Version | Changes                                                                       | 
  | ------  | ----------------------------------------------------                          | 
- | 0.1.0   | fix sortlist attribute for dta format 119                                     |
- | 0.1.0   | fix wrong test for compress option. In the past unwanted conversions to integer type might have happened.|
- | 0.1.0   | fix encoding issues in variable and data labels                               |
+ | 0.10.0  | fix sortlist attribute for dta format 119                                     |
+ | 0.10.0  | fix wrong test for compress option. In the past unwanted conversions to integer type might have happened.|
+ | 0.10.0  | fix encoding issues in variable and data labels                               |
  |         |                                                                               |
  | 0.9.3   | fix for reading/writing of format 119                                         |
  |         |                                                                               |

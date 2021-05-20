@@ -22,4 +22,5 @@ Imports:
 LinkingTo: Rcpp
 ByteCompile: yes
 Suggests: testthat
+Encoding: UTF-8
 RoxygenNote: 7.1.1

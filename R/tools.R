@@ -291,12 +291,30 @@ set.label <- function(dat, var.name, lang=NA) {
 #'  for all variables.
 #' @param lang \emph{character.} Label language. Default language defined by
 #'  \code{\link{get.lang}} is used if NA
-#' @param value \emph{character vector.} Vector of variable names.
+#' @param value \emph{character vector.} Character vector of size ncol(data) with variable names.
 #' @return Returns an named vector of variable labels
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @aliases varlabel
 #' @aliases 'varlabel<-'
+#' @examples
+#' dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"),
+#'                   convert.factors=FALSE)
+#'
+#' # display variable labels 
+#' varlabel(dat)
+#' 
+#' # display german variable labels
+#' varlabel(dat, lang="de")
+#' 
+#' # display german variable label for brand
+#' varlabel(dat, var.name = "brand", lang="de")
+#' 
+#' # define variable new labels
+#' varlabel(dat) <- letters[1:ncol(dat)]
+#'
+#' # display new variable labels
+#' varlabel(dat)
 NULL
 
 #' @rdname varlabel
@@ -325,7 +343,7 @@ varlabel <- function(dat, var.name=NULL, lang=NA) {
 'varlabel<-' <- function(dat, value) {
   nlabs <- length(attr(dat, "var.labels"))
   if (length(value)==nlabs) {
-    attr(x, "var.labels") <- value
+    attr(dat, "var.labels") <- value
   } else {
       warning(paste("Vector of new labels must have",nlabs,"entries."))
     }

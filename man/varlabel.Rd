@@ -19,13 +19,32 @@ for all variables.}
 \item{lang}{\emph{character.} Label language. Default language defined by
 \code{\link{get.lang}} is used if NA}
 
-\item{value}{\emph{character vector.} Vector of variable names.}
+\item{value}{\emph{character vector.} Character vector of size ncol(data) with variable names.}
 }
 \value{
 Returns an named vector of variable labels
 }
 \description{
 Retrieve or set variable labels for a dataset.
+}
+\examples{
+dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"),
+                  convert.factors=FALSE)
+
+# display variable labels 
+varlabel(dat)
+
+# display german variable labels
+varlabel(dat, lang="de")
+
+# display german variable label for brand
+varlabel(dat, var.name = "brand", lang="de")
+
+# define variable new labels
+varlabel(dat) <- letters[1:ncol(dat)]
+
+# display new variable labels
+varlabel(dat)
 }
 \author{
 Jan Marvin Garbuszus \email{jan.garbuszus@ruhr-uni-bochum.de}

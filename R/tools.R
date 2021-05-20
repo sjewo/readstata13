@@ -341,11 +341,11 @@ varlabel <- function(dat, var.name=NULL, lang=NA) {
 #' @rdname varlabel
 #' @export
 'varlabel<-' <- function(dat, value) {
-  nlabs <- length(attr(dat, "var.labels"))
+  nlabs <- ncol(dat)
   if (length(value)==nlabs) {
     attr(dat, "var.labels") <- value
   } else {
-      warning(paste("Vector of new labels must have",nlabs,"entries."))
+      warning(paste("Vector of new labels must have", nlabs, "entries."))
     }
   dat
 }

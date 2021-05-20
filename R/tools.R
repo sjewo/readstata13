@@ -310,7 +310,7 @@ set.label <- function(dat, var.name, lang=NA) {
 #' # display german variable label for brand
 #' varlabel(dat, var.name = "brand", lang="de")
 #' 
-#' # define variable new labels
+#' # define new variable labels
 #' varlabel(dat) <- letters[1:ncol(dat)]
 #'
 #' # display new variable labels

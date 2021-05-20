@@ -963,3 +963,41 @@ test_that("expansinon.fields", {
   # expect_equal(ef, dd103)
   # expect_equal(ef, dd102)
 })
+
+#### save and read varlabels  #### 
+
+if (readstata13:::dir.exists13("data")) {
+  unlink("data", recursive = TRUE)
+}
+dir.create("data")
+
+dd <- mtcars
+varlabeldd <- LETTERS[seq_len(ncol(dd))]
+varlabel(dd) <- varlabeldd
+
+version_list <- c(102,103,104,105,106,107,108,110,
+                  111,112,113,114,115,117,118,119)
+
+# write variable label attribute
+for(v in version_list) {
+  save.dta13(dd, paste0("data/dta_", v, ".dta"), version = v)
+}
+
+# read variable label attribute
+varlabeldd_read <- lapply(version_list, 
+                          function(v) {
+                            attr(read.dta13(paste0("data/dta_", v, ".dta")), 
+                                 "var.labels")
+                          })
+names(varlabeldd_read) <- as.character(version_list)
+  
+unlink("data", recursive = TRUE)
+
+test_that("save and read varlabels", {
+  
+  for(v in as.character(version_list)) {
+    expect_equal(varlabeldd, varlabeldd_read[[v]])
+  }
+  
+})
+

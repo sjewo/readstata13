@@ -8,7 +8,6 @@ save.dta13(
   data,
   file,
   data.label = NULL,
-  varlabels,
   time.stamp = TRUE,
   convert.factors = TRUE,
   convert.dates = TRUE,
@@ -16,7 +15,8 @@ save.dta13(
   add.rownames = FALSE,
   compress = FALSE,
   version = 117,
-  convert.underscore = FALSE
+  convert.underscore = FALSE,
+  varlabels = NULL
 )
 }
 \arguments{
@@ -25,8 +25,6 @@ save.dta13(
 \item{file}{\emph{character.} Path to the dta file you want to export.}
 
 \item{data.label}{\emph{character.} Name of the dta-file.}
-
-\item{varlabels}{\emph{character.} Character vector of size ncol(data).}
 
 \item{time.stamp}{\emph{logical.} If \code{TRUE}, add a time.stamp to the
 dta-file.}
@@ -56,6 +54,8 @@ thoroughly tested yet.}
 
 \item{convert.underscore}{\emph{logical.} If \code{TRUE}, all non numerics or
 non alphabet characters will be converted to underscores.}
+
+\item{varlabels}{\emph{character.} Character vector of size ncol(data).}
 }
 \value{
 The function writes a dta-file to disk. The following features of the

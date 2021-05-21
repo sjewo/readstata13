@@ -31,7 +31,7 @@ save.dta13(dat, file="newfile.dta")
 ```
 
 ## Development Version
-To install the current release from github you need the plattform specific build
+To install the current release from github you need the platform specific build
 tools. On Windows a current installation of
 [Rtools](https://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X
 users need to install

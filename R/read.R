@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
 # Copyright (C) of 'convert.dates' and 'missing.types' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it

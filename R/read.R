@@ -359,14 +359,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     
     convert_dt_q <- function(x) { 
       z <- x / 4 
-      qrt <- z - floor(z)
-      z <- 1960 + floor(z)
+      yr <- 1960 + floor(z)
       
-      z[qrt == 0.00] <- paste0(z[qrt == 0.00], "-1-1")
-      z[qrt == 0.25] <- paste0(z[qrt == 0.25], "-4-1")
-      z[qrt == 0.50] <- paste0(z[qrt == 0.50], "-7-1")
-      z[qrt == 0.75] <- paste0(z[qrt == 0.75], "-10-1")
+      qrt <- x %% 4 + 1
+      qrt_month <- c(1, 4, 7, 10)
       
+      z <- paste0(yr, "-", qrt_month[qrt], "-1")
       z <- as.Date(z, "%Y-%m-%d")
       if (any(is.na(z))) warning("conversion of %tq failed")
       z

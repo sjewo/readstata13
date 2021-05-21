@@ -274,7 +274,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   {
     uint32_t nsortlist = 0;
     
-    if ((release == 117) | (release == 118))
+    if ((release == 116) |(release == 117) | (release == 118))
       nsortlist = readbin((uint16_t)nsortlist, file, swapit);
     if (release == 119)
       nsortlist = readbin(nsortlist, file, swapit);

@@ -140,6 +140,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                        select.rows = NULL, select.cols = NULL,
                        strlexport = FALSE, strlpath = ".", tz = "GMT") {
 
+  # List to collect all warnings from factor conversion
+  collected_warnings <- list(misslab = NULL, floatfact = NULL)
+
   # Check if path is a url
   if (length(grep("^(http|ftp|https)://", file))) {
     tmp <- tempfile()
@@ -371,10 +374,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       if (labname %in% names(label)) {
         if((vartype == sdouble | vartype == sfloat)) {
           if(!nonint.factors) {
-            warning(paste0("\n  ",vnames[i], ":\n  Factor codes of type double ",
-                           "or float detected - no labels assigned.\n  Set ",
-                           "option nonint.factors to TRUE to assign labels ",
-                           "anyway.\n"))
+            
+            # collect variables which need a warning
+            collected_warnings[["floatfact"]] <- c(collected_warnings[["floatfact"]], vnames[i])
             next
           }
         }
@@ -384,9 +386,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
         #check for duplicated labels
         labcount <- table(names(labtable))
         if(any(labcount > 1)) {
-          warning(paste0("\n  ",vnames[i], ":\n  Duplicated factor levels ",
-                         "detected - generating unique labels.\n"))
+          
+          # collect variables which need a warning
+          collected_warnings[["dublifact"]] <- c(collected_warnings[["dublifact"]], vnames[i])
+
           labdups <- names(labtable) %in% names(labcount[labcount > 1])
+          
           # generate unique labels from assigned label and code number
           names(labtable)[labdups] <- paste0(names(labtable)[labdups],
                                              "_(", labtable[labdups], ")")
@@ -411,9 +416,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           attr(data, "val.labels")[i] <- gen.lab.name
 
         } else {
-          warning(paste0("\n  ",vnames[i], ":\n  Missing factor labels - no ",
-                         "labels assigned.\n  Set option generate.factors=T to ",
-                         "generate labels."))
+          # collect variables which need a warning
+          collected_warnings[["misslab"]] <- c(collected_warnings[["mislab"]],
+                                               vnames[i])
         }
       }
     }
@@ -424,5 +429,46 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     data[[1]] <- NULL
   }
 
+  ## issue warnings
+  #dublifact
+  if(length(collected_warnings[["dublifact"]]) > 0) {
+    dublifactvars <- paste(collected_warnings[["dublifact"]], collapse = ", ")
+    
+    warning(paste0("\n   Duplicated factor levels for variables\n\n",
+                   paste(strwrap(dublifactvars, 
+                                 width = 0.6 * getOption("width"), 
+                                 prefix = "   "), 
+                         collapse = "\n"),
+                 "\n\n   Unique labels for these variables have been generated.\n"))
+  }
+  
+  # floatfact
+  if(length(collected_warnings[["floatfact"]]) > 0) {
+    
+    floatfactvars <- paste(collected_warnings[["floatfact"]], collapse = ", ")
+    
+    warning(paste0("\n   Factor codes of type double or float detected in variables\n\n",
+              paste(strwrap(floatfactvars, 
+                            width = 0.6 * getOption("width"), 
+                            prefix = "   "), 
+                    collapse = "\n"),
+               "\n\n   No labels have been assigned.",
+               "\n   Set option 'nonint.factors = TRUE' to assign labels anyway.\n"))
+  }
+  # misslab
+  if(length(collected_warnings[["misslab"]]) > 0) {
+    
+    misslabvars <- paste(collected_warnings[["misslab"]], collapse = ", ")
+    
+    warning(paste0("\n   Missing factor labels for variables\n\n",
+                   paste(strwrap(misslabvars, 
+                                 width = 0.6 * getOption("width"), 
+                                 prefix = "   "), 
+                         collapse = "\n"),
+                 "\n\n   No labels have beend assigned.",
+                 "\n   Set option 'generate.factors=TRUE' to generate labels."))
+  }
+  
+  # return data.frame
   return(data)
 }

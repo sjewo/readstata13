@@ -347,14 +347,15 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     }
     
     convert_dt_m <- function(x) {
-      z <- x / 12
-      mth <- z - floor(z)
-      z <- 1960 + floor(z)
-      
-      for (i in 1:12)
-        z[mth == (i-1)/12] <- paste0(z[mth == (i-1)/12], "-",i, "-1")
-      
+      z <- x / 12 # divide by 12 to create months
+      # rounding to avoid missings
+      ref_month <- round(0:11/12, 5)
+      mth <- which(ref_month %in% round(z - floor(z), 5))
+      yr <- 1960 + floor(z)
+
+      z <- paste0(yr, "-", mth, "-1")
       z <- as.Date(z, "%Y-%m-%d")
+      if (is.na(z)) warning("conversion of %tm failed")
       z
     }
     
@@ -369,11 +370,13 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       z[qrt == 0.75] <- paste0(z[qrt == 0.75], "-10-1")
       
       z <- as.Date(z, "%Y-%m-%d")
+      if (is.na(z)) warning("conversion of %tq failed")
       z
     }
     
     convert_dt_y <- function(x) {
       z <- as.Date(paste0(x, "-1-1"), "%Y-%m-%d")
+      if (is.na(z)) warning("conversion of %ty failed")
       z
     }
 

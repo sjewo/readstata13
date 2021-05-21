@@ -60,7 +60,7 @@ devtools::install_github("sjewo/readstata13", ref="testing")
  | ------  | ----------------------------------------------------                          | 
  | 0.10.0  | fix for reading/writing of format 119                                         |
  |         | fix sortlist attribute for dta format 119                                     |
- |         | fix wrong test for compress option. In the past unwanted conversions to integer type might have happened.|
+ |         | fix compress option. In the past, unwanted conversions to integer type could occur.|
  |         | fix encoding issues in variable and data labels                               |
  |         | fix build on FreeBSD                                                          |
  |         | new feature: set variable labels in save.dta13                                |

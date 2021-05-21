@@ -348,9 +348,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     
     convert_dt_m <- function(x) {
       z <- x / 12 # divide by 12 to create months
-      # rounding to avoid missings
-      ref_month <- round(0:11/12, 5)
-      mth <- which(ref_month %in% round(z - floor(z), 5))
+      mth <- x %% 12 + 1
       yr <- 1960 + floor(z)
 
       z <- paste0(yr, "-", mth, "-1")

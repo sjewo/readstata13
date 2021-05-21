@@ -11,3 +11,5 @@ src/*.dll
 tests/*
 docs
 vignettes/res/*
+/doc/
+/Meta/

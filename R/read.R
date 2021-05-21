@@ -355,7 +355,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
       z <- paste0(yr, "-", mth, "-1")
       z <- as.Date(z, "%Y-%m-%d")
-      if (is.na(z)) warning("conversion of %tm failed")
+      if (any(is.na(z))) warning("conversion of %tm failed")
       z
     }
     
@@ -370,13 +370,13 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       z[qrt == 0.75] <- paste0(z[qrt == 0.75], "-10-1")
       
       z <- as.Date(z, "%Y-%m-%d")
-      if (is.na(z)) warning("conversion of %tq failed")
+      if (any(is.na(z))) warning("conversion of %tq failed")
       z
     }
     
     convert_dt_y <- function(x) {
       z <- as.Date(paste0(x, "-1-1"), "%Y-%m-%d")
-      if (is.na(z)) warning("conversion of %ty failed")
+      if (any(is.na(z))) warning("conversion of %ty failed")
       z
     }
 

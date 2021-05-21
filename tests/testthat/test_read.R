@@ -222,8 +222,8 @@ test_that("various datetime conversions", {
                 "2012-07-01")
     
   dd <- data.frame(td = as.Date(td),
-                   tc = as.POSIXct(tc),
-                   tc_hh_mm = as.POSIXct(tc_hh_mm),
+                   tc = as.POSIXct(tc, tz = "GMT"),
+                   tc_hh_mm = as.POSIXct(tc_hh_mm, tz = "GMT"),
                    ty = as.Date(ty),
                    tm = as.Date(tm),
                    tq = as.Date(tq))

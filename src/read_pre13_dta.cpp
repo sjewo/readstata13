@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2018 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the

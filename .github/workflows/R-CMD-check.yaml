@@ -74,7 +74,7 @@ jobs:
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("sessioninfo")
           # for vignette
-          remotes::install_cran("curl")
+          remotes::install_cran(c("curl", "magick"))
         shell: Rscript {0}
 
       - name: Session info

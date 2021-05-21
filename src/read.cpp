@@ -15,16 +15,9 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "string"
-#include <stdint.h>
-#include <fstream>
-#include "statadefines.h"
-#include "swap_endian.h"
-#include "readstata.h"
-#include "read_dta.h"
+#include <readstata.h>
 
 using namespace Rcpp;
-using namespace std;
 
 // Reads the binary Stata file
 //
@@ -33,7 +26,10 @@ using namespace std;
 // @import Rcpp
 // @export
 // [[Rcpp::export]]
-List stata_read(const char * filePath, const bool missing)
+List stata_read(const char * filePath, const bool missing,
+                const IntegerVector selectrows,
+                const CharacterVector selectcols,
+                const bool strlexport, const CharacterVector strlpath)
 {
   FILE *file = NULL;    // File pointer
 
@@ -47,7 +43,7 @@ List stata_read(const char * filePath, const bool missing)
     throw std::range_error("Could not open specified file.");
 
   /*
-   * check the first byte. continue if "<"
+   * check the first byte.
    */
 
   std::string fbit(1, '\0');
@@ -59,9 +55,10 @@ List stata_read(const char * filePath, const bool missing)
   List df(0);
 
   if (fbit.compare(expfbit) == 0)
-    df = read_dta(file, missing);
+    df = read_dta(file, missing, selectrows, selectcols,
+                  strlexport, strlpath);
   else
-    df = read_pre13_dta(file, missing);
+    df = read_pre13_dta(file, missing, selectrows, selectcols);
 
   fclose(file);
 

@@ -15,9 +15,11 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef READDTA_H
-#define READDTA_H
+#ifndef READPRE13DTA_H
+#define READPRE13DTA_H
 
-Rcpp::List read_dta(FILE * file, const bool missing);
+Rcpp::List read_pre13_dta(FILE * file, const bool missing,
+                          const Rcpp::IntegerVector selectrows,
+                          const Rcpp::CharacterVector selectcols);
 
 #endif

@@ -1,5 +1,67 @@
-testing
+[0.10.0]
+- fix sortlist attribute for dta format 119
+- fix compress option. In the past, unwanted conversions to integer type could occur.
+- fix encoding issues in variable and data labels
+- fix for reading/writing of format 119
+- fix build on FreeBSD
+- new feature: set variable labels in save.dta13   
+- new feature: improved handling of time and date formats
+- new feature: collect warnings from read.dta13
+
+[0.9.2]
+- fix build on OSX
+
+[0.9.1]
+- allow reading only pre-selected variables
+- experimental support for format 119
+- improve partial reading
+- export of binary data from dta-files
+- new function get.label.tables() to show all Stata label sets
+- fix check for duplicate labels
+- fixes in set.lang
+
+[0.9.0]
+- generate unique factor labels to prevent errors in factor definition
+- check interrupt for long read
+- fix storage size of character vectors in save.dta13
+- fix saving characters containing missings
+- implement partial reading of dta-files
+- fix an integer bug with saving data.frames of length requiring uint64_t
+
+0.8.5
+- fix errors on big-endian systems
+
+0.8.4
+- fix valgrind errors. converting from dta.write to writestr
+- fix for empty data label
+- make replace.strl default
+
+0.8.3
+- restrict length of varnames to 32 chars for compatibility with Stata 14
+- Stop compression of doubles as floats. Now test if compression of doubles as
+  interger types is possible.
+- add many function tests
+
+
+0.8.2
+- save NA values in character vector as empty string
+- convert.underscore=T will convert all non-literal characters to underscores
+- fix saving of Dates
+- save with convert.factors by default
+- test for NaN and inf values while writing missing values and replace with NA
+- remove message about saving factors
+
+0.8.1
+- convert non-integer variables to factors (nonint.factors=T)
+- working with strL variables is now a lot faster (thank to Magnus Thor Torfason)
+- fix handling of large datasets
+- some code cleanups
+
+0.8
 - implement reading all version prior 13.
+- clean up code.
+- fix a crash when varlables do not match ncols.
+- update leap seconds R code with foreign.
 
 0.7.1
 - fix saving of files > 2GB
@@ -7,7 +69,7 @@ testing
 0.7
 - read and write Stata 14 files (ver 118)
 - fix save for variables without non-missing values
-- read strings from different file encodings 
+- read strings from different file encodings
 - code cleanups
 
 0.6.1

@@ -27,6 +27,8 @@
 #define SBYTEORDER 1
 #endif
 
+#define swapit FALSE
+
 /*Define missings*/
 #define STATA_BYTE_NA_MIN -127
 #define STATA_BYTE_NA_MAX +100
@@ -52,6 +54,8 @@
 #define STATA_FLOAT 65527
 #define STATA_DOUBLE 65526
 
+#define STATA_STR 2045
+#define STATA_SHORT_STR 244
 #define STATA_STRL 32768
 
 #endif

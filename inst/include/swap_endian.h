@@ -1,7 +1,7 @@
 #ifndef SWAP_ENDIAN
 #define SWAP_ENDIAN
 
-#include <stdint.h>
+/*#include <stdint.h>*/
 #include <typeinfo>
 
 #define GCC_VERSION (__GNUC__ * 10000 \
@@ -34,20 +34,21 @@ T swap_endian(T t) {
     return __builtin_bswap64(t);
 
   union v {
-    double       d;
+    double      d;
     float       f;
-    uint64_t    i;
+    uint32_t    i32;
+    uint64_t    i64;
   } val;
 
   if (typeid(T) == typeid(float)){
     val.f = t;
-    val.i = __builtin_bswap32(val.i);
+    val.i32 = __builtin_bswap32(val.i32);
     return val.f;
   }
 
   if (typeid(T) == typeid(double)){
     val.d = t;
-    val.i = __builtin_bswap64(val.i);
+    val.i64 = __builtin_bswap64(val.i64);
     return val.d;
   }
 

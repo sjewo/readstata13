@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -15,25 +15,19 @@
  * with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "readstata.h"
-
+#include <readstata.h>
 
 using namespace Rcpp;
 using namespace std;
 
-//' Writes the binary Stata file
-//'
-//' @param filePath The full systempath to the dta file you want to export.
-//' @param dat an R-Object of class data.frame.
-//' @export
+// Writes the binary Stata file
+//
+// @param filePath The full systempath to the dta file you want to export.
+// @param dat an R-Object of class data.frame.
+// @export
 // [[Rcpp::export]]
 int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 {
-
-  // This bool was inteded to do a swap if you want to create a MSF-File on a
-  // LSF-machine. By default it should be 0 (no byteswap).
-  // bool swapit = strcmp(byteorder, SBYTEORDER);
-  bool swapit = 0;
 
   uint16_t k = dat.size();
   uint32_t n = dat.nrows();
@@ -53,7 +47,6 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
   List varLabels = dat.attr("var.labels");
   List vartypes = dat.attr("types");
 
-
   int8_t version = as<int>(dat.attr("version"));
 
 
@@ -61,43 +54,48 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
   if (dta.is_open())
   {
 
-    int32_t nformatslen = 49;
-    int32_t nvarnameslen = 33;
-    int32_t maxdatalabelsize = 81;
-    int32_t nvalLabelslen = 33;
-    int32_t nvarLabelslen = 81;
-    int32_t chlen = 33;
-    int32_t maxlabelsize = 32000;
+    uint32_t ndlabel = 81;
+    uint32_t nformatslen = 49;
+    uint32_t nvarnameslen = 33;
+    uint32_t nvalLabelslen = 33;
+    uint32_t nvarLabelslen = 81;
+    uint32_t chlen = 33;
+    uint32_t maxlabelsize = 32000;
+    uint32_t maxstrsize = 244;
+    if (version<111 || version==112)
+      maxstrsize = 80;
 
     switch(version)
     {
     case 102:
-      maxdatalabelsize = 30;
-      nformatslen = 7;
+      ndlabel = 30;
       nvarnameslen = 9;
+      nformatslen = 7;
       nvalLabelslen = 9;
-      nvarLabelslen = 33;
+      nvarLabelslen = 32;
       break;
     case 103:
     case 104:
-      maxdatalabelsize = 32;
-      nformatslen = 7;
+      ndlabel = 32;
       nvarnameslen = 9;
+      nformatslen = 7;
       nvalLabelslen = 9;
-      nvarLabelslen = 33;
+      nvarLabelslen = 32;
       break;
     case 105:
     case 106:// unknown version (SE?)
-      maxdatalabelsize = 32;
-      nformatslen = 12;
+      chlen = 9;
+      ndlabel = 32;
       nvarnameslen = 9;
+      nformatslen = 12;
       nvalLabelslen = 9;
-      nvarLabelslen = 33;
+      nvarLabelslen = 32;
       break;
     case 107: // unknown version (SE?)
     case 108:
-      nformatslen = 12;
+      chlen = 9;
       nvarnameslen = 9;
+      nformatslen = 12;
       nvalLabelslen = 9;
     case 110:
     case 111:
@@ -107,31 +105,31 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       break;
     }
 
-    writebin(version, dta, swapit);
+    writebin(version, dta, swapit);   // format
     writebin(byteorder, dta, swapit); // LSF
-    int8_t ft = 1;
+    int8_t ft = 1;                    // filetype
     writebin(ft, dta, swapit);
-    int8_t unused = 0;
+    int8_t unused = 0;                // unused
     writebin(unused, dta, swapit);
-    writebin(k, dta, swapit);
-    writebin(n, dta, swapit);
+    writebin(k, dta, swapit);         // nvars
+    writebin(n, dta, swapit);         // nobs
 
     /* write a datalabel */
-    if (datalabel.size() >= maxdatalabelsize)
-      Rcpp::warning("Datalabel to long. Resizing. Max size is %d.",
-                    maxdatalabelsize - 1);
+    if (datalabel.size() > ndlabel)
+      Rcpp::warning("Datalabel too long. Resizing. Max size is %d.",
+                    ndlabel - 1);
 
-    dta.write(datalabel.c_str(), maxdatalabelsize);
+    writestr(datalabel, ndlabel, dta);
 
     /* timestamp size is 17 */
     if (version > 104)
     {
       if (timestamp.size() > 18)
       {
-        Rcpp::warning("Timestamp to long. Dropping.");
+        Rcpp::warning("Timestamp too long. Dropping.");
         timestamp = "";
       }
-      dta.write(timestamp.c_str(),timestamp.size());
+      writestr(timestamp, timestamp.size(), dta);
     }
 
     /* <variable_types> ... </variable_types> */
@@ -186,10 +184,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       string nvarname = as<string>(nvarnames[i]);
 
       if (nvarname.size() > nvarnameslen)
-        Rcpp::warning("Varname to long. Resizing. Max size is %d",
+        Rcpp::warning("Varname too long. Resizing. Max size is %d",
                       nvarnameslen - 1);
 
-      dta.write(nvarname.c_str(),nvarnameslen);
+      writestr(nvarname, nvarnameslen, dta);
     }
 
     /* <sortlist> ... </sortlist> */
@@ -207,10 +205,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       string nformats = as<string>(formats[i]);
 
       if (nformats.size() > nformatslen)
-        Rcpp::warning("Formats to long. Resizing. Max size is %d",
+        Rcpp::warning("Formats too long. Resizing. Max size is %d",
                       nformatslen - 1);
 
-      dta.write(nformats.c_str(),nformatslen);
+      writestr(nformats, nformatslen, dta);
     }
 
     /* <value_label_names> ... </value_label_names> */
@@ -219,10 +217,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       string nvalLabels = as<string>(valLabels[i]);
 
       if (nvalLabels.size() > nvalLabelslen)
-        Rcpp::warning("Vallabel to long. Resizing. Max size is %d",
+        Rcpp::warning("Vallabel too long. Resizing. Max size is %d",
                       nvalLabelslen - 1);
 
-      dta.write(nvalLabels.c_str(), nvalLabelslen);
+      writestr(nvalLabels, nvalLabelslen, dta);
     }
 
     /* <variable_labels> ... </variable_labels> */
@@ -234,10 +232,10 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         nvarLabels = as<std::string>(varLabels[i]);
 
         if (nvarLabels.size() > nvarLabelslen)
-          Rcpp::warning("Varlabel to long. Resizing. Max size is %d",
+          Rcpp::warning("Varlabel too long. Resizing. Max size is %d",
                         nvarLabelslen - 1);
       }
-      dta.write(nvarLabels.c_str(),nvarLabelslen);
+      writestr(nvarLabels, nvarLabelslen, dta);
     }
 
 
@@ -248,8 +246,8 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
       int8_t datatype = 0;
       uint32_t len = 0;
 
-      if (chs.size()>0){
-        for (int32_t i = 0; i<chs.size(); ++i){
+      if (chs.size()>0) {
+        for (int32_t i = 0; i<chs.size(); ++i) {
 
           CharacterVector ch = as<CharacterVector>(chs[i]);
 
@@ -269,9 +267,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           else
             writebin(len, dta, swapit);
 
-          dta.write(ch1.c_str(), chlen);
-          dta.write(ch2.c_str(), chlen);
-          dta.write(ch3.c_str(), ch3.size()+1);
+          writestr(ch1, chlen, dta);
+          writestr(ch2, chlen, dta);
+          writestr(ch3, ch3.size()+1, dta);
 
         }
       }
@@ -298,7 +296,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // store numeric as Stata double (double)
         case 255:
         {
-          double val_d = as<NumericVector>(dat[i])[j];
+          double val_d = 0;
+
+          val_d = as<NumericVector>(dat[i])[j];
 
           if ( (val_d == NA_REAL) | R_IsNA(val_d) )
             val_d = STATA_DOUBLE_NA;
@@ -310,11 +310,15 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // float
         case 254:
         {
-          double val_d = as<NumericVector>(dat[i])[j];
-          float val_f = (float)(val_d);
+          double val_d = 0;
+          float  val_f = 0;
+
+          val_d = as<NumericVector>(dat[i])[j];
 
           if ((val_d == NA_REAL) | (R_IsNA(val_d)) )
             val_f = STATA_FLOAT_NA;
+          else
+            val_f = (float)(val_d);
 
           writebin(val_f, dta, swapit);
 
@@ -323,7 +327,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // store integer as Stata long (int32_t)
         case 253:
         {
-          int32_t val_l = as<IntegerVector>(dat[i])[j];
+          int32_t val_l = 0;
+
+          val_l = as<IntegerVector>(dat[i])[j];
 
           if ( (val_l == NA_INTEGER) | (R_IsNA(val_l)) )
           {
@@ -340,17 +346,15 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // int
         case 252:
         {
-          union v {
-            int32_t   l;
-            int16_t   i;
-          } val;
+          int16_t val_i = 0;
+          int32_t val_l = 0;
 
-          val.l = as<IntegerVector>(dat[i])[j];
+          val_l = as<IntegerVector>(dat[i])[j];
 
-          int16_t val_i = val.i;
-
-          if (val.l == NA_INTEGER)
+          if (val_l == NA_INTEGER)
             val_i = STATA_SHORTINT_NA;
+          else
+            val_i = val_l;
 
           writebin(val_i, dta, swapit);
 
@@ -359,20 +363,18 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           // byte
         case 251:
         {
-          union v {
-            int32_t   l;
-            int8_t    b;
-          } val;
+          int8_t  val_b = 0;
+          int32_t val_l = 0;
 
-          val.l = as<IntegerVector>(dat[i])[j];
+          val_l = as<IntegerVector>(dat[i])[j];
 
-          int8_t val_b = val.b;
-
-          if (val.l == NA_INTEGER) {
+          if (val_l == NA_INTEGER) {
             if (version>104)
               val_b = STATA_BYTE_NA;
             else
               val_b = STATA_BYTE_NA_104;
+          } else {
+            val_b = val_l;
           }
 
           writebin(val_b, dta, swapit);
@@ -382,17 +384,20 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         default:
         {
           int32_t len = vartypes[i];
-          /* FixMe: Storing the vector in b for each string. */
-          CharacterVector b = as<CharacterVector>(dat[i]);
-          string val_s = as<string>(b[j]);
+
+          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
+
+          if(val_s == "NA")
+            val_s.clear();
+
           // Stata 6-12 can only store 244 byte strings
-          if(val_s.size()>244)
+          if(val_s.size()>maxstrsize)
           {
-            Rcpp::warning("Character Var.to long. Resizing. Max size is 244.");
-            val_s.resize(244);
-            len = 244;
+            Rcpp::warning("Character value too long. Resizing. Max size is %d.",
+                          maxstrsize);
           }
-          dta.write(val_s.c_str(),len);
+
+          writestr(val_s, len, dta);
           break;
         }
 
@@ -402,7 +407,7 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
 
     /* <value_labels> ... </value_labels> */
-    if (labeltable.size()>0 & version>105)
+    if ((labeltable.size()>0) & (version>105))
     {
 
       CharacterVector labnames = labeltable.attr("names");
@@ -425,7 +430,9 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         for (int32_t i = 0; i < labelText.size(); ++i)
         {
           string label = as<string>(labelText[i]);
-          int32_t labellen = label.size()+1;
+          uint32_t labellen = label.size()+1;
+          if (labellen > maxlabelsize+1)
+            labellen = maxlabelsize+1;
           txtlen += labellen;
           off.push_back ( txtlen-labellen );
         }
@@ -437,8 +444,8 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
 
         writebin(nlen, dta, swapit);
 
-        dta.write(labname.c_str(), nvarnameslen);
-        dta.write((char*)&padding,3);
+        writestr(labname, nvarnameslen, dta);
+        writestr((char*)&padding, 3, dta);
         writebin(N, dta, swapit);
         writebin(txtlen, dta, swapit);
 
@@ -459,11 +466,13 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
           string labtext = as<string>(labelText[i]);
           if (labtext.size() > maxlabelsize)
           {
-            Rcpp::warning("Label to long. Resizing. Max size is 32,000.");
-            labtext.resize(maxlabelsize -1);
+            Rcpp::warning("Label too long. Resizing. Max size is %d",
+                          maxlabelsize);
+            labtext.resize(maxlabelsize);
+            // labtext[labtext.size()] = '\0';
           }
 
-          dta.write(labtext.c_str(), labtext.size()+1);
+          writestr(labtext, labtext.size()+1, dta);
         }
       }
 

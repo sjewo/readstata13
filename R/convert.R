@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) of 'convert_dt_c' and 'convert_dt_C' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -27,6 +28,12 @@ convert_dt_C <- function(x, tz) {
   as.POSIXct(z, origin = "1960-01-01", tz = tz)
 }
 
+# Convert Stata format %tm integer to R date.
+# Uses the first day of month.
+#
+# @param x element to be converted
+# @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+# @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 convert_dt_m <- function(x) {
   z <- x / 12 # divide by 12 to create years
   mth <- x %% 12 + 1
@@ -38,6 +45,12 @@ convert_dt_m <- function(x) {
   z
 }
 
+# Convert Stata format %tq integer to R date.
+# Uses the first month and day of quarter.
+#
+# @param x element to be converted
+# @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+# @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 convert_dt_q <- function(x) { 
   z <- x / 4 
   yr <- 1960 + floor(z)
@@ -51,6 +64,12 @@ convert_dt_q <- function(x) {
   z
 }
 
+# Convert Stata format %ty integer to R date
+# Uses the first month and day of year.
+#
+# @param x element to be converted
+# @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
+# @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 convert_dt_y <- function(x) {
   z <- as.Date(paste0(x, "-1-1"), "%Y-%m-%d")
   if (any(is.na(z))) warning("conversion of %ty failed")

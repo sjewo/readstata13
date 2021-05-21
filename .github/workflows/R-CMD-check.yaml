@@ -45,7 +45,7 @@ jobs:
         with:
           r-version: ${{ matrix.config.r }}
           http-user-agent: ${{ matrix.config.http-user-agent }}
-          
+
       - uses: r-lib/actions/setup-pandoc@master
 
       - name: Query dependencies
@@ -62,7 +62,7 @@ jobs:
           path: ${{ env.R_LIBS_USER }}
           key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
-          
+
       - name: Install Curl dependency
         if: runner.os == 'Linux'
         run: |
@@ -74,7 +74,7 @@ jobs:
           remotes::install_cran("rcmdcheck")
           remotes::install_cran("sessioninfo")
           # for vignette
-          remotes::install_cran(c("curl", "magick"))
+          remotes::install_cran("curl")
         shell: Rscript {0}
 
       - name: Session info

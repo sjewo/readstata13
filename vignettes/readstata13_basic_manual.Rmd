@@ -148,9 +148,9 @@ dat4 <- read.dta13("res/Stata.dta", strlexport = TRUE, strlpath = "res")
 dir("res")
 readLines("res/15_1")
 
-library(magick)
-img <- image_read("res/16_1")
-plot(img)
+library(png)
+img <- readPNG("res/16_1")
+grid::grid.raster(img)
 ```
 
 We do not append a file extension to this export, because a specific file type is not known (and may be different for each cell). Therefore, the binary file is named only by its position in the data (15_1 is 15th variable and 1st observation), leaving the user the to choose how to open it. In this example, the first file is a txt file and the second is a png file. Right now, both the blog post and this example are just prove of concept and neither of us have encountered such a file. This leaves room for improvements on both the Stata and the R sides.[^8]

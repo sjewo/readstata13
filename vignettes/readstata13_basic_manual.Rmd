@@ -19,17 +19,19 @@ knitr::opts_chunk$set(
 )
 ```
 
-Due to changes in the Stata 13 dta-file format former import methods using `foreign` did not work anymore with files created by Stata releases after version 12. Starting with Stata 13 the dta-format uses a format similar to xml-files.^[The dta-format for recent releases is well documented at http://www.stata.com/help.cgi?dta and in the coresponding handbooks as well.]  Parts of the content are structured in XML-like brackets, e.g. `<N>1</N>` could be the number of observations in the dta-file. Since neither of us, the package is co-authored by my friend and former colleague Sebastian Jeworutzki, did know a lot about writing C-code and I was playing around with Rcpp at the time, we gave it a swing and created what since then has become kind of a Swiss knife for dta-file handling in R. Among the many features are:
+Due to changes in the Stata 13 dta file format, former import methods using the `foreign` package do not work anymore with files created by Stata releases after version 12. Starting with Stata 13, the dta format looks similar to xml files.[^1] Portions of the content are structured like XML nodes, e.g. `<N>1</N>` could be the number of observations in the dta file. Since neither of us, the package is co-authored by my friend and former colleague Sebastian Jeworutzki, knew much about writing C code, and I was playing around with Rcpp at the time, we took a stab at it and created what has since become a sort of Swiss Army knife for handling dta files in R. Among the many features are:
 
-- importing dta-files of all previously known and many unknown and undocumented file formats. This includes both reading and writing of said files
-- handling of many dta features like string encodings, multilingual labels, business calendars, long strings (called strL) and even handling of embedded binary data
+[^1]: The dta format for current versions is well documented at <http://www.stata.com/help.cgi?dta> and also in the corresponding manuals.
 
-Created as a drop in replacement for `foreign`s dta reading we included many additional features to improve handling of labels (label generation) and partial reading to allow reading only selected rows or variables.
+-   Importing dta files of all previously known and many unknown and undocumented file formats. This includes both reading and writing of the mentioned files.
+-   Handling of many dta features like string encoding, multilingual labels, business calendars, long strings (called strL) and even handling of embedded binary data.
 
+Created as a drop-in replacement for `foreign`s dta reading we included many additional features to improve label handling (label generation) and partial reading to read only selected rows or variables.
 
 ## Basic reading and writing
 
-Similar to `foreign` one can use `read.dta13` to import a file.
+Similar to `foreign`, you can use `read.dta13` to import a file.
+
 ```{R}
 data (cars)
 
@@ -40,23 +42,26 @@ save.dta13(cars, file = "res/cars.dta")
 dat <- read.dta13("res/cars.dta")
 ```
 
-While often the imported data is of single interest to the user, additional information is available as attributes to the file.
+While often only the imported data is of interest to the user, additional information is available in the attributes of the imported file.
 
 ```{R}
+# prints the attributes
 attributes(dat)
 ```
 
-Easily to spot, this file is created with format 117, which was implemented in Stata 13 and can be handled by all later Stata releases. The attributes contain the datalabel a string Stata users can see, a time stamp and formats and types requires to display the data. In this case the `save.dta13` wrote a binary `double` since the data type in R is `numeric`. Byte order refers to endianness. This file was created using little endian, but we cover reading and writing on both.^[https://en.wikipedia.org/wiki/Endianness]
+It is easy to see that this file was created using format 117, which was implemented in Stata 13 and can be processed by all later versions of Stata. The attributes include the data label, a string that Stata users can see, a timestamp, and formats and types needed to represent the data in Stata. In this case, the `save.dta13` function used binary `double`s to write the data, because the data type in R is `numeric`. The byte order refers to endianness. This file was created with Little Endian, but we handle reads and writes on both.[^2]
 
-Reading and writing takes care of the conversion of missing values, value labels and variable labels.
+[^2]: A detailed explanation can be found here: <https://en.wikipedia.org/wiki/Endianness>.
+
+The read and write takes care of the conversion of missing values, value labels and variable labels.
 
 ## Version
 
-Since we were forced to write our own dta-file reader, we made sure to be able to write files readable for previous Stata releases. This can be done using the `version` argument in `save.dta13`. Available versions are
+Since we were forced to write our own dta-file reader, we made sure that we could write files that were readable by earlier versions of Stata. This can be achieved with the `version` argument in `save.dta13`. Available versions are
 
 | version | format |
-| ------- | ------ |
-| 15      | 118    |
+|---------|--------|
+| 16 & 15 | 118    |
 | 14      | 118    |
 | 13      | 117    |
 | 12      | 115    |
@@ -65,36 +70,40 @@ Since we were forced to write our own dta-file reader, we made sure to be able t
 | 7       | 110    |
 | 6       | 108    |
 
-These are just the versions and formats users are most likely to want. We support every format included in Stata releases. The minimal format we support is `102` (Stata 1), the maximum the experimental `119` (only readable by Stata 15/MP^[If you have access to this release, please contact us! We would love to test if our implementation works as expected.] and by us). In a long abandoned branch on github we even supported reading of the never released format `116`, for which a single public available Stata example file exists. Over the years the format has changed, allowing more observations (sometimes introduced in SE releases of Stata), longer strings, variable names, labels etc. We support reading every file format, though we currently do not control for Statas limits. Unless you want to play around or know that your data fits into the specific version of Stata you are targeting for, it is a good idea to not select versions < 7 or formats < 110 which is the default in `foreign::write.dta`.
+These are only the versions and formats that users are most likely to want. We support any format that is included in Stata versions. The minimum format we support is `102` (Stata 1), the maximum is the untested `119` (only readable by Stata 15 & 16 MP[^3] and by us).[^4] Over the years, the format has changed to allow more observations (sometimes introduced in SE and MP releases of Stata), longer strings, variable names, labels, etc. We support reading any file format, although we currently have no control overy Stata's limits. If you do not want to play around or do not know that your data will fit in the specific version of Stata you are targeting, it is a good idea not to choose versions \< 7 or formats \< 110, which is the default in `foreign::write.dta`.
+
+[^3]: If you have access to this release, please contact us! We would love to test if our implementation works as expected.
+
+[^4]: In a branch on github, we even support reading of the never released `116` format, for which a single publicly available Stata sample file exists.
 
 ```{r}
+# save a Stata 7 dta file
 save.dta13(cars, "res/cars_version.dta", version = 7)
 
+# read this file and print the format
 dat3 <- read.dta13("res/cars_version.dta")
-
 attr(dat3, "version")
 ```
 
 ## Partial reading
 
-Over the years data files have become larger and larger. In the early days of Stata the maximum number of observations was stored as `uint32_t` and the variables as `uint16_t`. This allows a maximum number of 4,294,967,295 observations and 65,535 variables. Nowadays the limit is `uint64_t` for observations (18,446,744,073,709,551,615) and `uint32_t` for variables. Thus it is easier to store large datasets in a single file, but the benefits of storing data easily bring longer importing times and limited memory as bottlenecks. Even though on recent workstations handling of gigabyte wise data works, not everyone of us wants to invest into such a workstation especially if you only need a fraction of the data set. In such a case `readstata13` now provides selections for ranges of observations (the first/last n observations or e.g. rows 5-10) and selections of specific variables.
-
+Over the years, data files have grown in size. In the early days of Stata, the maximum number of observations was stored as `uint32_t` and the variables as `uint16_t`. This allowed a maximum number of 4,294,967,295 observations and 65,535 variables. Nowadays the limit is `uint64_t` for observations (18,446,744,073,709,551,615) and `uint32_t` for variables. Thus it is easier to store large data sets in a single file, but the advantages of simply storing data come with longer import times and limited memory as bottlenecks. Even though handling gigabyte-wide data works on newer workstation, not all of us want to invest in such a workstation, especially if we only need a fraction of the data set. For such a case `readstata13` offers selections for ranges of observations (the first/last n observations or e.g. rows 5-10) and selections of specific variables.
 
 ```{r}
-
+# read rows 1 to 3
 dat_1 <- read.dta13("res/cars.dta", select.rows = c(1,3)); dat_1
 
+# read only variable "dist"
 dat_2 <- read.dta13("res/cars.dta", select.cols = "dist"); head(dat_2)
-
 ```
 
-A real life example where the selection of certain variables is helpful is the SOEP dataset.^[https://www.diw.de/soep] The dataset is split among different files, the best way is possible to think of it is as tables of a database. As usually in a database environment you need to make some connections between the files and therefore need to know some key variables of different files. The data set is conducted since 1984 and has grown a lot, with many cases and many variables in different files. Selecting a specific variable out of a file, resulted in reading the full file (all n cases and k variables), extracting the variable and removing all the other variables. The import of such a large file takes quite a while and the import results in a large R object not even wanted. With a selection of variables it is possible to only import the data wanted, skipping everything else, making it fast and memory efficient.
+A real-world example where the selection of certain variables is helpful is the SOEP dataset.[^5] The dataset is divided among different files, it is best to think of it as tables in a database. As is common in a database environment, you need to make some connections between the files and therefore need to know some key variables of different files. The dataset has been collected annually since 1984 and has grown a lot, with many cases and many variables in different files. Selecting a particular variable from a file resulted in reading the entire file (all *n* cases and *k* variables), extracting the variable, and removing all other variables. Importing such a large file takes quite a while, and the import results in a large R object that is not needed at all. With a selection of variables, it is possible to import only the data you want and skip everything else, making the import process fast and memory efficient.
 
+[^5]: The SOEP is currently located at the DIW Berlin <https://www.diw.de/soep_en>.
 
 ## Compress
 
-If you want to preserve storage size for the files you write, you can tell `save.dta13` to use the smallest available type for writing a file using `compress = TRUE`.
-
+If you want to minimize the memory size for the written files, you can instruct `save.dta13` with `compress = TRUE` to use the smallest available type for writing a file.
 
 ```{r}
 # save with compression
@@ -105,19 +114,23 @@ dat2 <- read.dta13(file = "res/cars_compress.dta")
 attr(dat2, "types")
 ```
 
-Initially `save.dta13` evaluated that it is save to store the `numeric` vector as an `integer`. In a second stage the smallest binary type was selected. For the R user the only notably change is that after a reimport, the former `numeric` has become an `integer`. The most notable change is the file size of the dta-file written.
+First `save.dta13` evaluated that it is save to store the `numeric` vector as an `integer`. In a second step, the smallest binary type was chosen. For the R user, the only notable change is that after a re-import, the former `numeric` has become an `integer`. The most significant change is the file size of the written dta file.
 
 ```{r}
-file.info("cars.dta")["size"]
-file.info("cars_compress.dta")["size"]
+file.info("res/cars.dta")["size"]
+file.info("res/cars_compress.dta")["size"]
 
 ```
 
 ## Long strings (strl)
 
-Stata 13 brought long strings to the Stata world. Such strings stored below the data part of the dta-file. Keeping the data part compact containing only a reference to the strl stored below. Since such strings are capable of storing entire novels we leave the decision, how to handle such files to the user. By default they are replaced, if unwanted they are stored as attribute below the text.
+With Stata 13, long strings were introduced into the Stata world. Such strings are stored in the dta file below the data part. This keeps the data part compact and this contains only a reference to the string stored below it. Since such strings are capable of storing entire novels, we leave the decision of how to handle such files to the user. By default they are replaced, if not desired they are stored as an attribute to the R-Object.
 
-In a blog post Stata explained how it is possible to store binary data in strls.^[https://www.stata.com/stata-news/news31-4/spotlight/] This is allows to save images, videos, audio or simply txt files next to the data. Though interesting, it currently is not possible to handle such data in a `data.frame` in R.^[Part of it is, that there exists no R vector object capable of image processing and R's `character` vector is not exactly a good place to store binary data. Which is also why we are (currently) unavailable to create such a file from within R.] Since `readstata13` release `0.9.1` we are able to export such files to a user specified folder, by default the current working directory.
+In a blog post, Stata explained how it is possible to store binary data in strls.[^6] This allows image, video, audio or txt files to be stored alongside the data. Although interesting, it is currently not possible to handle such data in a `data.frame` in R.[^7] Since `readstata13` release `0.9.1` we can export such files to a user defined folder, by default the current working directory.
+
+[^6]: The blog post describes how physicians could use the feature to store images of X-rays alongside patient data. "In the spotlight: Storing long strings and entire files in Stata datasets" <https://www.stata.com/stata-news/news31-4/spotlight/>.
+
+[^7]: Part of it is that there is no R vector object capable of image processing, and R's `character` vector is not exactly a good place to store binary data. This is also why we are (currently) not able to create such a file from R.
 
 ```{r}
 # download an example created for demonstration purposes
@@ -130,20 +143,21 @@ unzip("res/Stata_dta.zip", exdir = "res")
 dat4 <- read.dta13("res/Stata.dta", strlexport = TRUE, strlpath = "res")
 
 
-## content of both. First is a txt file second a png.
+# # content of both. First is a txt file second a png.
 # dir()
-# readLines("15_1")
+# readLines("res/15_1")
 # 
 # library(png)
-# img <- readPNG('16_1')
+# img <- readPNG('res/16_1')
 # grid::grid.raster(img)
 
 
 ```
 
-We do not append a file ending during our export, since a specific file type is not known (and can be different for every cell). Therefore the binary file is only named after its position in the data (15_1 is 15th variable and 1st observation) and leaves the user the choice how to open it. In this example the first one is a txt-file and the second one a png. For now, both - the blog post and this example - are merely a prove of concept and none of us has come across such a file. This leaves space for improvements coming in the future on both the Stata and the R side.^[In Stata format 116 they already experimented with blobs (binary large objects), now they are possible, so who knows what the future might bring.]
+We do not append a file extension to this export, because a specific file type is not known (and may be different for each cell). Therefore, the binary file is named only by its position in the data (15_1 is 15th variable and 1st observation), leaving the user the to choose how to open it. In this example, the first file is a txt file and the second is a png file. Right now, both the blog post and this example are just prove of concept and neither of us have encountered such a file. This leaves room for improvements on both the Stata and the R sides.[^8]
+
+[^8]: Blobs (binary large objects) have already been experimented with in Stata format 116, now they are possible, so who knows what the future will bring.
 
 ```{r include=FALSE}
 unlink("res/", recursive = TRUE)
 ```
-

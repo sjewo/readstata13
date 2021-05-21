@@ -205,6 +205,11 @@ test_that("various datetime conversions", {
                 "2011-04-09 19:35:00",
                 "2012-02-16 02:15:00",
                 "2012-08-02 11:59:00")
+  ty       <- c("2011-01-01",
+                "2011-01-01",
+                "2011-01-01",
+                "2012-01-01",
+                "2012-01-01")
   tm       <- c("2011-06-01",
                 "2011-03-01",
                 "2011-04-01",
@@ -219,6 +224,7 @@ test_that("various datetime conversions", {
   dd <- data.frame(td = as.Date(td),
                    tc = as.POSIXct(tc),
                    tc_hh_mm = as.POSIXct(tc_hh_mm),
+                   ty = as.Date(ty),
                    tm = as.Date(tm),
                    tq = as.Date(tq))
   dddates <- read.dta13(datetime, convert.dates = TRUE)

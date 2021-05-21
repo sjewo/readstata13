@@ -23,6 +23,7 @@
 
 . generate admonth = month(admit)
 . generate adyear = year(admit)
+. format adyear %ty // inserted by me
 . list admit admonth adyear
 
 . generate monthly = ym(adyear,admonth)
@@ -46,8 +47,8 @@
 
 
 // trim down
-. keep dob disch_time admit_time monthly quarterly
+. keep dob adyear disch_time admit_time monthly quarterly
 // rename
-. rename (dob admit_time disch_time monthly quarterly ) (td tc tc_hh_mm tm tq)
+. rename (dob admit_time disch_time monthly quarterly adyear) (td tc tc_hh_mm tm tq ty)
 // save
 save "readstata13/inst/extdata/datetime.dta", replace

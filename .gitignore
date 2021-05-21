@@ -9,3 +9,4 @@ src/*.dll
 .swp
 .*.Rnb.cached
 tests/*
+docs

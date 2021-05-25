@@ -63,7 +63,6 @@ devtools::install_github("sjewo/readstata13", ref="testing")
  |         | fix compress option. In the past, unwanted conversions to integer type could occur.|
  |         | fix encoding issues in variable and data labels                               |
  |         | fix build on FreeBSD                                                          |
- |         | new feature: set variable labels in save.dta13                                |
  |         | new feature: improved handling of time and date formats                       |
  |         | new feature: collect warnings from read.dta13                                 |
  |         |                                                                               |

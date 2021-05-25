@@ -4,7 +4,6 @@
 - fix encoding issues in variable and data labels
 - fix for reading/writing of format 119
 - fix build on FreeBSD
-- new feature: set variable labels in save.dta13   
 - new feature: improved handling of time and date formats
 - new feature: collect warnings from read.dta13
 

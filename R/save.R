@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -63,7 +63,7 @@
 #'  \code{memisc} for dta files from Stata versions < 13 and \code{read_dta} in
 #'  package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
-#'  \url{http://www.stata.com/help.cgi?dta}
+#'  \url{https://www.stata.com/help.cgi?dta}
 #' @examples
 #' \dontrun{
 #'   library(readstata13)

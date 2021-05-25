@@ -31,11 +31,11 @@ save.dta13(dat, file="newfile.dta")
 ```
 
 ## Development Version
-To install the current release from github you need the plattform specific build
+To install the current release from github you need the platform specific build
 tools. On Windows a current installation of
 [Rtools](https://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X
 users need to install
-[Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
+[Xcode](https://apps.apple.com/us/app/xcode/id497799835).
 
 ```R
 # install.packages("devtools")
@@ -63,7 +63,6 @@ devtools::install_github("sjewo/readstata13", ref="testing")
  |         | fix compress option. In the past, unwanted conversions to integer type could occur.|
  |         | fix encoding issues in variable and data labels                               |
  |         | fix build on FreeBSD                                                          |
- |         | new feature: set variable labels in save.dta13                                |
  |         | new feature: improved handling of time and date formats                       |
  |         | new feature: collect warnings from read.dta13                                 |
  |         |                                                                               |

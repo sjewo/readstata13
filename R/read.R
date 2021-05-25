@@ -1,4 +1,5 @@
-# Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+#
+# Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
 # Copyright (C) of 'convert.dates' and 'missing.types' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -120,11 +121,11 @@
 #' versions < 13 and \code{read_dta} in package \code{haven} for Stata version
 #'  >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
-#'  \url{http://www.stata.com/help.cgi?dta}
+#'  \url{https://www.stata.com/help.cgi?dta}
 #' @examples
 #' \dontrun{
 #'   library(readstata13)
-#'   r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+#'   r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
 #' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}

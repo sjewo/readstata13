@@ -7,12 +7,11 @@
 on:
   push:
     branches:
-      - master
+      - main
       - testing
-      - prepare_release
   pull_request:
     branches:
-      - master
+      - main
       - testing
 
 name: R-CMD-check

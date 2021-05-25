@@ -63,7 +63,7 @@
 #'  \code{memisc} for dta files from Stata versions < 13 and \code{read_dta} in
 #'  package \code{haven} for Stata version >= 13.
 #' @references Stata Corp (2014): Description of .dta file format
-#'  \url{http://www.stata.com/help.cgi?dta}
+#'  \url{https://www.stata.com/help.cgi?dta}
 #' @examples
 #' \dontrun{
 #'   library(readstata13)

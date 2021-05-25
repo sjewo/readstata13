@@ -35,7 +35,7 @@ To install the current release from github you need the platform specific build
 tools. On Windows a current installation of
 [Rtools](https://cran.r-project.org/bin/windows/Rtools/) is necessary, while OS X
 users need to install
-[Xcode](https://itunes.apple.com/us/app/xcode/id497799835). 
+[Xcode](https://apps.apple.com/us/app/xcode/id497799835).
 
 ```R
 # install.packages("devtools")

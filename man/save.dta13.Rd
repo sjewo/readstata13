@@ -84,7 +84,7 @@ into a dta-file.
 }
 \references{
 Stata Corp (2014): Description of .dta file format
- \url{http://www.stata.com/help.cgi?dta}
+ \url{https://www.stata.com/help.cgi?dta}
 }
 \seealso{
 \code{\link[foreign]{read.dta}} in package \code{foreign} and

@@ -148,12 +148,12 @@ read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 \examples{
 \dontrun{
   library(readstata13)
-  r13 <- read.dta13("http://www.stata-press.com/data/r13/auto.dta")
+  r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
 } 
 }
 \references{
 Stata Corp (2014): Description of .dta file format
- \url{http://www.stata.com/help.cgi?dta}
+ \url{https://www.stata.com/help.cgi?dta}
 }
 \seealso{
 \code{\link[foreign]{read.dta}} in package \code{foreign} and

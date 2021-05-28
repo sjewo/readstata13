@@ -74,7 +74,7 @@ As Stata supports multi-language files, labels might be provided for different l
 # Show available and default language 
 get.lang(x)
 
-# create factor with german labels
+# create factor with German labels
 x$type_de <- set.label(x, "type", lang = "de")
 
 # display results
@@ -85,8 +85,8 @@ x[, c("type", "type_en", "type_de")]
 
 ## Compability with other packages
 
-```{r}
-# version > 2.8.0
+```{r, eval = packageVersion("labelled")>"2.8.0"}
+# version > 2.8.0 is needed due to a bug in to_label
 library(labelled)
 
 xl <- read.dta13(system.file("extdata/statacar.dta", package = "readstata13"),
@@ -98,7 +98,7 @@ xl
 
 Packages like `expss` use the stored labels to produce descriptive headers in tables or to label the axis of a graph.
 
-```{r}
+```{r, eval = packageVersion("labelled")>"2.8.0"}
 library(expss)
 #xl <- add_labelled_class(xl) 
 

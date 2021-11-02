@@ -153,46 +153,50 @@ for all variables.</p></td>
 <p>Sebastian Jeworutzki <a href='mailto:sebastian.jeworutzki@ruhr-uni-bochum.de'>sebastian.jeworutzki@ruhr-uni-bochum.de</a></p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='read.dta13.html'>read.dta13</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata/statacar.dta"</span>, package<span class='op'>=</span><span class='st'>"readstata13"</span><span class='op'>)</span>,
-                  convert.factors<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span>
-
-<span class='co'># display variable labels </span>
-<span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;                       id                    brand                    model 
-#&gt;             "Numeric ID"           "Brand of car"              "Car model" 
-#&gt;                     type                       hp                      max 
-#&gt;     "Car classification"            "Horse Power"          "Maximum speed" 
-#&gt;                  mileage                     ecar                    ldate 
-#&gt;                       ""                       ""            "Launch date" 
-#&gt;                 ldatecal                modelStrL 
-#&gt; "Launch date (calendar)"                       "" </div><div class='input'>
-<span class='co'># display german variable labels</span>
-<span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span>, lang<span class='op'>=</span><span class='st'>"de"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;                            id                         brand 
-#&gt;               "Numerische ID"             "Herstellermarke" 
-#&gt;                         model                          type 
-#&gt;                  "Automodell"              "Klassifikation" 
-#&gt;                            hp                           max 
-#&gt;               "Pferdestärken"       "Höchstgeschwindigkeit" 
-#&gt;                          &lt;NA&gt;                          &lt;NA&gt; 
-#&gt;                            NA                            NA 
-#&gt;                         ldate                      ldatecal 
-#&gt;            "Einführungsdatum" "Einführungsdatum (Kalender)" 
-#&gt;                          &lt;NA&gt; 
-#&gt;                            NA </div><div class='input'>
-<span class='co'># display german variable label for brand</span>
-<span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span>, var.name <span class='op'>=</span> <span class='st'>"brand"</span>, lang<span class='op'>=</span><span class='st'>"de"</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;             brand 
-#&gt; "Herstellermarke" </div><div class='input'>
-<span class='co'># define new variable labels</span>
-<span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span><span class='op'>]</span>
-
-<span class='co'># display new variable labels</span>
-<span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span>
-</div><div class='output co'>#&gt;        id     brand     model      type        hp       max   mileage      ecar 
-#&gt;       "a"       "b"       "c"       "d"       "e"       "f"       "g"       "h" 
-#&gt;     ldate  ldatecal modelStrL 
-#&gt;       "i"       "j"       "k" </div></pre>
+    <pre class="examples"><span class='r-in'><span class='va'>dat</span> <span class='op'>&lt;-</span> <span class='fu'><a href='read.dta13.html'>read.dta13</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/system.file.html'>system.file</a></span><span class='op'>(</span><span class='st'>"extdata/statacar.dta"</span>, package<span class='op'>=</span><span class='st'>"readstata13"</span><span class='op'>)</span>,</span>
+<span class='r-in'>                  convert.factors<span class='op'>=</span><span class='cn'>FALSE</span><span class='op'>)</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># display variable labels </span></span>
+<span class='r-in'><span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                       id                    brand                    model </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             "Numeric ID"           "Brand of car"              "Car model" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                     type                       hp                      max </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     "Car classification"            "Horse Power"          "Maximum speed" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                  mileage                     ecar                    ldate </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                       ""                       ""            "Launch date" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                 ldatecal                modelStrL </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "Launch date (calendar)"                       "" </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># display german variable labels</span></span>
+<span class='r-in'><span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span>, lang<span class='op'>=</span><span class='st'>"de"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                            id                         brand </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>               "Numerische ID"             "Herstellermarke" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                         model                          type </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                  "Automodell"              "Klassifikation" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                            hp                           max </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>               "Pferdestärken"       "Höchstgeschwindigkeit" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                          &lt;NA&gt;                          &lt;NA&gt; </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                            NA                            NA </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                         ldate                      ldatecal </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>            "Einführungsdatum" "Einführungsdatum (Kalender)" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                          &lt;NA&gt; </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>                            NA </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># display german variable label for brand</span></span>
+<span class='r-in'><span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span>, var.name <span class='op'>=</span> <span class='st'>"brand"</span>, lang<span class='op'>=</span><span class='st'>"de"</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>             brand </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span> "Herstellermarke" </span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># define new variable labels</span></span>
+<span class='r-in'><span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span> <span class='op'>&lt;-</span> <span class='va'>letters</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span><span class='op'>]</span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># display new variable labels</span></span>
+<span class='r-in'><span class='fu'>varlabel</span><span class='op'>(</span><span class='va'>dat</span><span class='op'>)</span></span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>        id     brand     model      type        hp       max   mileage      ecar </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "a"       "b"       "c"       "d"       "e"       "f"       "g"       "h" </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>     ldate  ldatecal modelStrL </span>
+<span class='r-out co'><span class='r-pr'>#&gt;</span>       "i"       "j"       "k" </span>
+</pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

@@ -466,7 +466,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                                  width = 0.6 * getOption("width"), 
                                  prefix = "   "), 
                          collapse = "\n"),
-                 "\n\n   No labels have beend assigned.",
+                 "\n\n   No labels have been assigned.",
                  "\n   Set option 'generate.factors=TRUE' to generate labels."))
   }
   

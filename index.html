@@ -19,6 +19,8 @@
 <![endif]-->
 </head>
 <body data-spy="scroll" data-target="#toc">
+    
+
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -31,25 +33,19 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">readstata13</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.10.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.10.0</span>
       </span>
     </div>
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
-  <a href="index.html">
-    <span class="fas fa-home fa-lg"></span>
-     
-  </a>
-</li>
-<li>
   <a href="reference/index.html">Reference</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/sjewo/readstata13/">
+  <a href="https://github.com/sjewo/readstata13/" class="external-link">
     <span class="fab fa-github fa-lg"></span>
      
   </a>
@@ -66,32 +62,32 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-<div id="readstata13" class="section level1">
-<div class="page-header"><h1 class="hasAnchor">
-<a href="#readstata13" class="anchor"></a>readstata13</h1></div>
+<div class="section level1">
+<div class="page-header"><h1 id="readstata13">readstata13<a class="anchor" aria-label="anchor" href="#readstata13"></a>
+</h1></div>
 
 <p>Package to read and write all Stata file formats (version 17 and older) into a R data.frame. The dta file format versions 102 to 119 are supported.</p>
 <p>The function <code>read.dta</code> from the foreign package imports only dta files from Stata versions &lt;= 12. Due to the different structure and features of dta 117 files, we wrote a new file reader in Rcpp.</p>
 <p>Additionally the package supports many features of the Stata dta format like label sets in different languages (<code><a href="reference/set.lang.html">?set.lang</a></code>) or business calendars (<code><a href="reference/as.caldays.html">?as.caldays</a></code>).</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
 <p>The package is hosted on CRAN.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"readstata13"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"readstata13"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="usage" class="section level2">
-<h2 class="hasAnchor">
-<a href="#usage" class="anchor"></a>Usage</h2>
+<div class="section level2">
+<h2 id="usage">Usage<a class="anchor" aria-label="anchor" href="#usage"></a>
+</h2>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13">readstata13</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span>
 <span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"path to file.dta"</span><span class="op">)</span>
 <span class="fu"><a href="reference/save.dta13.html">save.dta13</a></span><span class="op">(</span><span class="va">dat</span>, file<span class="op">=</span><span class="st">"newfile.dta"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="development-version" class="section level2">
-<h2 class="hasAnchor">
-<a href="#development-version" class="anchor"></a>Development Version</h2>
-<p>To install the current release from github you need the platform specific build tools. On Windows a current installation of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> is necessary, while OS X users need to install <a href="https://apps.apple.com/us/app/xcode/id497799835">Xcode</a>.</p>
+<div class="section level2">
+<h2 id="development-version">Development Version<a class="anchor" aria-label="anchor" href="#development-version"></a>
+</h2>
+<p>To install the current release from github you need the platform specific build tools. On Windows a current installation of <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a> is necessary, while OS X users need to install <a href="https://apps.apple.com/us/app/xcode/id497799835" class="external-link">Xcode</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sjewo/readstata13"</span>, ref<span class="op">=</span><span class="st">"0.10.0"</span><span class="op">)</span></code></pre></div>
@@ -102,9 +98,9 @@
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sjewo/readstata13"</span>, ref<span class="op">=</span><span class="st">"testing"</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="changelog-and-features" class="section level2">
-<h2 class="hasAnchor">
-<a href="#changelog-and-features" class="anchor"></a>Changelog and Features</h2>
+<div class="section level2">
+<h2 id="changelog-and-features">Changelog and Features<a class="anchor" aria-label="anchor" href="#changelog-and-features"></a>
+</h2>
 <table class="table">
 <colgroup>
 <col width="10%">
@@ -346,36 +342,36 @@
 </tbody>
 </table>
 </div>
-<div id="readstata13-and-foreign" class="section level2">
-<h2 class="hasAnchor">
-<a href="#readstata13-and-foreign" class="anchor"></a>readstata13 and foreign</h2>
-<p>Most attributes of the resulting data.frame are largely similar to the data.frames produced by <code>foreign</code>. Since newer Stata files require some additional attributes, the results of <code><a href="https://rdrr.io/r/base/all.equal.html">all.equal()</a></code> and <code><a href="https://rdrr.io/r/base/identical.html">identical()</a></code> will be <code>FALSE</code> for data.frames read by <code><a href="https://rdrr.io/pkg/foreign/man/read.dta.html">foreign::read.dta</a></code> and <code><a href="reference/read.dta13.html">read.dta13()</a></code>. Otherwise, the data.frames produced by both functions are identical.</p>
+<div class="section level2">
+<h2 id="readstata13-and-foreign">readstata13 and foreign<a class="anchor" aria-label="anchor" href="#readstata13-and-foreign"></a>
+</h2>
+<p>Most attributes of the resulting data.frame are largely similar to the data.frames produced by <code>foreign</code>. Since newer Stata files require some additional attributes, the results of <code><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal()</a></code> and <code><a href="https://rdrr.io/r/base/identical.html" class="external-link">identical()</a></code> will be <code>FALSE</code> for data.frames read by <code><a href="https://rdrr.io/pkg/foreign/man/read.dta.html" class="external-link">foreign::read.dta</a></code> and <code><a href="reference/read.dta13.html">read.dta13()</a></code>. Otherwise, the data.frames produced by both functions are identical.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/">foreign</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13">readstata13</a></span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://svn.r-project.org/R-packages/trunk/foreign/" class="external-link">foreign</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span>
 
 <span class="co"># with factors</span>
-<span class="va">r12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.dta.html">read.dta</a></span><span class="op">(</span><span class="st">"http://www.stata-press.com/data/r12/auto.dta"</span><span class="op">)</span>
+<span class="va">r12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.dta.html" class="external-link">read.dta</a></span><span class="op">(</span><span class="st">"http://www.stata-press.com/data/r12/auto.dta"</span><span class="op">)</span>
 <span class="va">r13</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"http://www.stata-press.com/data/r13/auto.dta"</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">r12</span>, <span class="va">r13</span>, check.attributes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">r12</span>, <span class="va">r13</span>, check.attributes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
 <span class="co"># without factors</span>
-<span class="va">r12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.dta.html">read.dta</a></span><span class="op">(</span><span class="st">"http://www.stata-press.com/data/r12/auto.dta"</span>, 
+<span class="va">r12</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/foreign/man/read.dta.html" class="external-link">read.dta</a></span><span class="op">(</span><span class="st">"http://www.stata-press.com/data/r12/auto.dta"</span>, 
                 convert.factors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="va">r13</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"http://www.stata-press.com/data/r13/auto.dta"</span>, 
                   convert.factors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 
-<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">r12</span>, <span class="va">r13</span>, check.attributes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
+<span class="fu"><a href="https://rdrr.io/r/base/all.equal.html" class="external-link">all.equal</a></span><span class="op">(</span><span class="va">r12</span>, <span class="va">r13</span>, check.attributes <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="authors" class="section level2">
-<h2 class="hasAnchor">
-<a href="#authors" class="anchor"></a>Authors</h2>
-<p><a href="mailto:jan.garbuszus@ruhr-uni-bochum.de">Marvin Garbuszus</a> (<a href="https://github.com/JanMarvin">JanMarvin</a>) and <a href="mailto:Sebastian.Jeworutzki@ruhr-uni-bochum.de">Sebastian Jeworutzki</a> (<a href="https://github.com/sjewo">sjewo</a>)</p>
+<div class="section level2">
+<h2 id="authors">Authors<a class="anchor" aria-label="anchor" href="#authors"></a>
+</h2>
+<p><a href="mailto:jan.garbuszus@ruhr-uni-bochum.de">Marvin Garbuszus</a> (<a href="https://github.com/JanMarvin" class="external-link">JanMarvin</a>) and <a href="mailto:Sebastian.Jeworutzki@ruhr-uni-bochum.de">Sebastian Jeworutzki</a> (<a href="https://github.com/sjewo" class="external-link">sjewo</a>)</p>
 </div>
-<div id="licence" class="section level2">
-<h2 class="hasAnchor">
-<a href="#licence" class="anchor"></a>Licence</h2>
+<div class="section level2">
+<h2 id="licence">Licence<a class="anchor" aria-label="anchor" href="#licence"></a>
+</h2>
 <p>GPL2</p>
 </div>
 </div>
@@ -383,51 +379,61 @@
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
-<h2>Links</h2>
+<h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
-<li>Download from CRAN at <br><a href="https://cloud.r-project.org/package=readstata13">https://​cloud.r-project.org/​package=readstata13</a>
-</li>
-<li>Browse source code at <br><a href="https://github.com/sjewo/readstata13/">https://​github.com/​sjewo/​readstata13/​</a>
-</li>
-<li>Report a bug at <br><a href="https://github.com/sjewo/readstata13/issues">https://​github.com/​sjewo/​readstata13/​issues</a>
-</li>
-</ul>
-</div>
-<div class="license">
-<h2>License</h2>
-<ul class="list-unstyled">
-<li>
-<a href="https://www.r-project.org/Licenses/GPL-2">GPL-2</a> | file <a href="LICENSE-text.html">LICENSE</a>
-</li>
-</ul>
-</div>
-<div class="developers">
-<h2>Developers</h2>
-<ul class="list-unstyled">
-<li>Jan Marvin Garbuszus <br><small class="roles"> Author </small>  </li>
-<li>Sebastian Jeworutzki <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2671-5253" target="orcid.widget" aria-label="ORCID"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
-<li><a href="authors.html">All authors...</a></li>
+<li><a href="https://cloud.r-project.org/package=readstata13" class="external-link">View on CRAN</a></li>
+<li><a href="https://github.com/sjewo/readstata13/" class="external-link">Browse source code</a></li>
+<li><a href="https://github.com/sjewo/readstata13/issues" class="external-link">Report a bug</a></li>
 </ul>
 </div>
 
-  <div class="dev-status">
-<h2>Dev status</h2>
+<div class="license">
+<h2 data-toc-skip>License</h2>
 <ul class="list-unstyled">
-<li><a href="https://cran.r-project.org/package=readstata13"><img src="http://www.r-pkg.org/badges/version/readstata13" alt="CRAN status"></a></li>
-<li><a href="https://github.com/sjewo/readstata13/actions?workflow=R-CMD-check"><img src="https://github.com/sjewo/readstata13/workflows/R-CMD-check/badge.svg" alt="Build status"></a></li>
-<li><a href="https://cran.r-project.org/package=readstata13"><img src="http://cranlogs.r-pkg.org/badges/readstata13" alt="CRAN Downloads"></a></li>
+<li>
+<a href="https://www.r-project.org/Licenses/GPL-2" class="external-link">GPL-2</a> | file <a href="LICENSE-text.html">LICENSE</a>
+</li>
 </ul>
 </div>
+
+
+<div class="citation">
+<h2 data-toc-skip>Citation</h2>
+<ul class="list-unstyled">
+<li><a href="authors.html#citation">Citing readstata13</a></li>
+</ul>
 </div>
+
+<div class="developers">
+<h2 data-toc-skip>Developers</h2>
+<ul class="list-unstyled">
+<li>Jan Marvin Garbuszus <br><small class="roles"> Author </small>  </li>
+<li>Sebastian Jeworutzki <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2671-5253" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li><a href="authors.html">More about authors...</a></li>
+</ul>
+</div>
+
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://cran.r-project.org/package=readstata13" class="external-link"><img src="http://www.r-pkg.org/badges/version/readstata13" alt="CRAN status"></a></li>
+<li><a href="https://github.com/sjewo/readstata13/actions?workflow=R-CMD-check" class="external-link"><img src="https://github.com/sjewo/readstata13/workflows/R-CMD-check/badge.svg" alt="Build status"></a></li>
+<li><a href="https://cran.r-project.org/package=readstata13" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/readstata13" alt="CRAN Downloads"></a></li>
+</ul>
+</div>
+
+  </div>
 </div>
 
 
       <footer><div class="copyright">
-  <p>Developed by Jan Marvin Garbuszus, Sebastian Jeworutzki.</p>
+  <p></p>
+<p>Developed by Jan Marvin Garbuszus, Sebastian Jeworutzki.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
+  <p></p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.1.</p>
 </div>
 
       </footer>
@@ -435,6 +441,8 @@
 
   
 
+
+  
 
   </body>
 </html>

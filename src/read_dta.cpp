@@ -21,9 +21,13 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
-              const CharacterVector selectcols,
-              const bool strlexport, const CharacterVector strlpath)
+List read_dta(FILE * file,
+              const bool missing,
+              const IntegerVector selectrows,
+              const CharacterVector selectcols_chr,
+              const NumericVector selectcols_int,
+              const bool strlexport,
+              const CharacterVector strlpath)
 {
   // stata_dta><header>
   test("stata_dta><header>", file);
@@ -424,15 +428,30 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   uint64_t rlength = sum(rlen);
 
   // check if vars are selected
-  std::string selcols = as<std::string>(selectcols(0));
+  std::string selcols = as<std::string>(selectcols_chr(0));
   bool selectvars = selcols != "";
 
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
+  //
+  // name selection was passed to selectcols
   IntegerVector select = cvec, nselect;
-  if (selectvars)
-    select = choose(selectcols, varnames);
+  if (selectvars) {
+    select = choose(selectcols_chr, varnames);
+  }
+
+  // numeric selection was passed to selectcols
+  if (selectcols_int[0] != 0) {
+    IntegerVector seq_varnames = seq_along(varnames);
+    // TODO: check if there is a better way
+    // choose below apparantly works only with character vectors?
+    CharacterVector seq_varnam = as<CharacterVector>(seq_varnames);
+    CharacterVector sel_int_chr = as<CharacterVector>(selectcols_int);
+
+    select = choose(sel_int_chr, seq_varnam);
+  }
+
 
   // separate the selected from the not selected cases
   LogicalVector ll = is_na(select);

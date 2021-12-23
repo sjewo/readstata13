@@ -53,12 +53,13 @@
 #' @param select.rows \emph{integer.} Vector of one or two numbers. If single
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
-#' @param select.cols \emph{character.} Vector of variables to select.
+#' @param select.cols \emph{character.} or \emph{numeric.} Vector of variables
+#'  to select. Either variable names or position.
 #' @param strlexport \emph{logical.} Should strl content be exported as binary
 #'  files?
 #' @param strlpath \emph{character.} Path for strl export.
-#' @param tz \emph{character.} time zone specification to be used for 
-#'  POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC 
+#' @param tz \emph{character.} time zone specification to be used for
+#'  POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC
 #'  (Universal Time, Coordinated).
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
@@ -189,11 +190,22 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     select.rows <- c(0,0)
   }
 
-  if (is.null(select.cols)){
-    select.cols <- ""
+  select.cols_chr <- ""
+  select.cols_int <- 0
+
+  # treat names and index differently
+  if (!is.null(select.cols)) {
+
+    if (is.character(select.cols))
+      select.cols_chr <- select.cols
+
+    # do we need factor too?
+    if (is.numeric(select.cols) | is.integer(select.cols))
+      select.cols_int <- select.cols
   }
 
-  data <- stata_read(filepath, missing.type, select.rows, select.cols,
+  data <- stata_read(filepath, missing.type, select.rows,
+                     select.cols_chr, select.cols_int,
                      strlexport, strlpath)
 
   version <- attr(data, "version")

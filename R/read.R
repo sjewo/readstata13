@@ -190,8 +190,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     select.rows <- c(0,0)
   }
 
-  select.cols_chr <- ""
-  select.cols_int <- 0
+  select.cols_chr <- as.character(NA)
+  select.cols_int <- as.integer(NA)
 
   # treat names and index differently
   if (!is.null(select.cols)) {

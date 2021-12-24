@@ -428,21 +428,21 @@ List read_dta(FILE * file,
   uint64_t rlength = sum(rlen);
 
   // check if vars are selected
-  std::string selcols = as<std::string>(selectcols_chr(0));
-  bool selectvars = selcols != "";
-
+  IntegerVector select = cvec, nselect;
+  
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
   //
   // name selection was passed to selectcols
-  IntegerVector select = cvec, nselect;
-  if (selectvars) {
+  bool all_na_chr = all(is_na(selectcols_chr));
+  if (!all_na_chr) {
     select = choose(selectcols_chr, varnames);
   }
-
+  
   // numeric selection was passed to selectcols
-  if (selectcols_int[0] != 0) {
+  bool all_na_int = all(is_na(selectcols_int));
+  if (!all_na_int) {
     IntegerVector seq_varnames = seq_along(varnames);
     select = choose(selectcols_int, seq_varnames);
   }

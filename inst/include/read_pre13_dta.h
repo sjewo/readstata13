@@ -21,6 +21,6 @@
 Rcpp::List read_pre13_dta(FILE * file, const bool missing,
                           const Rcpp::IntegerVector selectrows,
                           const Rcpp::CharacterVector selectcols_chr,
-                          const Rcpp::NumericVector selectcols_int);
+                          const Rcpp::IntegerVector selectcols_int);
 
 #endif

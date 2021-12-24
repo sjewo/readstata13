@@ -25,7 +25,7 @@ List read_dta(FILE * file,
               const bool missing,
               const IntegerVector selectrows,
               const CharacterVector selectcols_chr,
-              const NumericVector selectcols_int,
+              const IntegerVector selectcols_int,
               const bool strlexport,
               const CharacterVector strlpath)
 {
@@ -444,12 +444,7 @@ List read_dta(FILE * file,
   // numeric selection was passed to selectcols
   if (selectcols_int[0] != 0) {
     IntegerVector seq_varnames = seq_along(varnames);
-    // TODO: check if there is a better way
-    // choose below apparantly works only with character vectors?
-    CharacterVector seq_varnam = as<CharacterVector>(seq_varnames);
-    CharacterVector sel_int_chr = as<CharacterVector>(selectcols_int);
-
-    select = choose(sel_int_chr, seq_varnam);
+    select = choose(selectcols_int, seq_varnames);
   }
 
 

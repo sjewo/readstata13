@@ -29,7 +29,7 @@ using namespace Rcpp;
 List stata_read(const char * filePath, const bool missing,
                 const IntegerVector selectrows,
                 const CharacterVector selectcols_chr,
-                const NumericVector selectcols_int,
+                const IntegerVector selectcols_int,
                 const bool strlexport, const CharacterVector strlpath)
 {
   FILE *file = NULL;    // File pointer

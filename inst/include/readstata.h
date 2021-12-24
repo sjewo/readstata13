@@ -167,9 +167,8 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
 // return only the matched positions. Either Rcpps in() can't handle Character-
 // Vectors or I could not make it work. Wanted to select the selected varname
 // position from the varnames vector.
-inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
-                                  Rcpp::CharacterVector y)
-{
+template <typename T>
+inline Rcpp::IntegerVector choose(T x, T y) {
   // ToDo: Maybe we can skip the select and nselect in read_dta.cpp if we match
   // the other way around and use Rcpp::is_na on the result which then could be
   // used as an additional index
@@ -178,10 +177,10 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
   if (Rcpp::any(Rcpp::is_na(mm))) {
     Rcpp::LogicalVector ll = !Rcpp::is_na(mm);
 
-    Rcpp::CharacterVector ms = x[ll==0];
+    Rcpp::CharacterVector ms = Rcpp::as<Rcpp::CharacterVector>(x[ll==0]);
 
     // does not work if ms contains multiple names: Rcpp::as<std::string>(ms)
-    Rcpp::Rcout << "Variable " << ms <<
+    Rcpp::Rcout << "selected.col " << ms <<
       " was not found in dta-file." << std::endl;
   }
 

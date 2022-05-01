@@ -38,19 +38,14 @@ users need to install
 [Xcode](https://apps.apple.com/us/app/xcode/id497799835).
 
 ```R
-# install.packages("devtools")
-devtools::install_github("sjewo/readstata13", ref="0.10.0")
-```
-
-Older Versions of devtools require a username option:
-```R
-install_github("readstata13", username="sjewo", ref="0.10.0")
+# install.packages("remotes")
+remotes::install_github("sjewo/readstata13", ref="0.10.0")
 ```
 
 To install the current development version from github:
 
 ```R
-devtools::install_github("sjewo/readstata13", ref="testing")
+remotes::install_github("sjewo/readstata13", ref="testing")
 ```
 
 

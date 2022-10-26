@@ -150,7 +150,7 @@ read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 \dontrun{
   library(readstata13)
   r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
-} 
+}
 }
 \references{
 Stata Corp (2014): Description of .dta file format

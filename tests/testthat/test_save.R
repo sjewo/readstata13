@@ -21,7 +21,7 @@ datacompare <- function(x, y) {
   all(unlist(Map(all.equal, x, y)))
 }
 
-namescompare <- function(x, y){
+namescompare <- function(x, y) {
   all(identical(names(x), names(y)))
 }
 
@@ -58,7 +58,7 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
-dd15mp<- read.dta13("data/dta_15mp.dta")
+dd15mp <- read.dta13("data/dta_15mp.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -174,7 +174,7 @@ if (readstata13:::dir.exists13("data"))
 dir.create("data")
 
 dd <- mtcars
-dd$am <- factor(x = dd$am, levels = c(0,1), labels = c("auto", "man"))
+dd$am <- factor(x = dd$am, levels = c(0, 1), labels = c("auto", "man"))
 
 save.dta13(dd, "data/dta_119.dta", version = 119, convert.factors = TRUE)
 save.dta13(dd, "data/dta_118.dta", version = 118, convert.factors = TRUE)
@@ -241,7 +241,7 @@ if (readstata13:::dir.exists13("data"))
 dir.create("data")
 
 dd <- mtcars
-dd$am <- factor(x = dd$am, levels = c(0,1), labels = c("auto", "man"))
+dd$am <- factor(x = dd$am, levels = c(0, 1), labels = c("auto", "man"))
 
 save.dta13(dd, "data/dta_119.dta", version = 119, convert.factors = FALSE)
 save.dta13(dd, "data/dta_118.dta", version = 118, convert.factors = FALSE)
@@ -567,9 +567,9 @@ dir.create("data")
 
 # strLs can be of length any length up to 2 billion characters. Starting with
 # 2046 a string is handled as a strL
-dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
-                          paste(replicate(2046, "b"), collapse = "")),
-                  stringsAsFactors = FALSE)
+dd <- data.frame(dat = c(paste(replicate(2046, "a"), collapse = ""),
+                         paste(replicate(2046, "b"), collapse = "")),
+                 stringsAsFactors = FALSE)
 
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
@@ -756,7 +756,7 @@ dd102 <- read.dta13("data/dta_102.dta", select.rows = 5)
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[1:5,]
+dd <- dd[1:5, ]
 
 test_that("select.rows = 5", {
   # check numerics
@@ -801,26 +801,26 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
-dd119 <- read.dta13("data/dta_119.dta", select.rows = c(5,10))
-dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5,10))
-dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5,10))
-dd115 <- read.dta13("data/dta_115.dta", select.rows = c(5,10))
-dd114 <- read.dta13("data/dta_114.dta", select.rows = c(5,10))
-dd113 <- read.dta13("data/dta_113.dta", select.rows = c(5,10))
-dd112 <- read.dta13("data/dta_112.dta", select.rows = c(5,10))
-dd111 <- read.dta13("data/dta_111.dta", select.rows = c(5,10))
-dd110 <- read.dta13("data/dta_110.dta", select.rows = c(5,10))
-dd108 <- read.dta13("data/dta_108.dta", select.rows = c(5,10))
-dd107 <- read.dta13("data/dta_107.dta", select.rows = c(5,10))
-dd106 <- read.dta13("data/dta_106.dta", select.rows = c(5,10))
-dd105 <- read.dta13("data/dta_105.dta", select.rows = c(5,10))
-dd104 <- read.dta13("data/dta_104.dta", select.rows = c(5,10))
-dd103 <- read.dta13("data/dta_103.dta", select.rows = c(5,10))
-dd102 <- read.dta13("data/dta_102.dta", select.rows = c(5,10))
+dd119 <- read.dta13("data/dta_119.dta", select.rows = c(5, 10))
+dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5, 10))
+dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5, 10))
+dd115 <- read.dta13("data/dta_115.dta", select.rows = c(5, 10))
+dd114 <- read.dta13("data/dta_114.dta", select.rows = c(5, 10))
+dd113 <- read.dta13("data/dta_113.dta", select.rows = c(5, 10))
+dd112 <- read.dta13("data/dta_112.dta", select.rows = c(5, 10))
+dd111 <- read.dta13("data/dta_111.dta", select.rows = c(5, 10))
+dd110 <- read.dta13("data/dta_110.dta", select.rows = c(5, 10))
+dd108 <- read.dta13("data/dta_108.dta", select.rows = c(5, 10))
+dd107 <- read.dta13("data/dta_107.dta", select.rows = c(5, 10))
+dd106 <- read.dta13("data/dta_106.dta", select.rows = c(5, 10))
+dd105 <- read.dta13("data/dta_105.dta", select.rows = c(5, 10))
+dd104 <- read.dta13("data/dta_104.dta", select.rows = c(5, 10))
+dd103 <- read.dta13("data/dta_103.dta", select.rows = c(5, 10))
+dd102 <- read.dta13("data/dta_102.dta", select.rows = c(5, 10))
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[5:10,]
+dd <- dd[5:10, ]
 
 test_that("select.rows = c(5,10)", {
   # check numerics
@@ -888,7 +888,7 @@ dd102 <- read.dta13("data/dta_102.dta", select.cols = c("disp", "drat"))
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[,c("disp", "drat")]
+dd <- dd[, c("disp", "drat")]
 
 test_that("select.cols = c('disp', 'drat')", {
   # check numerics
@@ -952,7 +952,7 @@ dd102 <- read.dta13("data/dta_102.dta", select.cols = c(3, 5))
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[,c("disp", "drat")]
+dd <- dd[, c("disp", "drat")]
 
 test_that("select.cols = c('disp', 'drat')", {
   # check numerics
@@ -1066,7 +1066,7 @@ test_that("expansinon.fields", {
   # expect_equal(ef, dd102)
 })
 
-#### save and read varlabels  #### 
+#### save and read varlabels  ####
 
 if (readstata13:::dir.exists13("data")) {
   unlink("data", recursive = TRUE)
@@ -1077,29 +1077,28 @@ dd <- mtcars
 varlabeldd <- LETTERS[seq_len(ncol(dd))]
 varlabel(dd) <- varlabeldd
 
-version_list <- c(102,103,104,105,106,107,108,110,
-                  111,112,113,114,115,117,118,119)
+version_list <- c(102, 103, 104, 105, 106, 107, 108, 110,
+                  111, 112, 113, 114, 115, 117, 118, 119)
 
 # write variable label attribute
-for(v in version_list) {
+for (v in version_list) {
   save.dta13(dd, paste0("data/dta_", v, ".dta"), version = v)
 }
 
 # read variable label attribute
-varlabeldd_read <- lapply(version_list, 
+varlabeldd_read <- lapply(version_list,
                           function(v) {
-                            attr(read.dta13(paste0("data/dta_", v, ".dta")), 
+                            attr(read.dta13(paste0("data/dta_", v, ".dta")),
                                  "var.labels")
                           })
 names(varlabeldd_read) <- as.character(version_list)
-  
+
 unlink("data", recursive = TRUE)
 
 test_that("save and read varlabels", {
-  
-  for(v in as.character(version_list)) {
+
+  for (v in as.character(version_list)) {
     expect_equal(varlabeldd, varlabeldd_read[[v]])
   }
-  
-})
 
+})

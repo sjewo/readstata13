@@ -31,7 +31,7 @@ Retrieve or set variable labels for a dataset.
 dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"),
                   convert.factors=FALSE)
 
-# display variable labels 
+# display variable labels
 varlabel(dat)
 
 # display german variable labels

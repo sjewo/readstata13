@@ -1,0 +1,8 @@
+linters: linters_with_defaults(
+  line_length_linter = NULL,               # we have a few
+  cyclocomp_linter = NULL,                 # four cases
+  commented_code_linter = NULL,            # a few cases
+  object_name_linter = NULL,               # a few cases
+  quotes_linter = NULL,                    # one case
+  indentation_linter = NULL
+  )

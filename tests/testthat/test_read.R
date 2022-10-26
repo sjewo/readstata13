@@ -22,7 +22,7 @@ datacompare <- function(x, y) {
 
 dd <- data.frame(missings = as.numeric(rep(NA, 27)))
 
-missings <- system.file("extdata", "missings.dta", package="readstata13")
+missings <- system.file("extdata", "missings.dta", package = "readstata13")
 
 
 
@@ -41,16 +41,16 @@ test_that("missings", {
 # rm(list = files)
 
 #### missings msf/lsf ####
-dd <- data.frame(b = as.logical(c(1,NA)),
-                 i=as.integer(c(1,NA)),
-                 n=as.numeric(c(1,NA)),
-                 s=c("1", ""),
+dd <- data.frame(b = as.logical(c(1, NA)),
+                 i = as.integer(c(1, NA)),
+                 n = as.numeric(c(1, NA)),
+                 s = c("1", ""),
                  stringsAsFactors = FALSE)
 
 dd$b <- as.integer(dd$b)
 
-missings_msf <- system.file("extdata", "missings_msf.dta", package="readstata13")
-missings_lsf <- system.file("extdata", "missings_lsf.dta", package="readstata13")
+missings_msf <- system.file("extdata", "missings_msf.dta", package = "readstata13")
+missings_lsf <- system.file("extdata", "missings_lsf.dta", package = "readstata13")
 
 dd_msf <- read.dta13(missings_msf)
 dd_lsf <- read.dta13(missings_lsf)
@@ -67,7 +67,7 @@ test_that("missings msf/lsf", {
 dd <- data.frame(v1 = as.numeric(1:2))
 dd$v1 <- factor(x = dd$v1, levels = 1:2, labels = c("one", "2"))
 
-gen_fac <- system.file("extdata", "gen_fac.dta", package="readstata13")
+gen_fac <- system.file("extdata", "gen_fac.dta", package = "readstata13")
 
 
 
@@ -83,7 +83,7 @@ test_that("generate.factors TRUE", {
 
 dd <- data.frame(v1 = as.numeric(1:2))
 
-gen_fac <- system.file("extdata", "gen_fac.dta", package="readstata13")
+gen_fac <- system.file("extdata", "gen_fac.dta", package = "readstata13")
 
 suppressWarnings(dd118 <- read.dta13(gen_fac, convert.factors = TRUE, generate.factors = FALSE))
 
@@ -98,9 +98,9 @@ dd <- data.frame(v.1 = as.numeric(1:2),
                  v.2  = as.numeric(1:2),
                  long.name.multiple.underscores = as.numeric(1:2))
 
-underscore <- system.file("extdata", "underscore.dta", package="readstata13")
+underscore <- system.file("extdata", "underscore.dta", package = "readstata13")
 
-dd118 <- read.dta13(underscore, convert.underscore = T)
+dd118 <- read.dta13(underscore, convert.underscore = TRUE)
 
 test_that("generate.factors TRUE", {
   expect_true(datacompare(dd, dd118))
@@ -112,9 +112,9 @@ dd <- data.frame(v.1 = as.numeric(1:2),
                  v.2  = as.numeric(1:2),
                  long_name_multiple_underscores = as.numeric(1:2))
 
-underscore <- system.file("extdata", "underscore.dta", package="readstata13")
+underscore <- system.file("extdata", "underscore.dta", package = "readstata13")
 
-dd118 <- read.dta13(underscore, convert.underscore = F)
+dd118 <- read.dta13(underscore, convert.underscore = FALSE)
 
 test_that("generate.factors TRUE", {
   expect_true(datacompare(dd, dd118))
@@ -126,7 +126,7 @@ test_that("generate.factors TRUE", {
 dd <- data.frame(v1 = as.numeric(1:2))
 dd$v1 <- factor(x = dd$v1, levels = 1:2, labels = c("one", "1.2"))
 
-nonint <- system.file("extdata", "nonint.dta", package="readstata13")
+nonint <- system.file("extdata", "nonint.dta", package = "readstata13")
 
 
 
@@ -142,24 +142,24 @@ test_that("nonint.factors TRUE", {
 
 #### encoding TRUE ####
 
-umlauts <- c("ä","ö","ü","ß","€","Œ")
+umlauts <- c("ä", "ö", "ü", "ß", "€", "Œ")
 Encoding(umlauts) <- "UTF-8"
 
 ddcp <- dd <- data.frame(num = factor(1:6, levels = 1:6, labels = umlauts),
                  chr = umlauts, stringsAsFactors = FALSE)
 
 # Dataset in CP1252
-levels(ddcp$num)[5:6] <- c("EUR","OE")
-ddcp$chr[5:6] <- c("EUR","OE")
+levels(ddcp$num)[5:6] <- c("EUR", "OE")
+ddcp$chr[5:6] <- c("EUR", "OE")
 
 
 # Stata 14
-encode <- system.file("extdata", "encode.dta", package="readstata13")
+encode <- system.file("extdata", "encode.dta", package = "readstata13")
 # Stata 12
-encodecp <- system.file("extdata", "encodecp.dta", package="readstata13")
+encodecp <- system.file("extdata", "encodecp.dta", package = "readstata13")
 
 ddutf_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE,
-                       encoding="UTF-8")
+                       encoding = "UTF-8")
 
 # On windows the last two characters will fail on default (not in latin1)
 dd_aE <- read.dta13(encode, convert.factors = TRUE, generate.factors = TRUE)
@@ -176,24 +176,24 @@ test_that("encoding UTF-8 (Stata 14)", {
 })
 
 test_that("Reading of strls", {
-  strl <- system.file("extdata", "statacar.dta", package="readstata13")
+  strl <- system.file("extdata", "statacar.dta", package = "readstata13")
 
-  ddstrlf <- read.dta13(strl, replace.strl = F)
+  ddstrlf <- read.dta13(strl, replace.strl = FALSE)
   ddstrlfref <- paste0("11_", 1:8)
   expect_equal(ddstrlf$modelStrL, ddstrlfref)
 
-  ddstrl <- read.dta13(strl, replace.strl = T)
+  ddstrl <- read.dta13(strl, replace.strl = TRUE)
   expect_equal(ddstrl$model, ddstrl$modelStrL)
 })
 
 test_that("reading of many strls", {
 
   # slow test
-  N = 1e4
+  N <- 1e4
   big_strl <- data.frame(
     x = 1:N,
     y = sample(LETTERS, N, replace = TRUE),
-    z = c(paste(rep("a", 3000), collapse=""), sample(LETTERS, N-1, replace=TRUE))
+    z = c(paste(rep("a", 3000), collapse = ""), sample(LETTERS, N - 1, replace = TRUE))
   )
 
   # writing the file is slow
@@ -206,7 +206,7 @@ test_that("reading of many strls", {
 })
 
 test_that("various datetime conversions", {
-  datetime <- system.file("extdata", "datetime.dta", package="readstata13")
+  datetime <- system.file("extdata", "datetime.dta", package = "readstata13")
 
   td       <- c("2001-05-15",
                 "1999-04-01",
@@ -251,7 +251,7 @@ test_that("various datetime conversions", {
 
 test_that("reading file format 120 works", {
 
-  fl <- system.file("extdata", "myproject2.dtas", package="readstata13")
+  fl <- system.file("extdata", "myproject2.dtas", package = "readstata13")
 
   tmp <- tempdir()
 

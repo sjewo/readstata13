@@ -73,10 +73,10 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13, .registration = TRUE
 #' @export
-save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
-                       convert.factors=TRUE, convert.dates=TRUE, tz="GMT",
-                       add.rownames=FALSE, compress=FALSE, version=117,
-                       convert.underscore=FALSE){
+save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
+                       convert.factors = TRUE, convert.dates = TRUE, tz = "GMT",
+                       add.rownames = FALSE, compress = FALSE, version = 117,
+                       convert.underscore = FALSE) {
 
 
   if (!is.data.frame(data))
@@ -85,26 +85,26 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     stop("Path is invalid. Possibly a non-existing directory.")
 
   # Allow writing version as Stata version not Stata format
-  if (version=="15mp" | version=="16mp")
+  if (version == "15mp" || version == "16mp")
     version <- 119
-  if (version==15L | version==16L)
+  if (version == 15L || version == 16L)
     version <- 118
-  if (version==14L)
+  if (version == 14L)
     version <- 118
-  if (version==13L)
+  if (version == 13L)
     version <- 117
-  if (version==12L)
+  if (version == 12L)
     version <- 115
-  if (version==11L | version==10L)
+  if (version == 11L || version == 10L)
     version <- 114
-  if (version==9L | version==8L)
+  if (version == 9L || version == 8L)
     version <- 113
-  if (version==7)
+  if (version == 7)
     version <- 110
-  if (version==6)
+  if (version == 6)
     version <- 108
 
-  if (version<102 | version == 109 | version == 116 | version>121)
+  if (version < 102 || version == 109 || version == 116 || version > 121)
     stop("Version mismatch abort execution. No Data was saved.")
 
   sstr     <- 2045
@@ -124,18 +124,18 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     sint    <- 252
     sbyte   <- 251
   }
-  if (version<111 | version==112)
+  if (version < 111 || version == 112)
     sstrl   <- 80
 
 
-  if(!is.data.frame(data)) {
+  if (!is.data.frame(data)) {
     stop("Object is not of class data.frame.")
   }
-  
+
   is_utf8 <- l10n_info()[["UTF-8"]]
 
   # Is recoding necessary?
-  if (version<=117) {
+  if (version <= 117) {
     # Reencoding is always needed
     doRecode <- TRUE
     toEncoding <- "CP1252"
@@ -153,18 +153,18 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     if (doRecode) {
       rwn <- save.encoding(rownames(data), toEncoding)
     } else  {
-      rwn <-rownames(data)
+      rwn <- rownames(data)
     }
 
-    data <- data.frame(rownames= rwn,
-                       data, stringsAsFactors = F)
+    data <- data.frame(rownames = rwn,
+                       data, stringsAsFactors = FALSE)
   }
   rownames(data) <- NULL
 
   if (convert.underscore) {
     names(data) <- gsub("[^a-zA-Z0-9_]", "_", names(data))
     names(data)[grepl("^[0-9]", names(data))] <-
-      paste0( "_", names(data)[grepl("^[0-9]", names(data))])
+      paste0("_", names(data)[grepl("^[0-9]", names(data))])
   }
 
   filepath <- path.expand(file)
@@ -179,7 +179,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- vtyp <- sapply(data, class)
 
   # Identify POSIXt
-  posix_datetime <- which(sapply(data, 
+  posix_datetime <- which(sapply(data,
                          function(x) inherits(x, "POSIXt")))
   vartypen[posix_datetime] <- vtyp[posix_datetime] <- "POSIXt"
 
@@ -187,9 +187,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   # times: seconds from 1970-01-01 + 10 years (new origin 1960-01-01) * 1000 = miliseconds
   # go back 1h
   for (v in names(vartypen[vartypen == "POSIXt"]))
-    data[[v]] <- (as.double(data[[v]]) + 315622800 - 60*60)*1000
+    data[[v]] <- (as.double(data[[v]]) + 315622800 - 60 * 60) * 1000
 
-  if (convert.factors){
+  if (convert.factors) {
     if (version < 106) {
 
       hasfactors <- sapply(data, is.factor)
@@ -200,7 +200,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     }
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
-    f.names <- attr(factors,"names")
+    f.names <- attr(factors, "names")
 
     label.table <- vector("list", length(f.names))
     names(label.table) <- f.names
@@ -219,7 +219,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
       f.labels <-  as.integer(labels(levels(data[[v]])))
       attr(f.labels, "names") <- f.levels
       f.labels <- f.labels[names(f.labels) != ".."]
-      label.table[[ (f.names[i]) ]] <- f.labels
+      label.table[[(f.names[i])]] <- f.labels
 
       valLabel[v] <- f.names[i]
     }
@@ -230,7 +230,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     attr(data, "vallabels") <- valLabel
   } else {
     attr(data, "label.table") <- NULL
-    attr(data, "vallabels") <- rep("",length(data))
+    attr(data, "vallabels") <- rep("", length(data))
   }
 
   if (convert.dates) {
@@ -239,7 +239,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     )
     for (v in dates)
       data[[v]] <- as.vector(
-        julian(data[[v]],as.Date("1960-1-1", tz = "GMT"))
+        julian(data[[v]], as.Date("1960-1-1", tz = "GMT"))
       )
   }
 
@@ -259,12 +259,14 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
-    varTmin <- sapply(data[(ff | ii) & !empty], function(x) min(x,na.rm=TRUE))
-    varTmax <- sapply(data[(ff | ii) & !empty], function(x) max(x,na.rm=TRUE))
+    varTmin <- sapply(data[(ff | ii) & !empty],
+                      function(x) min(x, na.rm = TRUE))
+    varTmax <- sapply(data[(ff | ii) & !empty],
+                      function(x) max(x, na.rm = TRUE))
 
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
-    
+
     if (any(numToCompress)) {
       saveToConvert <- names(data[ff])[numToCompress]
       # replace numerics as integers
@@ -277,8 +279,10 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
     vartypen[ff] <- sdouble
 
-    bmin <- -127; bmax <- 100
-    imin <- -32767; imax <- 32740
+    bmin <- -127
+    bmax <- 100
+    imin <- -32767
+    imax <- 32740
     # check if integer is byte, int or long
     for (k in names(which(ii & !empty))) {
       vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- slong
@@ -300,20 +304,19 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   }
 
   # recode character variables. >118 wants utf-8, so encoding may be required
-  if(doRecode) {
+  if (doRecode) {
     #TODO: use seq_len ?
-    for(v in (1:ncol(data))[vartypen == "character"]) {
+    for (v in seq_len(ncol(data))[vartypen == "character"]) {
       data[, v] <- save.encoding(data[, v], toEncoding)
     }
   }
 
   # str and strL are stored by maximum length of chars in a variable
-  str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
+  str.length <- sapply(data[vartypen == "character"], FUN = maxchar)
   str.length[str.length > sstr] <- sstrl
 
   # vartypen for character
-  for (v in names(vartypen[vartypen == "character"]))
-  {
+  for (v in names(vartypen[vartypen == "character"])) {
    # str.length[str.length > sstr] <- sstrl # no loop necessary!
 
     vartypen[[v]] <- str.length[[v]]
@@ -341,9 +344,9 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     maxlen <- 8
   if (version >= 118)
     maxlen <- 128
-  
-  if (any (lenvarnames > maxlen)) {
-    message ("Varname to long. Resizing. Max size is ", maxlen, ".")
+
+  if (any(lenvarnames > maxlen)) {
+    message("Varname to long. Resizing. Max size is ", maxlen, ".")
     names(data) <- sapply(varnames, strtrim, width = maxlen)
   }
 
@@ -378,14 +381,15 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (!time.stamp) {
     attr(data, "timestamp") <- ""
   } else {
-    lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
+    lct <- Sys.getlocale("LC_TIME")
+    Sys.setlocale("LC_TIME", "C")
     attr(data, "timestamp") <- format(Sys.time(), "%d %b %Y %H:%M")
-    Sys.setlocale("LC_TIME",lct)
+    Sys.setlocale("LC_TIME", lct)
   }
 
   expfield <- attr(data, "expansion.fields")
   if (doRecode) {
-    expfield <- lapply(expfield, function(x) iconv(x, to=toEncoding))
+    expfield <- lapply(expfield, function(x) iconv(x, to = toEncoding))
   }
 
   attr(data, "expansion.fields") <- rev(expfield)
@@ -406,8 +410,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   if (doRecode) {
       attr(data, "var.labels") <- save.encoding(varlabels, toEncoding)
-  } 
-  if (!is.null(varlabels) & (length(varlabels)!=ncol(data))) {
+  }
+  if (!is.null(varlabels) && (length(varlabels) != ncol(data))) {
     attr(data, "var.labels") <- NULL
     warning("Number of variable labels does not match number of variables.
             Variable labels dropped.")
@@ -415,7 +419,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
 
   if (version >= 117)
-    invisible( stata_save(filePath = filepath, dat = data) )
+    invisible(stata_save(filePath = filepath, dat = data))
   else
-    invisible( stata_pre13_save(filePath = filepath, dat = data) )
+    invisible(stata_pre13_save(filePath = filepath, dat = data))
 }

@@ -4,7 +4,7 @@
 \alias{get.lang}
 \title{Show Default Label Language}
 \usage{
-get.lang(dat, print = T)
+get.lang(dat, print = TRUE)
 }
 \arguments{
 \item{dat}{\emph{data.frame.} Data.frame created by \code{read.dta13}.}

@@ -141,8 +141,8 @@
 #' @importFrom utils download.file
 #' @importFrom stats na.omit
 #' @export
-read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = "UTF-8", fromEncoding=NULL,
+read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
+                       encoding = "UTF-8", fromEncoding = NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors = FALSE,
@@ -170,11 +170,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   # some select.row checks
   if (!is.null(select.rows)) {
     # check that it is a numeric
-    if (!is.numeric(select.rows)){
+    if (!is.numeric(select.rows)) {
       return(message("select.rows must be of type numeric"))
     } else {
       # guard against negative values
-      if (any(select.rows < 0) )
+      if (any(select.rows < 0))
         select.rows <- abs(select.rows)
 
       # check that length is not > 2
@@ -190,11 +190,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       select.rows <- c(select.rows[2], select.rows[1])
 
     # make sure to start at index position 1 if select.rows[2] > 0
-    if (select.rows[2] > 0 & select.rows[1] == 0)
+    if (select.rows[2] > 0 && select.rows[1] == 0)
       select.rows[1] <- 1
   } else {
     # set a value
-    select.rows <- c(0,0)
+    select.rows <- c(0, 0)
   }
 
   select.cols_chr <- as.character(NA)
@@ -207,7 +207,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       select.cols_chr <- select.cols
 
     # do we need factor too?
-    if (is.numeric(select.cols) | is.integer(select.cols))
+    if (is.numeric(select.cols) || is.integer(select.cols))
       select.cols_int <- select.cols
   }
 
@@ -219,11 +219,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   sstr     <- 2045
   sstrl    <- 32768
-  salias   <- 65525
+  # salias   <- 65525
   sdouble  <- 65526
   sfloat   <- 65527
-  slong    <- 65528
-  sint     <- 65529
+  # slong    <- 65528
+  # sint     <- 65529
   sbyte    <- 65530
 
   if (version < 117) {
@@ -231,8 +231,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     sstrl   <- 255
     sdouble <- 255
     sfloat  <- 254
-    slong   <- 253
-    sint    <- 252
+    # slong   <- 253
+    # sint    <- 252
     sbyte   <- 251
   }
 
@@ -249,13 +249,13 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                            inc = c(1, 1, 1, 2 ^ 115, 2 ^ 1011)
     )
 
-    if (version >= 113L & version < 117L) {
+    if (version >= 113L && version < 117L) {
       missings <- vector("list", length(data))
       names(missings) <- names(data)
       for (v in which(types > 250L)) {
         this.type <- types[v] - 250L
         nas <- is.na(data[[v]]) | data[[v]] >= stata.na$min[this.type]
-        natype <- (data[[v]][nas] - stata.na$min[this.type])/
+        natype <- (data[[v]][nas] - stata.na$min[this.type]) /
           stata.na$inc[this.type]
         natype[is.na(natype)] <- 0L
         missings[[v]] <- rep(NA, NROW(data))
@@ -278,8 +278,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
           data[[v]][nas] <- NA
         }
         attr(data, "missing") <- missings
-      } else
+      } else {
         warning("'missing.type' only applicable to version >= 8 files")
+      }
     }
   }
 
@@ -287,12 +288,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   datalabel <- attr(data, "data.label")
 
   ## Encoding
-  if(!is.null(encoding)) {
+  if (!is.null(encoding)) {
 
     # set from encoding by dta version
-    if(is.null(fromEncoding)) {
+    if (is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
-      if(attr(data, "version") >= 118L)
+      if (attr(data, "version") >= 118L)
         fromEncoding <- "UTF-8"
     }
 
@@ -314,7 +315,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     names(label) <- read.encoding(names(label), fromEncoding, encoding)
 
     if (length(label) > 0) {
-      for (i in 1:length(label))  {
+      for (i in seq_along(label)) {
         names(label[[i]]) <- read.encoding(names(label[[i]]), fromEncoding,
                                            encoding)
       }
@@ -322,15 +323,18 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     }
 
     # recode character variables
-    for (v in (1:ncol(data))[types <= sstr]) {
-      data[, v] <- iconv(data[, v], from=fromEncoding, to=encoding, sub="byte")
+    for (v in seq_along(data)[types <= sstr]) {
+      data[, v] <- iconv(data[, v],
+                         from = fromEncoding,
+                         to = encoding,
+                         sub = "byte")
     }
 
     # expansion.field
     efi <- attr(data, "expansion.fields")
     if (length(efi) > 0) {
       efiChar <- unlist(lapply(efi, is.character))
-      for (i in (1:length(efi))[efiChar])  {
+      for (i in seq_along(efi)[efiChar])  {
         efi[[i]] <- read.encoding(efi[[i]], fromEncoding, encoding)
       }
       attr(data, "expansion.fields") <- efi
@@ -340,7 +344,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       #strl
       strl <- attr(data, "strl")
       if (length(strl) > 0) {
-        for (i in 1:length(strl))  {
+        for (i in seq_along(strl)) {
           strl[[i]] <- read.encoding(strl[[i]], fromEncoding, encoding)
         }
         attr(data, "strl") <- strl
@@ -350,12 +354,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   var.labels <- attr(data, "var.labels")
 
-  if (replace.strl & version >= 117L) {
+  if (replace.strl && version >= 117L) {
     strl <- c("")
     names(strl) <- "00000000000000000000"
-    strl <- c(strl, attr(data,"strl"))
-    for (j in seq(ncol(data))[types == sstrl] ) {
-      data[, j] <- strl[data[,j]]
+    strl <- c(strl, attr(data, "strl"))
+    for (j in seq_len(ncol(data))[types == sstrl]) {
+      data[, j] <- strl[data[, j]]
     }
     # if strls are in data.frame remove attribute strl
     attr(data, "strl") <- NULL
@@ -393,8 +397,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
       if (labname %in% names(label)) {
-        if((vartype == sdouble | vartype == sfloat)) {
-          if(!nonint.factors) {
+        if ((vartype == sdouble || vartype == sfloat)) {
+          if (!nonint.factors) {
 
             # collect variables which need a warning
             collected_warnings[["floatfact"]] <- c(collected_warnings[["floatfact"]], vnames[i])
@@ -406,7 +410,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
         #check for duplicated labels
         labcount <- table(names(labtable))
-        if(any(labcount > 1)) {
+        if (any(labcount > 1)) {
 
           # collect variables which need a warning
           collected_warnings[["dublifact"]] <- c(collected_warnings[["dublifact"]], vnames[i])
@@ -420,19 +424,19 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
         # assign label if label set is complete
         if (all(varunique %in% labtable)) {
-          data[, i] <- factor(data[, i], levels=labtable,
-                              labels=names(labtable))
+          data[, i] <- factor(data[, i], levels = labtable,
+                              labels = names(labtable))
           # else generate labels from codes
         } else if (generate.factors) {
 
           names(varunique) <- varunique
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-          data[, i] <- factor(data[, i], levels=gen.lab,
-                              labels=names(gen.lab))
+          data[, i] <- factor(data[, i], levels = gen.lab,
+                              labels = names(gen.lab))
 
           # add generated labels to label.table
-          gen.lab.name <- paste0("gen_",vnames[i])
+          gen.lab.name <- paste0("gen_", vnames[i])
           attr(data, "label.table")[[gen.lab.name]] <- gen.lab
           attr(data, "val.labels")[i] <- gen.lab.name
 
@@ -452,7 +456,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
   ## issue warnings
   #dublifact
-  if(length(collected_warnings[["dublifact"]]) > 0) {
+  if (length(collected_warnings[["dublifact"]]) > 0) {
     dublifactvars <- paste(collected_warnings[["dublifact"]], collapse = ", ")
 
     warning(paste0("\n   Duplicated factor levels for variables\n\n",
@@ -464,7 +468,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
   }
 
   # floatfact
-  if(length(collected_warnings[["floatfact"]]) > 0) {
+  if (length(collected_warnings[["floatfact"]]) > 0) {
 
     floatfactvars <- paste(collected_warnings[["floatfact"]], collapse = ", ")
 
@@ -477,7 +481,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
                "\n   Set option 'nonint.factors = TRUE' to assign labels anyway.\n"))
   }
   # misslab
-  if(length(collected_warnings[["misslab"]]) > 0) {
+  if (length(collected_warnings[["misslab"]]) > 0) {
 
     misslabvars <- paste(collected_warnings[["misslab"]], collapse = ", ")
 

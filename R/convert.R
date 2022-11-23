@@ -39,9 +39,8 @@ convert_dt_m <- function(x) {
   mth <- x %% 12 + 1
   yr <- 1960 + floor(z)
   
-  z <- paste0(yr, "-", mth, "-1")
+  z <- ifelse(is.na(z), NA, paste0(yr, "-", mth, "-1"))
   z <- as.Date(z, "%Y-%m-%d")
-  if (any(is.na(z))) warning("conversion of %tm failed")
   z
 }
 
@@ -58,9 +57,8 @@ convert_dt_q <- function(x) {
   qrt <- x %% 4 + 1
   qrt_month <- c(1, 4, 7, 10)
   
-  z <- paste0(yr, "-", qrt_month[qrt], "-1")
+  z <- ifelse(is.na(z), NA, paste0(yr, "-", qrt_month[qrt], "-1"))
   z <- as.Date(z, "%Y-%m-%d")
-  if (any(is.na(z))) warning("conversion of %tq failed")
   z
 }
 
@@ -71,7 +69,7 @@ convert_dt_q <- function(x) {
 # @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 # @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 convert_dt_y <- function(x) {
-  z <- as.Date(paste0(x, "-1-1"), "%Y-%m-%d")
-  if (any(is.na(z))) warning("conversion of %ty failed")
+  z <- ifelse(is.na(x), NA, paste0(x, "-1-1"))
+  z <- as.Date(z, "%Y-%m-%d")
   z
 }

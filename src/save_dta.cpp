@@ -246,7 +246,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     for (uint64_t i = 0; i < big_k; ++i)
     {
       uint32_t nsortlist = 0;
-      
+
       if ((release == 117) | (release == 118)) {
         writebin((uint16_t)nsortlist, dta, swapit);
       }
@@ -444,10 +444,13 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
         {
           int32_t const len = vartypes[i];
 
-          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
+          CharacterVector cv_s = NA_STRING;
+          cv_s = as<CharacterVector>(dat[i])[j];
 
-          if (val_s == "NA")
-            val_s.clear();
+          std::string val_s = "";
+
+          if (cv_s[0] != NA_STRING)
+            val_s = as<std::string>(cv_s);
 
           writestr(val_s, len, dta);
           break;
@@ -458,8 +461,14 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
           /* Stata uses +1 */
           int64_t z = 0;
 
-          CharacterVector b = as<CharacterVector>(dat[i]);
-          const string val_strl = as<string>(b[j]);
+          CharacterVector cv_s = NA_STRING;
+          cv_s = as<CharacterVector>(dat[i])[j];
+
+          std::string val_strl = "";
+
+          if (cv_s[0] != NA_STRING)
+            val_strl = as<std::string>(cv_s);
+
           if (!val_strl.empty())
           {
             switch (release)

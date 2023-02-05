@@ -385,10 +385,13 @@ int stata_pre13_save(const char * filePath, Rcpp::DataFrame dat)
         {
           int32_t len = vartypes[i];
 
-          string val_s = as<string>(as<CharacterVector>(dat[i])[j]);
+          CharacterVector cv_s = NA_STRING;
+          cv_s = as<CharacterVector>(dat[i])[j];
 
-          if(val_s == "NA")
-            val_s.clear();
+          std::string val_s = "";
+
+          if (cv_s[0] != NA_STRING)
+            val_s = as<std::string>(cv_s);
 
           // Stata 6-12 can only store 244 byte strings
           if(val_s.size()>maxstrsize)

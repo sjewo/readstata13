@@ -1000,7 +1000,7 @@ test_that("expansinon.fields", {
   # expect_equal(ef, dd102)
 })
 
-#### save and read varlabels  #### 
+#### save and read varlabels  ####
 
 if (readstata13:::dir.exists13("data")) {
   unlink("data", recursive = TRUE)
@@ -1020,20 +1020,108 @@ for(v in version_list) {
 }
 
 # read variable label attribute
-varlabeldd_read <- lapply(version_list, 
+varlabeldd_read <- lapply(version_list,
                           function(v) {
-                            attr(read.dta13(paste0("data/dta_", v, ".dta")), 
+                            attr(read.dta13(paste0("data/dta_", v, ".dta")),
                                  "var.labels")
                           })
 names(varlabeldd_read) <- as.character(version_list)
-  
+
 unlink("data", recursive = TRUE)
 
 test_that("save and read varlabels", {
-  
+
   for(v in as.character(version_list)) {
     expect_equal(varlabeldd, varlabeldd_read[[v]])
   }
-  
+
 })
 
+
+#### differentiating "NA" and NA_character works  ####
+
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+dd <- data.frame(x1 = c("NA", NA_character_))
+exp <- data.frame(x1 = c("NA", ""))
+
+save.dta13(dd, "data/dta_119.dta", version = 119)
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+save.dta13(dd, "data/dta_115.dta", version = 115)
+save.dta13(dd, "data/dta_114.dta", version = 114)
+save.dta13(dd, "data/dta_113.dta", version = 113)
+save.dta13(dd, "data/dta_112.dta", version = 112)
+save.dta13(dd, "data/dta_111.dta", version = 111)
+save.dta13(dd, "data/dta_110.dta", version = 110)
+save.dta13(dd, "data/dta_108.dta", version = 108)
+save.dta13(dd, "data/dta_107.dta", version = 107)
+save.dta13(dd, "data/dta_106.dta", version = 106)
+save.dta13(dd, "data/dta_105.dta", version = 105)
+save.dta13(dd, "data/dta_104.dta", version = 104)
+save.dta13(dd, "data/dta_103.dta", version = 103)
+save.dta13(dd, "data/dta_102.dta", version = 102)
+
+dd119 <- read.dta13("data/dta_119.dta")
+dd118 <- read.dta13("data/dta_118.dta")
+dd117 <- read.dta13("data/dta_117.dta")
+dd115 <- read.dta13("data/dta_115.dta")
+dd114 <- read.dta13("data/dta_114.dta")
+dd113 <- read.dta13("data/dta_113.dta")
+dd112 <- read.dta13("data/dta_112.dta")
+dd111 <- read.dta13("data/dta_111.dta")
+dd110 <- read.dta13("data/dta_110.dta")
+dd108 <- read.dta13("data/dta_108.dta")
+dd107 <- read.dta13("data/dta_107.dta")
+dd106 <- read.dta13("data/dta_106.dta")
+dd105 <- read.dta13("data/dta_105.dta")
+dd104 <- read.dta13("data/dta_104.dta")
+dd103 <- read.dta13("data/dta_103.dta")
+dd102 <- read.dta13("data/dta_102.dta")
+
+test_that("NA character works", {
+  expect_true(datacompare(exp, dd119))
+  expect_true(datacompare(exp, dd118))
+  expect_true(datacompare(exp, dd117))
+  expect_true(datacompare(exp, dd115))
+  expect_true(datacompare(exp, dd114))
+  expect_true(datacompare(exp, dd113))
+  expect_true(datacompare(exp, dd112))
+  expect_true(datacompare(exp, dd111))
+  expect_true(datacompare(exp, dd110))
+  expect_true(datacompare(exp, dd108))
+  expect_true(datacompare(exp, dd107))
+  expect_true(datacompare(exp, dd106))
+  expect_true(datacompare(exp, dd105))
+  expect_true(datacompare(exp, dd104))
+  expect_true(datacompare(exp, dd103))
+  expect_true(datacompare(exp, dd102))
+})
+
+# the same with strls
+if (readstata13:::dir.exists13("data"))
+  unlink("data", recursive = TRUE)
+dir.create("data")
+
+# strLs can be of length any length up to 2 billion characters. Starting with
+# 2046 a string is handled as a strL
+dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
+                          paste(replicate(2046, "b"), collapse = ""),
+                          "NA", NA_character_),
+                  stringsAsFactors = FALSE)
+
+save.dta13(dd, "data/dta_119.dta", version = 119)
+save.dta13(dd, "data/dta_118.dta", version = 118)
+save.dta13(dd, "data/dta_117.dta", version = 117)
+
+dd119 <- read.dta13("data/dta_119.dta")
+dd118 <- read.dta13("data/dta_118.dta")
+dd117 <- read.dta13("data/dta_117.dta")
+
+test_that("NA character works", {
+  expect_true(datacompare(dd, dd119))
+  expect_true(datacompare(dd, dd118))
+  expect_true(datacompare(dd, dd117))
+})

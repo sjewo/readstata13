@@ -5,6 +5,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // stata_read
 List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows, const CharacterVector selectcols, const bool strlexport, const CharacterVector strlpath);
 RcppExport SEXP _readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcolsSEXP, SEXP strlexportSEXP, SEXP strlpathSEXP) {

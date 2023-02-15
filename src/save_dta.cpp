@@ -20,6 +20,16 @@
 using namespace Rcpp;
 using namespace std;
 
+// // create big endian file from little endian
+// #ifdef swapit
+// #undef swapit
+// #undef sbyteorder
+// #undef SBYTEORDER
+// #define swapit TRUE
+// #define sbyteorder "MSF"
+// #define SBYTEORDER 1
+// #endif
+
 // Writes the binary Stata file
 //
 // @param filePath The full systempath to the dta file you want to export.

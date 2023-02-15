@@ -207,7 +207,7 @@ List read_data(FILE * file,
 
         // FixMe: works if we read a big-endian file on little-endian
         if (byteorder.compare("MSF")==0) {
-          v = (z >> 48) & ((1 << 24) - 1);
+          v = (z >> 40) & ((1 << 24) - 1);
           o = z & ((1 << 24) - 1);
         }
 

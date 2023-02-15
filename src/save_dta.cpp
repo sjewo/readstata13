@@ -483,13 +483,13 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             char    z[8];
 
             // push back every v, o and val_strl
-            V.push_back(v);
+            V.push_back(v); if (swapit) v = swap_endian(v);
             O.push_back(o);
 
             // z is 'vv-- ----'
             memcpy(&z[0], &v, sizeof(v));
             if (SBYTEORDER == 1) {
-              o <<= 16;
+              o <<= 16; if (swapit) o = swap_endian(o);
             }
             memcpy(&z[2], &o, 6);
             // z is 'vvoo oooo'
@@ -509,10 +509,13 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             V.push_back(v);
             O.push_back(o);
 
-            // z is 'vv-- ----'
-            memcpy(&z[0], &v, sizeof(v));
+            // z is 'vvv- ----'
             if (SBYTEORDER == 1) {
-              o <<= 24;
+              v <<= 8; if (swapit) v = swap_endian(v);
+            }
+            memcpy(&z[0], &v, 3);
+            if (SBYTEORDER == 1) {
+              o <<= 24; if (swapit) o = swap_endian(o);
             }
             memcpy(&z[3], &o, 5);
             // z is 'vvvo oooo'

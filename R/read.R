@@ -129,7 +129,7 @@
 #' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
-#' @useDynLib readstata13
+#' @useDynLib readstata13, .registration = TRUE
 #' @importFrom utils download.file
 #' @importFrom stats na.omit
 #' @export

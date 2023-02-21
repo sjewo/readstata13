@@ -71,7 +71,7 @@
 #' } 
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
-#' @useDynLib readstata13
+#' @useDynLib readstata13, .registration = TRUE
 #' @export
 save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
                        convert.factors=TRUE, convert.dates=TRUE, tz="GMT",

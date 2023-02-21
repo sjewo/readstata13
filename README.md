@@ -58,6 +58,9 @@ devtools::install_github("sjewo/readstata13", ref="testing")
 
  | Version | Changes                                                                       | 
  | ------  | ----------------------------------------------------                          | 
+ | 0.10.1  | fix writing "NA", NA_character_ values                                        |
+ |         | fix writing of STRLs in big endian systems                                    |
+ |         |                                                                               |
  | 0.10.0  | fix for reading/writing of format 119                                         |
  |         | fix sortlist attribute for dta format 119                                     |
  |         | fix compress option. In the past, unwanted conversions to integer type could occur.|

@@ -112,230 +112,242 @@
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td>0.10.1</td>
+<td>fix writing “NA”, NA_character_ values</td>
+</tr>
+<tr class="even">
+<td></td>
+<td>fix writing of STRLs in big endian systems</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
 <td>0.10.0</td>
 <td>fix for reading/writing of format 119</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>fix sortlist attribute for dta format 119</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>fix compress option. In the past, unwanted conversions to integer type could occur.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>fix encoding issues in variable and data labels</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>fix build on FreeBSD</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>new feature: improved handling of time and date formats</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>new feature: collect warnings from read.dta13</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>0.9.2</td>
 <td>Fix Build on MacOS X</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>0.9.1</td>
 <td>Allow reading only pre-selected variables</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Experimental support for format 119</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Improvements to partial reading. Idea by Kevin Jin</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Export of binary data from dta-files</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>new function get.label.tables() to show all Stata label sets</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Fix check for duplicate labels and in set.lang()</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>0.9.0</td>
 <td>Generate unique factor labels to prevent errors in factor definition</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>check interrupt for long read. Patch by Giovanni Righi</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Updates to notes, roxygen and register</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Fixed size of character length. Bug reported by Yiming (Paul) Li</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Fix saving characters containing missings. Bug reported by Eivind H. Olsen</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Adjustments to convert.underscore. Patch by luke-m-olson</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Allow partial reading of selected rows</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>0.8.5</td>
 <td>Fix errors on big-endians systems</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>0.8.4</td>
 <td>Fix valgrind errors. converting from dta.write to writestr</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Fix for empty data label</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Make replace.strl default</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>0.8.3</td>
 <td>Restrict length of varnames to 32 chars for compatibility with Stata 14</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Add many function tests</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Avoid converting of double to floats while writing compressed files</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>0.8.2</td>
 <td>Save NA values in character vector as empty string</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Convert.underscore=T will convert all non-literal characters to underscores</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Fix saving of Dates</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Save with convert.factors by default</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Test for NaN and inf values while writing missing values and replace with NA</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Remove message about saving factors</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>0.8.1</td>
 <td>Convert non-integer variables to factors (<code>nonint.factors=T</code>)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Handle large datasets</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Working with strL variables is now a lot faster</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>&lt;0.8.1</td>
 <td>Reading data files from disk or url and create a data.frame</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Saving dta files to disk - most features of the dta file format are supported</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Assign variable names</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Read the new strL strings and save them as attribute</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Convert stata label to factors and save them as attribute</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Read some meta data (timestamp, dataset label, formats,…)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Convert strings to system encoding</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Handle different NA values</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Handle multiple label languages</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td></td>
 <td>Convert dates</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td></td>
 <td>Reading business calendar files</td>
 </tr>

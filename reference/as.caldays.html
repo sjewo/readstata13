@@ -50,21 +50,28 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">as.caldays</span><span class="op">(</span><span class="va">buisdays</span>, <span class="va">cal</span>, format <span class="op">=</span> <span class="st">"%Y-%m-%d"</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">as.caldays</span><span class="op">(</span><span class="va">buisdays</span>, <span class="va">cal</span>, format <span class="op">=</span> <span class="st">"%Y-%m-%d"</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>buisdays</dt>
 <dd><p>numeric Vector of business dates</p></dd>
+
+
 <dt>cal</dt>
 <dd><p>data.frame Conversion table for business calendar dates</p></dd>
+
+
 <dt>format</dt>
 <dd><p>character String with date format as in <code><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></code></p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a vector of readable dates.</p>
+    
+
+<p>Returns a vector of readable dates.</p>
     </div>
     <div id="author">
     <h2>Author</h2>
@@ -74,13 +81,13 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="co"># read business calendar and data</span></span>
-<span class="r-in"><span class="va">sp500</span> <span class="op">&lt;-</span> <span class="fu"><a href="stbcal.html">stbcal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/sp500.stbcal"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># convert dates and check</span></span>
-<span class="r-in"><span class="va">dat</span><span class="op">$</span><span class="va">ldatescal2</span> <span class="op">&lt;-</span> <span class="fu">as.caldays</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">ldate</span>, <span class="va">sp500</span><span class="op">)</span></span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">ldatescal2</span><span class="op">==</span><span class="va">dat</span><span class="op">$</span><span class="va">ldatescal</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># read business calendar and data</span></span></span>
+<span class="r-in"><span><span class="va">sp500</span> <span class="op">&lt;-</span> <span class="fu"><a href="stbcal.html">stbcal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/sp500.stbcal"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># convert dates and check</span></span></span>
+<span class="r-in"><span><span class="va">dat</span><span class="op">$</span><span class="va">ldatescal2</span> <span class="op">&lt;-</span> <span class="fu">as.caldays</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">ldate</span>, <span class="va">sp500</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/all.html" class="external-link">all</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">ldatescal2</span><span class="op">==</span><span class="va">dat</span><span class="op">$</span><span class="va">ldatescal</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] TRUE</span>
 </code></pre></div>
     </div>
@@ -96,7 +103,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

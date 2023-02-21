@@ -52,88 +52,121 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">read.dta13</span><span class="op">(</span>
-  <span class="va">file</span>,
-  convert.factors <span class="op">=</span> <span class="cn">TRUE</span>,
-  generate.factors <span class="op">=</span> <span class="cn">FALSE</span>,
-  encoding <span class="op">=</span> <span class="st">"UTF-8"</span>,
-  fromEncoding <span class="op">=</span> <span class="cn">NULL</span>,
-  convert.underscore <span class="op">=</span> <span class="cn">FALSE</span>,
-  missing.type <span class="op">=</span> <span class="cn">FALSE</span>,
-  convert.dates <span class="op">=</span> <span class="cn">TRUE</span>,
-  replace.strl <span class="op">=</span> <span class="cn">TRUE</span>,
-  add.rownames <span class="op">=</span> <span class="cn">FALSE</span>,
-  nonint.factors <span class="op">=</span> <span class="cn">FALSE</span>,
-  select.rows <span class="op">=</span> <span class="cn">NULL</span>,
-  select.cols <span class="op">=</span> <span class="cn">NULL</span>,
-  strlexport <span class="op">=</span> <span class="cn">FALSE</span>,
-  strlpath <span class="op">=</span> <span class="st">"."</span>,
-  tz <span class="op">=</span> <span class="st">"GMT"</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">read.dta13</span><span class="op">(</span></span>
+<span>  <span class="va">file</span>,</span>
+<span>  convert.factors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  generate.factors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  encoding <span class="op">=</span> <span class="st">"UTF-8"</span>,</span>
+<span>  fromEncoding <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  convert.underscore <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  missing.type <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  convert.dates <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  replace.strl <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  add.rownames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  nonint.factors <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  select.rows <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  select.cols <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  strlexport <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  strlpath <span class="op">=</span> <span class="st">"."</span>,</span>
+<span>  tz <span class="op">=</span> <span class="st">"GMT"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>file</dt>
 <dd><p><em>character.</em> Path to the dta file you want to import.</p></dd>
+
+
 <dt>convert.factors</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, factors from Stata
 value labels are created.</p></dd>
+
+
 <dt>generate.factors</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code> and convert.factors is
 TRUE, missing factor labels are created from integers. If duplicated labels
 are found, unique labels will be generated according the following scheme:
 "label_(integer code)".</p></dd>
+
+
 <dt>encoding</dt>
 <dd><p><em>character.</em> Strings can be converted from Windows-1252
 or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
 target encoding explicitly. Stata 14, 15 and 16 files are UTF-8 encoded and
 may contain strings which can't be displayed in the current locale.
 Set encoding=NULL to stop reencoding.</p></dd>
+
+
 <dt>fromEncoding</dt>
 <dd><p><em>character.</em> We expect strings to be encoded as
 "CP1252" for Stata Versions 13 and older. For dta files saved with Stata 14
 or newer "UTF-8" is used. In some situation the used encoding can differ for
 Stata 14 files and must be manually set.</p></dd>
+
+
 <dt>convert.underscore</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, "_" in variable
 names will be changed to "."</p></dd>
+
+
 <dt>missing.type</dt>
 <dd><p><em>logical.</em> Stata knows 27 different missing types:
 ., .a, .b, ..., .z. If <code>TRUE</code>, attribute <code>missing</code> will be
  created.</p></dd>
+
+
 <dt>convert.dates</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, Stata dates are
 converted.</p></dd>
+
+
 <dt>replace.strl</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, replace the reference to
 a strL string in the data.frame with the actual value. The strl attribute
 will be removed from the data.frame (see details).</p></dd>
+
+
 <dt>add.rownames</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, the first column will be
 used as rownames. Variable will be dropped afterwards.</p></dd>
+
+
 <dt>nonint.factors</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, factors labels
 will be assigned to variables of type float and double.</p></dd>
+
+
 <dt>select.rows</dt>
 <dd><p><em>integer.</em> Vector of one or two numbers. If single
 value rows from 1:val are selected. If two values of a range are selected
 the rows in range will be selected.</p></dd>
+
+
 <dt>select.cols</dt>
 <dd><p><em>character.</em> Vector of variables to select.</p></dd>
+
+
 <dt>strlexport</dt>
 <dd><p><em>logical.</em> Should strl content be exported as binary
 files?</p></dd>
+
+
 <dt>strlpath</dt>
 <dd><p><em>character.</em> Path for strl export.</p></dd>
+
+
 <dt>tz</dt>
 <dd><p><em>character.</em> time zone specification to be used for 
 POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC 
 (Universal Time, Coordinated).</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The function returns a data.frame with attributes. The attributes
+    
+
+<p>The function returns a data.frame with attributes. The attributes
  include</p><dl><dt>datalabel:</dt>
 <dd><p>Dataset label</p></dd>
 
@@ -233,10 +266,10 @@ versions &lt; 13 and <code>read_dta</code> in package <code>haven</code> for Sta
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span></span>
-<span class="r-in">  <span class="va">r13</span> <span class="op">&lt;-</span> <span class="fu">read.dta13</span><span class="op">(</span><span class="st">"https://www.stata-press.com/data/r13/auto.dta"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span> </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">r13</span> <span class="op">&lt;-</span> <span class="fu">read.dta13</span><span class="op">(</span><span class="st">"https://www.stata-press.com/data/r13/auto.dta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> </span></span>
 </code></pre></div>
     </div>
   </div>
@@ -251,7 +284,7 @@ versions &lt; 13 and <code>read_dta</code> in package <code>haven</code> for Sta
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

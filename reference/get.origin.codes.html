@@ -50,20 +50,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">get.origin.codes</span><span class="op">(</span><span class="va">x</span>, <span class="va">label.table</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">get.origin.codes</span><span class="op">(</span><span class="va">x</span>, <span class="va">label.table</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>x</dt>
 <dd><p><em>factor.</em> Factor to obtain code for</p></dd>
+
+
 <dt>label.table</dt>
 <dd><p><em>table.</em> Table with factor levels obtained by
 <code><a href="get.label.html">get.label</a></code>.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns an integer with original codes</p>
+    
+
+<p>Returns an integer with original codes</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -79,15 +84,15 @@
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">labname</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.label.name.html">get.label.name</a></span><span class="op">(</span><span class="va">dat</span>,<span class="st">"type"</span><span class="op">)</span></span>
-<span class="r-in"><span class="va">labtab</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.label.html">get.label</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">labname</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># comparsion</span></span>
-<span class="r-in"><span class="fu">get.origin.codes</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">type</span>, <span class="va">labtab</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">labname</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.label.name.html">get.label.name</a></span><span class="op">(</span><span class="va">dat</span>,<span class="st">"type"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">labtab</span> <span class="op">&lt;-</span> <span class="fu"><a href="get.label.html">get.label</a></span><span class="op">(</span><span class="va">dat</span>, <span class="va">labname</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># comparsion</span></span></span>
+<span class="r-in"><span><span class="fu">get.origin.codes</span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">type</span>, <span class="va">labtab</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]           2           4           3           4           1           3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [7]  2147483620 -2147483647</span>
-<span class="r-in"><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/integer.html" class="external-link">as.integer</a></span><span class="op">(</span><span class="va">dat</span><span class="op">$</span><span class="va">type</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 3 5 4 5 2 4 6 1</span>
 </code></pre></div>
     </div>
@@ -103,7 +108,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

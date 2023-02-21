@@ -52,64 +52,87 @@ into a dta-file.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">save.dta13</span><span class="op">(</span>
-  <span class="va">data</span>,
-  <span class="va">file</span>,
-  data.label <span class="op">=</span> <span class="cn">NULL</span>,
-  time.stamp <span class="op">=</span> <span class="cn">TRUE</span>,
-  convert.factors <span class="op">=</span> <span class="cn">TRUE</span>,
-  convert.dates <span class="op">=</span> <span class="cn">TRUE</span>,
-  tz <span class="op">=</span> <span class="st">"GMT"</span>,
-  add.rownames <span class="op">=</span> <span class="cn">FALSE</span>,
-  compress <span class="op">=</span> <span class="cn">FALSE</span>,
-  version <span class="op">=</span> <span class="fl">117</span>,
-  convert.underscore <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">save.dta13</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  <span class="va">file</span>,</span>
+<span>  data.label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  time.stamp <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  convert.factors <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  convert.dates <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  tz <span class="op">=</span> <span class="st">"GMT"</span>,</span>
+<span>  add.rownames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  compress <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  version <span class="op">=</span> <span class="fl">117</span>,</span>
+<span>  convert.underscore <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>data</dt>
 <dd><p><em>data.frame.</em> A data.frame Object.</p></dd>
+
+
 <dt>file</dt>
 <dd><p><em>character.</em> Path to the dta file you want to export.</p></dd>
+
+
 <dt>data.label</dt>
 <dd><p><em>character.</em> Name of the dta-file.</p></dd>
+
+
 <dt>time.stamp</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, add a time.stamp to the
 dta-file.</p></dd>
+
+
 <dt>convert.factors</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, factors will be
 converted to Stata variables with labels.
 Stata expects strings to be encoded as Windows-1252, so all levels will be
 recoded.  Character which can not be mapped in Windows-1252 will be saved as
 hexcode.</p></dd>
+
+
 <dt>convert.dates</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, dates will be converted
 to Stata date time format. Code from <code><a href="https://rdrr.io/pkg/foreign/man/write.dta.html" class="external-link">foreign::write.dta</a></code></p></dd>
+
+
 <dt>tz</dt>
 <dd><p><em>character.</em> time zone specification to be used for 
 POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current 
 time zone, and ‘"GMT"’ is UTC  (Universal Time, Coordinated).</p></dd>
+
+
 <dt>add.rownames</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, a new variable rownames
 will be added to the dta-file.</p></dd>
+
+
 <dt>compress</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, the resulting dta-file will
 use all of Statas numeric-vartypes.</p></dd>
+
+
 <dt>version</dt>
 <dd><p><em>numeric.</em> Stata format for the resulting dta-file either
 Stata version number (6 - 16) or the internal Stata dta-format (e.g. 117 for
 Stata 13). Experimental support for large datasets: Use version="15mp" to 
 save the dataset in the new Stata 15/16 MP file format. This feature is not
 thoroughly tested yet.</p></dd>
+
+
 <dt>convert.underscore</dt>
 <dd><p><em>logical.</em> If <code>TRUE</code>, all non numerics or
 non alphabet characters will be converted to underscores.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>The function writes a dta-file to disk. The following features of the
+    
+
+<p>The function writes a dta-file to disk. The following features of the
  dta file format are supported:</p><dl><dt>datalabel:</dt>
 <dd><p>Dataset label</p></dd>
 
@@ -155,10 +178,10 @@ non alphabet characters will be converted to underscores.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span></span>
-<span class="r-in">  <span class="fu">save.dta13</span><span class="op">(</span><span class="va">cars</span>, file<span class="op">=</span><span class="st">"cars.dta"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span> </span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">save.dta13</span><span class="op">(</span><span class="va">cars</span>, file<span class="op">=</span><span class="st">"cars.dta"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span> </span></span>
 </code></pre></div>
     </div>
   </div>
@@ -173,7 +196,7 @@ non alphabet characters will be converted to underscores.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

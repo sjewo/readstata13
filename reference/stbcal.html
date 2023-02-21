@@ -50,7 +50,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">stbcal</span><span class="op">(</span><span class="va">stbcalfile</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">stbcal</span><span class="op">(</span><span class="va">stbcalfile</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -58,10 +58,13 @@
     <dl><dt>stbcalfile</dt>
 <dd><p><em>stbcal-file</em> Stata business calendar file created by
 Stata.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a data.frame with two cols:</p><dl><dt>range:</dt>
+    
+
+<p>Returns a data.frame with two cols:</p><dl><dt>range:</dt>
 <dd><p>The date matching the businessdate. Date format.</p></dd>
 
 <dt>buisdays:</dt>
@@ -91,7 +94,7 @@ attribute of the resulting data.frame.</p>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">sp500</span> <span class="op">&lt;-</span> <span class="fu">stbcal</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/sp500.stbcal"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">sp500</span> <span class="op">&lt;-</span> <span class="fu">stbcal</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/sp500.stbcal"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -106,7 +109,7 @@ attribute of the resulting data.frame.</p>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

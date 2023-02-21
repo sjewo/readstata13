@@ -54,40 +54,47 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">set.label</span><span class="op">(</span><span class="va">dat</span>, <span class="va">var.name</span>, lang <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">set.label</span><span class="op">(</span><span class="va">dat</span>, <span class="va">var.name</span>, lang <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>dat</dt>
 <dd><p><em>data.frame.</em> Data.frame created by <code>read.dta13</code>.</p></dd>
+
+
 <dt>var.name</dt>
 <dd><p><em>character.</em> Name of the variable in the data.frame</p></dd>
+
+
 <dt>lang</dt>
 <dd><p><em>character.</em> Label language. Default language defined by
 <code><a href="get.lang.html">get.lang</a></code> is used if NA</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a labeled factor</p>
+    
+
+<p>Returns a labeled factor</p>
     </div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span>,</span>
-<span class="r-in">                  convert.factors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># compare vectors</span></span>
-<span class="r-in"><span class="fu">set.label</span><span class="op">(</span><span class="va">dat</span>, <span class="st">"type"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>                  convert.factors<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># compare vectors</span></span></span>
+<span class="r-in"><span><span class="fu">set.label</span><span class="op">(</span><span class="va">dat</span>, <span class="st">"type"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] Roadster   Family car City car   Family car Off-Road   City car   max       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [8] min       </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Levels: min Off-Road Roadster City car Family car max</span>
-<span class="r-in"><span class="va">dat</span><span class="op">$</span><span class="va">type</span></span>
+<span class="r-in"><span><span class="va">dat</span><span class="op">$</span><span class="va">type</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1]           2           4           3           4           1           3</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [7]  2147483620 -2147483647</span>
-<span class="r-in"></span>
-<span class="r-in"><span class="co"># German label</span></span>
-<span class="r-in"><span class="fu">set.label</span><span class="op">(</span><span class="va">dat</span>, <span class="st">"type"</span>, <span class="st">"de"</span><span class="op">)</span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># German label</span></span></span>
+<span class="r-in"><span><span class="fu">set.label</span><span class="op">(</span><span class="va">dat</span>, <span class="st">"type"</span>, <span class="st">"de"</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] Sportwagen   Familienauto Stadtauto    Familienauto Geländewagen</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [6] Stadtauto    max          min         </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Levels: min Geländewagen Sportwagen Stadtauto Familienauto max</span>
@@ -105,7 +112,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

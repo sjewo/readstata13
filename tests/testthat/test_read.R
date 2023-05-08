@@ -248,3 +248,64 @@ test_that("various datetime conversions", {
   dddates <- read.dta13(datetime, convert.dates = TRUE)
   expect_true(all.equal(dd, dddates, check.attributes = FALSE))
 })
+
+test_that("reading file format 120 works", {
+
+  fl <- system.file("extdata", "myproject2.dtas", package="readstata13")
+
+  tmp <- tempdir()
+
+  fls <- unzip(fl, exdir = tmp)
+
+  # data name, dta file name, dta version
+  data_fram <- strsplit(readLines(fls[1])[-c(1:2)], " ")
+  data_fram <- as.data.frame(do.call("rbind", data_fram))
+
+  expect_equal(data_fram$V1, c("persons", "counties"))
+
+  # read dtas
+  dtas <- fls[tools::file_ext(fls) == "dta"]
+  expect_equal(basename(dtas), paste0(data_fram$V2, ".dta"))
+
+  expect_warning(
+    df1 <- read.dta13(dtas[1]),
+    "File contains unhandled alias variable in column: 5"
+  )
+  df2 <- read.dta13(dtas[2], convert.factors = FALSE)
+
+  expect_equal(attr(df1, "version"), as.integer(data_fram$V3[1]))
+  expect_equal(attr(df2, "version"), as.integer(data_fram$V3[2]))
+
+  # backup order
+  nams <- names(df1)
+
+  # merge: fralias_from in attr(df1, "expansion.fields") tells what to merge
+  df <- merge(
+    df1[-which(names(df1) == "median")],
+    df2,
+    by = "countyid",
+    all.x = TRUE
+  )
+
+  # update names
+  as_name <- attr(df1, "expansion.fields")[[16]]
+  nams2 <- names(df)
+  nams2[nams2 == as_name[3]] <- as_name[1]
+  names(df) <- nams2
+
+  # resore expected order
+  df <- df[nams]
+
+  # restore order
+  df <- df[order(df$personid), ]
+
+  expect_equal(
+    df$personid, 1:20
+  )
+
+  expect_equal(
+    c("personid", "countyid", "income", "counties", "median", "ratio"),
+    names(df)
+  )
+
+})

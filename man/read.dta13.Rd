@@ -36,7 +36,7 @@ are found, unique labels will be generated according the following scheme:
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252
 or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
-target encoding explicitly. Stata 14, 15 and 16 files are UTF-8 encoded and
+target encoding explicitly. Since Stata 14 files are UTF-8 encoded and
 may contain strings which can't be displayed in the current locale.
 Set encoding=NULL to stop reencoding.}
 
@@ -141,6 +141,10 @@ In R, you may use rownames to store characters (see for instance
 
 Reading dta-files of older and newer versions than 13 was introduced
  with version 0.8.
+
+Stata 18 introduced alias variables. Alias variables are currently ignored
+ when reading the file. The format was added to the package without access
+ to Stata 18.
 }
 \note{
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members

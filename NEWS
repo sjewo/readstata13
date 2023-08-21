@@ -1,3 +1,6 @@
+[0.10.2]
+- add package alias to readstata13.Rd
+
 [0.10.1]
 - fix writing "NA", NA_character_ values
 - fix writing of STRLs in big endian systems

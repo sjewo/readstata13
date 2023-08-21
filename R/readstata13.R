@@ -7,6 +7,7 @@
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #'
 #' @name readstata13
+#' @aliases readstata13-package
 #' @docType package
 #' @useDynLib readstata13, .registration = TRUE
 #' @import Rcpp

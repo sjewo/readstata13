@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2023 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -53,6 +53,7 @@
 #define STATA_INT 65528
 #define STATA_FLOAT 65527
 #define STATA_DOUBLE 65526
+#define STATA_ALIAS 65525
 
 #define STATA_STR 2045
 #define STATA_SHORT_STR 244

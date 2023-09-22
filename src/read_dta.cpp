@@ -505,8 +505,8 @@ List read_dta(FILE * file,
   readstring(tags, file, tags.size());
 
   //put strLs into a named vector
-  CharacterVector strlvalues(0);
-  CharacterVector strlnames(0);
+  std::vector<std::string> vec_strlvalues(0);
+  std::vector<std::string> vec_strlnames(0);
 
   while (gso.compare(tags)==0)
   {
@@ -576,14 +576,15 @@ List read_dta(FILE * file,
 
     }
 
-    strlvalues.push_back( strl );
-    strlnames.push_back( ref );
+    vec_strlvalues.push_back( strl );
+    vec_strlnames.push_back( ref );
 
     readstring(tags, file, tags.size());
   }
 
   // set identifier as name
-  strlvalues.attr("names") = strlnames;
+  CharacterVector strlvalues = wrap(vec_strlvalues);
+  strlvalues.attr("names") = vec_strlnames;
 
   // after strls
   //[</s]trls>

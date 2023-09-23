@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2023 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -429,7 +429,7 @@ List read_dta(FILE * file,
 
   // check if vars are selected
   IntegerVector select = cvec, nselect;
-  
+
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
@@ -439,7 +439,7 @@ List read_dta(FILE * file,
   if (!all_na_chr) {
     select = choose(selectcols_chr, varnames);
   }
-  
+
   // numeric selection was passed to selectcols
   bool all_na_int = all(is_na(selectcols_int));
   if (!all_na_int) {

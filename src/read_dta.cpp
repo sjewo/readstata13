@@ -273,12 +273,12 @@ List read_dta(FILE * file,
   for (uint64_t i=0; i<big_k; ++i)
   {
     uint32_t nsortlist = 0;
-    
+
     if ((release == 117) | (release == 118))
       nsortlist = readbin((uint16_t)nsortlist, file, swapit);
     if (release == 119)
       nsortlist = readbin(nsortlist, file, swapit);
-    
+
     sortlist[i] = nsortlist;
   }
 
@@ -510,7 +510,6 @@ List read_dta(FILE * file,
 
   while (gso.compare(tags)==0)
   {
-    CharacterVector strls(2);
     string ref;
 
     // FixMe: Strl in 118

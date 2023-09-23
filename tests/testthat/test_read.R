@@ -186,10 +186,28 @@ test_that("Reading of strls", {
   expect_equal(ddstrl$model, ddstrl$modelStrL)
 })
 
+test_that("reading of many strls", {
+
+  # slow test
+  N = 1e4
+  big_strl <- data.frame(
+    x = 1:N,
+    y = sample(LETTERS, N, replace = TRUE),
+    z = c(paste(rep("a", 3000), collapse=""), sample(LETTERS, N-1, replace=TRUE))
+  )
+
+  # writing the file is slow
+  if (!file.exists("big_strl.dta"))
+    readstata13::save.dta13(big_strl, "big_strl.dta")
+
+  expect_silent(x <- readstata13::read.dta13("big_strl.dta", select.rows = 1))
+  unlink("big_strl.dta")
+
+})
 
 test_that("various datetime conversions", {
   datetime <- system.file("extdata", "datetime.dta", package="readstata13")
-  
+
   td       <- c("2001-05-15",
                 "1999-04-01",
                 "1975-11-15",
@@ -220,7 +238,7 @@ test_that("various datetime conversions", {
                 "2011-04-01",
                 "2012-01-01",
                 "2012-07-01")
-    
+
   dd <- data.frame(td = as.Date(td),
                    tc = as.POSIXct(tc, tz = "GMT"),
                    tc_hh_mm = as.POSIXct(tc_hh_mm, tz = "GMT"),

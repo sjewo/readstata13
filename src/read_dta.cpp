@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2023 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -273,12 +273,12 @@ List read_dta(FILE * file,
   for (uint64_t i=0; i<big_k; ++i)
   {
     uint32_t nsortlist = 0;
-    
+
     if ((release == 117) | (release == 118))
       nsortlist = readbin((uint16_t)nsortlist, file, swapit);
     if (release == 119)
       nsortlist = readbin(nsortlist, file, swapit);
-    
+
     sortlist[i] = nsortlist;
   }
 
@@ -429,7 +429,7 @@ List read_dta(FILE * file,
 
   // check if vars are selected
   IntegerVector select = cvec, nselect;
-  
+
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
@@ -439,7 +439,7 @@ List read_dta(FILE * file,
   if (!all_na_chr) {
     select = choose(selectcols_chr, varnames);
   }
-  
+
   // numeric selection was passed to selectcols
   bool all_na_int = all(is_na(selectcols_int));
   if (!all_na_int) {
@@ -505,12 +505,11 @@ List read_dta(FILE * file,
   readstring(tags, file, tags.size());
 
   //put strLs into a named vector
-  CharacterVector strlvalues(0);
-  CharacterVector strlnames(0);
+  std::vector<std::string> vec_strlvalues(0);
+  std::vector<std::string> vec_strlnames(0);
 
   while (gso.compare(tags)==0)
   {
-    CharacterVector strls(2);
     string ref;
 
     // FixMe: Strl in 118
@@ -576,14 +575,15 @@ List read_dta(FILE * file,
 
     }
 
-    strlvalues.push_back( strl );
-    strlnames.push_back( ref );
+    vec_strlvalues.push_back( strl );
+    vec_strlnames.push_back( ref );
 
     readstring(tags, file, tags.size());
   }
 
   // set identifier as name
-  strlvalues.attr("names") = strlnames;
+  CharacterVector strlvalues = wrap(vec_strlvalues);
+  strlvalues.attr("names") = vec_strlnames;
 
   // after strls
   //[</s]trls>

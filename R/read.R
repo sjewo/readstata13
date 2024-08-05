@@ -94,9 +94,11 @@
 #' Reading dta-files of older and newer versions than 13 was introduced
 #'  with version 0.8.
 #'
-#' Stata 18 introduced alias variables. Alias variables are currently ignored
-#'  when reading the file. The format was added to the package without access
-#'  to Stata 18.
+#' Stata 18 introduced alias variables and frame files. Alias variables are
+#'  currently ignored when reading the file and a warning is printed. Stata
+#'  frame files (file extension `.dtas`) contain zipped `dta` files which can
+#'  be loaded individually. The read test provides an example how to construct
+#'  the alias variables from a Stata frame file.
 #'
 #' @return The function returns a data.frame with attributes. The attributes
 #'  include
@@ -132,7 +134,7 @@
 #' \dontrun{
 #'   library(readstata13)
 #'   r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
-#' } 
+#' }
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13, .registration = TRUE

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2023 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2024 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -38,7 +38,7 @@ List read_dta(FILE * file,
   */
 
   int8_t fversion = 117L; //f = first
-  int8_t lversion = 119L; //l = last
+  int8_t lversion = 121L; //l = last
 
   std::string version(3, '\0');
   readstring(version, file, version.size());
@@ -74,6 +74,8 @@ List read_dta(FILE * file,
     break;
   case 118:
   case 119:
+  case 120:
+  case 121:
     nvarnameslen = 129;
     nformatslen = 57;
     nvalLabelslen = 129;
@@ -106,9 +108,9 @@ List read_dta(FILE * file,
   */
 
   uint32_t k = 0;
-  if (release < 119)
+  if (release < 119 || release == 120)
     k = readbin((uint16_t)k, file, swapit);
-  if (release == 119)
+  if (release == 119 || release == 121)
     k = readbin(k, file, swapit);
 
   //</K>
@@ -123,7 +125,7 @@ List read_dta(FILE * file,
 
   if (release == 117)
     n = readbin((uint32_t)n, file, swapit);
-  if ((release == 118) | (release == 119))
+  if ((release >= 118) && (release <= 121))
     n = readbin(n, file, swapit);
 
   //</N>
@@ -146,7 +148,7 @@ List read_dta(FILE * file,
 
   if (release == 117)
     ndlabel = readbin((int8_t)ndlabel, file, swapit);
-  if ((release == 118) | (release == 119))
+  if ((release >= 118) && (release <= 121))
     ndlabel = readbin(ndlabel, file, swapit);
 
   std::string datalabel(ndlabel, '\0');
@@ -224,6 +226,7 @@ List read_dta(FILE * file,
   * vartypes.
   * 0-2045: strf (String: Max length 2045)
   * 32768:  strL (long String: Max length 2 billion)
+  * 65525:  alias
   * 65526:  double
   * 65527:  float
   * 65528:  long
@@ -274,9 +277,9 @@ List read_dta(FILE * file,
   {
     uint32_t nsortlist = 0;
 
-    if ((release == 117) | (release == 118))
+    if ((release == 117) || (release == 118) || (release == 120))
       nsortlist = readbin((uint16_t)nsortlist, file, swapit);
-    if (release == 119)
+    if (release == 119 || release == 121)
       nsortlist = readbin(nsortlist, file, swapit);
 
     sortlist[i] = nsortlist;
@@ -530,6 +533,8 @@ List read_dta(FILE * file,
     }
     case 118:
     case 119:
+    case 120:
+    case 121:
     {
       uint32_t v = 0;
       uint64_t o = 0;

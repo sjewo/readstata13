@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2024 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -154,6 +154,8 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
       break;
     case STATA_STRL:
       rlen(i) = 8;
+      break;
+    case STATA_ALIAS: // 0
       break;
     default:
       rlen(i) = type;

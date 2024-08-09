@@ -37,8 +37,8 @@ hexcode.}
 \item{convert.dates}{\emph{logical.} If \code{TRUE}, dates will be converted
 to Stata date time format. Code from \code{foreign::write.dta}}
 
-\item{tz}{\emph{character.} time zone specification to be used for 
-POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current 
+\item{tz}{\emph{character.} time zone specification to be used for
+POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current
 time zone, and ‘"GMT"’ is UTC  (Universal Time, Coordinated).}
 
 \item{add.rownames}{\emph{logical.} If \code{TRUE}, a new variable rownames
@@ -49,7 +49,7 @@ use all of Statas numeric-vartypes.}
 
 \item{version}{\emph{numeric.} Stata format for the resulting dta-file either
 Stata version number (6 - 16) or the internal Stata dta-format (e.g. 117 for
-Stata 13). Experimental support for large datasets: Use version="15mp" to 
+Stata 13). Support for large datasets: Use version="15mp" to
 save the dataset in the new Stata 15/16 MP file format. This feature is not
 thoroughly tested yet.}
 
@@ -80,7 +80,7 @@ into a dta-file.
 \dontrun{
   library(readstata13)
   save.dta13(cars, file="cars.dta")
-} 
+}
 }
 \references{
 Stata Corp (2014): Description of .dta file format

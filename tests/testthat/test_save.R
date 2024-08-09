@@ -109,6 +109,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121, compress = TRUE)
+save.dta13(dd, "data/dta_120.dta", version = 120, compress = TRUE)
 save.dta13(dd, "data/dta_119.dta", version = 119, compress = TRUE)
 save.dta13(dd, "data/dta_118.dta", version = 118, compress = TRUE)
 save.dta13(dd, "data/dta_117.dta", version = 117, compress = TRUE)
@@ -126,6 +128,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104, compress = TRUE)
 save.dta13(dd, "data/dta_103.dta", version = 103, compress = TRUE)
 save.dta13(dd, "data/dta_102.dta", version = 102, compress = TRUE)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -147,6 +151,8 @@ dd102 <- read.dta13("data/dta_102.dta")
 unlink("data", recursive = TRUE)
 
 test_that("compress", {
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -176,6 +182,8 @@ dir.create("data")
 dd <- mtcars
 dd$am <- factor(x = dd$am, levels = c(0,1), labels = c("auto", "man"))
 
+save.dta13(dd, "data/dta_121.dta", version = 121, convert.factors = TRUE)
+save.dta13(dd, "data/dta_120.dta", version = 120, convert.factors = TRUE)
 save.dta13(dd, "data/dta_119.dta", version = 119, convert.factors = TRUE)
 save.dta13(dd, "data/dta_118.dta", version = 118, convert.factors = TRUE)
 save.dta13(dd, "data/dta_117.dta", version = 117, convert.factors = TRUE)
@@ -193,6 +201,8 @@ save.dta13(dd, "data/dta_107.dta", version = 107, convert.factors = TRUE)
 # save.dta13(dd, "data/dta_103.dta", version = 103, convert.factors = TRUE)
 # save.dta13(dd, "data/dta_102.dta", version = 102, convert.factors = TRUE)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -214,6 +224,8 @@ dd107 <- read.dta13("data/dta_107.dta")
 unlink("data", recursive = TRUE)
 
 test_that("convert.factors TRUE", {
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -243,6 +255,8 @@ dir.create("data")
 dd <- mtcars
 dd$am <- factor(x = dd$am, levels = c(0,1), labels = c("auto", "man"))
 
+save.dta13(dd, "data/dta_121.dta", version = 121, convert.factors = FALSE)
+save.dta13(dd, "data/dta_120.dta", version = 120, convert.factors = FALSE)
 save.dta13(dd, "data/dta_119.dta", version = 119, convert.factors = FALSE)
 save.dta13(dd, "data/dta_118.dta", version = 118, convert.factors = FALSE)
 save.dta13(dd, "data/dta_117.dta", version = 117, convert.factors = FALSE)
@@ -260,6 +274,8 @@ save.dta13(dd, "data/dta_107.dta", version = 107, convert.factors = FALSE)
 # save.dta13(dd, "data/dta_103.dta", version = 103, convert.factors = FALSE)
 # save.dta13(dd, "data/dta_102.dta", version = 102, convert.factors = FALSE)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -285,6 +301,8 @@ dd$am <- dd$am + 1
 unlink("data", recursive = TRUE)
 
 test_that("convert.factors TRUE", {
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -312,6 +330,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121, add.rownames = TRUE)
+save.dta13(dd, "data/dta_120.dta", version = 120, add.rownames = TRUE)
 save.dta13(dd, "data/dta_119.dta", version = 119, add.rownames = TRUE)
 save.dta13(dd, "data/dta_118.dta", version = 118, add.rownames = TRUE)
 save.dta13(dd, "data/dta_117.dta", version = 117, add.rownames = TRUE)
@@ -329,6 +349,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104, add.rownames = TRUE)
 save.dta13(dd, "data/dta_103.dta", version = 103, add.rownames = TRUE)
 save.dta13(dd, "data/dta_102.dta", version = 102, add.rownames = TRUE)
 
+dd121 <- read.dta13("data/dta_121.dta", add.rownames = TRUE)
+dd120 <- read.dta13("data/dta_120.dta", add.rownames = TRUE)
 dd119 <- read.dta13("data/dta_119.dta", add.rownames = TRUE)
 dd118 <- read.dta13("data/dta_118.dta", add.rownames = TRUE)
 dd117 <- read.dta13("data/dta_117.dta", add.rownames = TRUE)
@@ -351,6 +373,8 @@ unlink("data", recursive = TRUE)
 
 test_that("add.rownames TRUE", {
   # Check that rownames are identical
+  expect_true(identical(rownames(dd), rownames(dd121)))
+  expect_true(identical(rownames(dd), rownames(dd120)))
   expect_true(identical(rownames(dd), rownames(dd119)))
   expect_true(identical(rownames(dd), rownames(dd118)))
   expect_true(identical(rownames(dd), rownames(dd117)))
@@ -369,6 +393,8 @@ test_that("add.rownames TRUE", {
   expect_true(identical(rownames(dd), rownames(dd102)))
 
   # Check that data is identical
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -399,6 +425,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121, data.label = dl)
+save.dta13(dd, "data/dta_120.dta", version = 120, data.label = dl)
 save.dta13(dd, "data/dta_119.dta", version = 119, data.label = dl)
 save.dta13(dd, "data/dta_118.dta", version = 118, data.label = dl)
 save.dta13(dd, "data/dta_117.dta", version = 117, data.label = dl)
@@ -416,6 +444,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104, data.label = dl)
 save.dta13(dd, "data/dta_103.dta", version = 103, data.label = dl)
 # save.dta13(dd, "data/dta_102.dta", version = 102, data.label = dl) # no data label
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -437,6 +467,8 @@ unlink("data", recursive = TRUE)
 
 test_that("data label", {
   # Check that rownames are identical
+  expect_equal(dl, attr(dd121, "datalabel"))
+  expect_equal(dl, attr(dd120, "datalabel"))
   expect_equal(dl, attr(dd119, "datalabel"))
   expect_equal(dl, attr(dd118, "datalabel"))
   expect_equal(dl, attr(dd117, "datalabel"))
@@ -502,6 +534,8 @@ dd <- data.frame(td = as.Date(td),
                  tm = as.Date(tm),
                  tq = as.Date(tq))
 
+save.dta13(dd, "data/dta_121.dta", version = 121, convert.dates = TRUE)
+save.dta13(dd, "data/dta_120.dta", version = 120, convert.dates = TRUE)
 save.dta13(dd, "data/dta_119.dta", version = 119, convert.dates = TRUE)
 save.dta13(dd, "data/dta_118.dta", version = 118, convert.dates = TRUE)
 save.dta13(dd, "data/dta_117.dta", version = 117, convert.dates = TRUE)
@@ -519,6 +553,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104, convert.dates = TRUE)
 save.dta13(dd, "data/dta_103.dta", version = 103, convert.dates = TRUE)
 save.dta13(dd, "data/dta_102.dta", version = 102, convert.dates = TRUE)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -540,6 +576,8 @@ unlink("data", recursive = TRUE)
 
 test_that("convert.dates TRUE", {
   # Check that rownames are identical
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -571,6 +609,8 @@ dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
                           paste(replicate(2046, "b"), collapse = "")),
                   stringsAsFactors = FALSE)
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -588,6 +628,8 @@ save.dta13(dd, "data/dta_117.dta", version = 117)
 # save.dta13(dd, "data/dta_103.dta", version = 103)
 # save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- read.dta13("data/dta_121.dta", replace.strl = TRUE)
+dd120 <- read.dta13("data/dta_120.dta", replace.strl = TRUE)
 dd119 <- read.dta13("data/dta_119.dta", replace.strl = TRUE)
 dd118 <- read.dta13("data/dta_118.dta", replace.strl = TRUE)
 dd117 <- read.dta13("data/dta_117.dta", replace.strl = TRUE)
@@ -609,6 +651,8 @@ unlink("data", recursive = TRUE)
 
 test_that("replace.strl TRUE", {
   # Check that rownames are identical
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -636,6 +680,8 @@ dir.create("data")
 
 dd <- data.frame(x.1 = 1)
 
+save.dta13(dd, "data/dta_121.dta", version = 121, convert.underscore = TRUE)
+save.dta13(dd, "data/dta_120.dta", version = 120, convert.underscore = TRUE)
 save.dta13(dd, "data/dta_119.dta", version = 119, convert.underscore = TRUE)
 save.dta13(dd, "data/dta_118.dta", version = 118, convert.underscore = TRUE)
 save.dta13(dd, "data/dta_117.dta", version = 117, convert.underscore = TRUE)
@@ -653,6 +699,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104, convert.underscore = TRUE)
 save.dta13(dd, "data/dta_103.dta", version = 103, convert.underscore = TRUE)
 save.dta13(dd, "data/dta_102.dta", version = 102, convert.underscore = TRUE)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -676,6 +724,8 @@ names(dd) <- "x_1"
 
 test_that("convert.underscore TRUE", {
   # check numerics
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -693,6 +743,8 @@ test_that("convert.underscore TRUE", {
   expect_true(datacompare(dd, dd103))
   expect_true(datacompare(dd, dd102))
   # check names
+  expect_true(namescompare(dd, dd121))
+  expect_true(namescompare(dd, dd120))
   expect_true(namescompare(dd, dd119))
   expect_true(namescompare(dd, dd118))
   expect_true(namescompare(dd, dd117))
@@ -720,6 +772,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -737,6 +791,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- read.dta13("data/dta_121.dta", select.rows = 5)
+dd120 <- read.dta13("data/dta_120.dta", select.rows = 5)
 dd119 <- read.dta13("data/dta_119.dta", select.rows = 5)
 dd118 <- read.dta13("data/dta_118.dta", select.rows = 5)
 dd117 <- read.dta13("data/dta_117.dta", select.rows = 5)
@@ -760,6 +816,8 @@ dd <- dd[1:5,]
 
 test_that("select.rows = 5", {
   # check numerics
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -784,6 +842,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -801,6 +861,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- read.dta13("data/dta_121.dta", select.rows = c(5,10))
+dd120 <- read.dta13("data/dta_120.dta", select.rows = c(5,10))
 dd119 <- read.dta13("data/dta_119.dta", select.rows = c(5,10))
 dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5,10))
 dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5,10))
@@ -824,6 +886,8 @@ dd <- dd[5:10,]
 
 test_that("select.rows = c(5,10)", {
   # check numerics
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -852,6 +916,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -869,6 +935,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- read.dta13("data/dta_121.dta", select.cols = c("disp", "drat"))
+dd120 <- read.dta13("data/dta_120.dta", select.cols = c("disp", "drat"))
 dd119 <- read.dta13("data/dta_119.dta", select.cols = c("disp", "drat"))
 dd118 <- read.dta13("data/dta_118.dta", select.cols = c("disp", "drat"))
 dd117 <- read.dta13("data/dta_117.dta", select.cols = c("disp", "drat"))
@@ -892,6 +960,8 @@ dd <- dd[,c("disp", "drat")]
 
 test_that("select.cols = c('disp', 'drat')", {
   # check numerics
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -916,6 +986,8 @@ dir.create("data")
 
 dd <- mtcars
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -933,6 +1005,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- read.dta13("data/dta_121.dta", select.cols = c(3, 5))
+dd120 <- read.dta13("data/dta_120.dta", select.cols = c(3, 5))
 dd119 <- read.dta13("data/dta_119.dta", select.cols = c(3, 5))
 dd118 <- read.dta13("data/dta_118.dta", select.cols = c(3, 5))
 dd117 <- read.dta13("data/dta_117.dta", select.cols = c(3, 5))
@@ -956,6 +1030,8 @@ dd <- dd[,c("disp", "drat")]
 
 test_that("select.cols = c('disp', 'drat')", {
   # check numerics
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))
@@ -1010,6 +1086,8 @@ ef <- list(
 
 attr(dd, "expansion.fields") <- ef
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -1027,6 +1105,8 @@ save.dta13(dd, "data/dta_105.dta", version = 105)
 # save.dta13(dd, "data/dta_103.dta", version = 103)
 # save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- attr(read.dta13("data/dta_121.dta"), "expansion.fields")
+dd120 <- attr(read.dta13("data/dta_120.dta"), "expansion.fields")
 dd119 <- attr(read.dta13("data/dta_119.dta"), "expansion.fields")
 dd118 <- attr(read.dta13("data/dta_118.dta"), "expansion.fields")
 dd117 <- attr(read.dta13("data/dta_117.dta"), "expansion.fields")
@@ -1048,6 +1128,8 @@ unlink("data", recursive = TRUE)
 
 test_that("expansinon.fields", {
   # check numerics
+  expect_equal(ef, dd121)
+  expect_equal(ef, dd120)
   expect_equal(ef, dd119)
   expect_equal(ef, dd118)
   expect_equal(ef, dd117)
@@ -1077,8 +1159,8 @@ dd <- mtcars
 varlabeldd <- LETTERS[seq_len(ncol(dd))]
 varlabel(dd) <- varlabeldd
 
-version_list <- c(102,103,104,105,106,107,108,110,
-                  111,112,113,114,115,117,118,119)
+version_list <- c(102,103,104,105,106,107,108,110,111,
+                  112,113,114,115,117,118,119,120,121)
 
 # write variable label attribute
 for(v in version_list) {
@@ -1113,6 +1195,8 @@ dir.create("data")
 dd <- data.frame(x1 = c("NA", NA_character_))
 exp <- data.frame(x1 = c("NA", ""))
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
@@ -1130,6 +1214,8 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
@@ -1148,6 +1234,8 @@ dd103 <- read.dta13("data/dta_103.dta")
 dd102 <- read.dta13("data/dta_102.dta")
 
 test_that("NA character works", {
+  expect_true(datacompare(exp, dd121))
+  expect_true(datacompare(exp, dd120))
   expect_true(datacompare(exp, dd119))
   expect_true(datacompare(exp, dd118))
   expect_true(datacompare(exp, dd117))
@@ -1178,15 +1266,21 @@ dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
                           "NA", NA_character_),
                   stringsAsFactors = FALSE)
 
+save.dta13(dd, "data/dta_121.dta", version = 121)
+save.dta13(dd, "data/dta_120.dta", version = 120)
 save.dta13(dd, "data/dta_119.dta", version = 119)
 save.dta13(dd, "data/dta_118.dta", version = 118)
 save.dta13(dd, "data/dta_117.dta", version = 117)
 
+dd121 <- read.dta13("data/dta_121.dta")
+dd120 <- read.dta13("data/dta_120.dta")
 dd119 <- read.dta13("data/dta_119.dta")
 dd118 <- read.dta13("data/dta_118.dta")
 dd117 <- read.dta13("data/dta_117.dta")
 
 test_that("NA character works", {
+  expect_true(datacompare(dd, dd121))
+  expect_true(datacompare(dd, dd120))
   expect_true(datacompare(dd, dd119))
   expect_true(datacompare(dd, dd118))
   expect_true(datacompare(dd, dd117))

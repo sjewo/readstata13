@@ -1,8 +1,8 @@
 # readstata13
 
-[![CRAN status](http://www.r-pkg.org/badges/version/readstata13)](https://cran.r-project.org/package=readstata13)
+[![CRAN status](https://www.r-pkg.org/badges/version/readstata13)](https://cran.r-project.org/package=readstata13)
 [![Build status](https://github.com/sjewo/readstata13/workflows/R-CMD-check/badge.svg)](https://github.com/sjewo/readstata13/actions?workflow=R-CMD-check)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
+[![CRAN Downloads](https://cranlogs.r-pkg.org/badges/readstata13)](https://cran.r-project.org/package=readstata13)
 
 Package to read and write all Stata file formats (version 17 and older) into a
 R data.frame. The dta file format versions 102 to 119 are supported.

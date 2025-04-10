@@ -40,7 +40,7 @@ typedef unsigned int uint32_t;
 #include <stdint.h>
 #endif
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__APPLE__) || defined(__ANDROID__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__APPLE__) || defined(__ANDROID__) || (defined(__linux__) && !defined(__GLIBC__))
 #  define fseeko64 fseeko
 #endif
 

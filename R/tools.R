@@ -519,6 +519,8 @@ maxchar <- function(x) {
 #' @param select.frames character vector 
 #' @param read.dta13.options list of parameters used in  read.dta13. The list must have the following structure: \code{list(framename = list(param = value))}
 #' @return Returns a named list of data.frames.
+#' @importFrom utils unzip
+#' @export
 #' @examples
 #' 
 #' path <- system.file("extdata", "myproject2.dtas", package="readstata13")
@@ -532,7 +534,7 @@ maxchar <- function(x) {
 #' # read only frame counties
 #' read.dtas(path, select.frames = c("counties"))
 #' 
-#' # read frames from with different arguments
+#' # read frames with different arguments
 #' read.dtas(path, 
 #'           read.dta13.options = list(counties = list(select.cols = "median_income"),
 #'                                      persons = list(select.cols = "income")))
@@ -540,7 +542,7 @@ maxchar <- function(x) {
 read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
   tmp <- tempdir()
   
-  fls <- unzip(path, exdir = tmp)
+  fls <- utils::unzip(path, exdir = tmp)
   
   # data name, dta file name, dta version
   frames <- strsplit(readLines(fls[grep(".frameinfo", fls)])[-c(1:2)], " ")
@@ -577,6 +579,7 @@ read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
 #'
 #' @param path path to .dtas file
 #' @return Returns a data.frame with frame names, internal filenames and dta file format version.
+#' @export
 #' @examples
 #' 
 #' path <- system.file("extdata", "myproject2.dtas", package="readstata13")

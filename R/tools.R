@@ -565,7 +565,7 @@ read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
   }
   
   dtas <- lapply(opts, function(f) do.call(read.dta13, f))
-  names(dtas) <- frames$V1
+  names(dtas) <- names(opts)
   
   return(dtas)
 }

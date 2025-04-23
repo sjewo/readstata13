@@ -145,8 +145,7 @@ Reading dta-files of older and newer versions than 13 was introduced
 Stata 18 introduced alias variables and frame files. Alias variables are
  currently ignored when reading the file and a warning is printed. Stata
  frame files (file extension `.dtas`) contain zipped `dta` files which can
- be loaded individually. The read test provides an example how to construct
- the alias variables from a Stata frame file.
+ be imported with \code{\link{read.dtas}}.
 }
 \note{
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members

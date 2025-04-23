@@ -509,3 +509,90 @@ maxchar <- function(x) {
 
   z
 }
+
+#' Read frames from Stata dtas-files
+#'
+#' Stata 18 introduced frame files (file extension `.dtas`) that contain zipped `dta`
+#' files. This helper functions imports those files and returns a list of data.frames.
+#'
+#' @param path path to .dtas file
+#' @param select.frames character vector 
+#' @param read.dta13.options list of parameters used in  read.dta13. The list must have the following structure: \code{list(framename = list(param = value))}
+#' @return Returns a named list of data.frames.
+#' @examples
+#' 
+#' path <- system.file("extdata", "myproject2.dtas", package="readstata13")
+#' 
+#' # read all frames in myproject2.dtas
+#' read.dtas(path)
+#' 
+#' # read selected frames
+#' read.dtas(path, select.frames = c("persons", "counties"))
+#' 
+#' # read only frame counties
+#' read.dtas(path, select.frames = c("counties"))
+#' 
+#' # read frames from with different arguments
+#' read.dtas(path, 
+#'           read.dta13.options = list(counties = list(select.cols = "median_income"),
+#'                                      persons = list(select.cols = "income")))
+#' 
+read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
+  tmp <- tempdir()
+  
+  fls <- unzip(path, exdir = tmp)
+  
+  # data name, dta file name, dta version
+  frames <- strsplit(readLines(fls[grep(".frameinfo", fls)])[-c(1:2)], " ")
+  frames <- as.data.frame(do.call("rbind", frames))
+  
+  # select frames
+  if(!is.null(select.frames)) {
+    frames <- frames[frames$V1 %in% select.frames, ]
+  }
+  
+  # read dtas
+  opts <- vector(mode = "list", length = length(frames$V1))
+  names(opts) <- frames$V1
+  
+  for(f in frames$V1) {
+    
+    if(is.list(read.dta13.options)) {
+      opts[[f]] <- read.dta13.options[[f]]
+    }
+    
+    opts[[f]][["file"]] <- file.path(tmp, paste0(frames$V2[frames$V1 == f], ".dta"))
+  }
+  
+  dtas <- lapply(opts, function(f) do.call(read.dta13, f))
+  names(dtas) <- frames$V1
+  
+  return(dtas)
+}
+
+#' List frames in Stata dtas-files
+#'
+#' Stata 18 introduced frame files (file extension `.dtas`) that contain zipped `dta`
+#' files. This helper functions imports those files and returns a list of data.frames.
+#'
+#' @param path path to .dtas file
+#' @return Returns a data.frame with frame names, internal filenames and dta file format version.
+#' @examples
+#' 
+#' path <- system.file("extdata", "myproject2.dtas", package="readstata13")
+#' 
+#' # print all frames in myproject2.dtas
+#' get.frames(path)
+#' 
+get.frames <- function(path) {
+  tmp <- tempdir()
+  
+  fls <- unzip(path, exdir = tmp, files = ".frameinfo")
+  
+  # data name, dta file name, dta version
+  frames <- strsplit(readLines(fls[grep(".frameinfo", fls)])[-c(1:2)], " ")
+  frames <- as.data.frame(do.call("rbind", frames))
+  names(frames) <- c("name", "filename", "version")
+  
+  return(frames)
+}

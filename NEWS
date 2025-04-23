@@ -1,3 +1,8 @@
+[0.11]
+- Initial support oft Stata 18 files. Alias variables are currently ignored with a warning.
+- Argument 'select.cols' accepts either variable names or column index
+- fix compilation on musl and other non-glibc based systems
+
 [0.10.2]
 - add package alias to readstata13.Rd
 
@@ -34,22 +39,22 @@
 - implement partial reading of dta-files
 - fix an integer bug with saving data.frames of length requiring uint64_t
 
-0.8.5
+[0.8.5]
 - fix errors on big-endian systems
 
-0.8.4
+[0.8.4]
 - fix valgrind errors. converting from dta.write to writestr
 - fix for empty data label
 - make replace.strl default
 
-0.8.3
+[0.8.3]
 - restrict length of varnames to 32 chars for compatibility with Stata 14
 - Stop compression of doubles as floats. Now test if compression of doubles as
   interger types is possible.
 - add many function tests
 
 
-0.8.2
+[0.8.2]
 - save NA values in character vector as empty string
 - convert.underscore=T will convert all non-literal characters to underscores
 - fix saving of Dates
@@ -57,61 +62,61 @@
 - test for NaN and inf values while writing missing values and replace with NA
 - remove message about saving factors
 
-0.8.1
+[0.8.1]
 - convert non-integer variables to factors (nonint.factors=T)
 - working with strL variables is now a lot faster (thank to Magnus Thor Torfason)
 - fix handling of large datasets
 - some code cleanups
 
-0.8
+[0.8]
 - implement reading all version prior 13.
 - clean up code.
 - fix a crash when varlables do not match ncols.
 - update leap seconds R code with foreign.
 
-0.7.1
+[0.7.1]
 - fix saving of files > 2GB
 
-0.7
+[0.7]
 - read and write Stata 14 files (ver 118)
 - fix save for variables without non-missing values
 - read strings from different file encodings
 - code cleanups
 
-0.6.1
+[0.6.1]
 - fix heap overflow
 
-0.6
+[0.6]
 - various fixes
 - reading stbcal-files
 
-0.5
+[0.5]
 - write dta-files
 - read/write LSF and MSF files
 - source testing and cleaning
 - support for multiple label languages (see http://www.stata.com/manuals13/dlabellanguage.pdf)
 - additional tools for label handling
 
-0.4
+[0.4]
 - convert.dates from foreign::read.dta()
 - handle different NA values
 - convert strings to system encoding
 - some checks on label assignment
 
-0.3
+[0.3]
 - reading file from url.
   Example: `read.dta13("http://www.stata-press.com/data/r13/auto.dta")`
 - convert.underscore from foreign::read.dta(): converts _ to .
 - missing.type parts from foreign::read.dta(). If TRUE return "missing"
 - replace.strl option to replace the reference to a STRL string in the data.frame with the actual value
 
-0.2
+[0.2]
 - read stata characteristics and save them in extension.table attribute
 - more robust handling of factor labels
 - set file encoding for all strings and convert them to system encoding
 - fixed compiler warnings
 
-0.1
+[0.1]
 - reading data files and create a data.frame
 - assign variable names
 - read the new strL strings and save them as attribute

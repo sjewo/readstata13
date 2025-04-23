@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
 # Copyright (C) of 'convert_dt_c' and 'convert_dt_C' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it

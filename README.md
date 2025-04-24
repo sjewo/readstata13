@@ -62,10 +62,10 @@ remotes::install_github("sjewo/readstata13", ref="testing")
 
 | Version | Changes |
 |:---|:---|
-| 0.11 | \- Initial support for Stata 18 files. Import “.dtas”” files with multiple data frames via read.dtas(). Alias variables are currently ignored with a warning. |
-| 0.11 | \- The ‘select.cols’ argument accepts either variable names or column indices. |
-| 0.11 | \- Fix compilation on musl and other non-glibc based systems. |
-| 0.11 | \- Add package alias to readstata13.Rd |
+| 0.11 | Initial support for Stata 18 files. Import “.dtas”” files with multiple data frames via read.dtas(). Alias variables are currently ignored with a warning. |
+|  | The ‘select.cols’ argument accepts either variable names or column indices. |
+|  | Fix compilation on musl and other non-glibc based systems. |
+|  | Add package alias to readstata13.Rd |
 
 See [News](NEWS) for the full changelog.
 

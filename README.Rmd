@@ -10,8 +10,9 @@ output:
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-"
-)
+  fig.path = "man/figures/README-")
+
+options(knitr.kable.NA = '')
 ```
 
 <!-- badges: start -->
@@ -24,7 +25,7 @@ knitr::opts_chunk$set(
 Package to read and write all Stata file formats (version 17 and older) into a
 R data.frame. The dta file format versions 102 to 121 are supported (including dtas files).
 
-The function ```r read.dta``` from the foreign package imports only dta files from
+The function ```read.dta``` from the foreign package imports only dta files from
 Stata versions <= 12. Due to the different structure and features of dta 117
 files, we wrote a new file reader in Rcpp.
 
@@ -73,11 +74,22 @@ news <- readLines("NEWS")
 news_stop <- which(news == news[grepl("^\\[", news)][2]) - 2
 news <- news[1:news_stop]
 
-news_tab <- data.frame(Version = gsub("\\[|\\]", "", news[1]), Changes = news[-1])
+news_tab <- data.frame(Version = gsub("\\[|\\]", "", news[1]), 
+                       Changes = gsub("^- ", "", news[-1]))
+news_tab[2:nrow(news_tab), "Version"] <- NA
 knitr::kable(news_tab)
 ```
 
 See [News](NEWS) for the full changelog.
+
+```{r, echo = FALSE}
+# create NEWS.MD for pagedown
+
+news <- readLines("NEWS")
+newsmd <- gsub("^\\[(.*)\\]", "## readstata13 -- \\1", news)
+cat(newsmd, file ="NEWS.md", sep = "\n")
+```
+
 
 ## readstata13 and foreign
 

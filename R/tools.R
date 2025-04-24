@@ -517,7 +517,7 @@ maxchar <- function(x) {
 #'
 #' @param path path to .dtas file
 #' @param select.frames character vector 
-#' @param read.dta13.options list of parameters used in  read.dta13. The list must have the following structure: \code{list(framename = list(param = value))}
+#' @param read.dta13.options list of parameters used in  \code{\link[readstata13]{read.dta13}}. The list must have the following structure: \code{list(framename = list(param = value))}
 #' @return Returns a named list of data.frames.
 #' @importFrom utils unzip
 #' @export

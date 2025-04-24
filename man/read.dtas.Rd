@@ -11,7 +11,7 @@ read.dtas(path, select.frames = NULL, read.dta13.options = NULL)
 
 \item{select.frames}{character vector}
 
-\item{read.dta13.options}{list of parameters used in  read.dta13. The list must have the following structure: \code{list(framename = list(param = value))}}
+\item{read.dta13.options}{list of parameters used in  \code{\link[readstata13]{read.dta13}}. The list must have the following structure: \code{list(framename = list(param = value))}}
 }
 \value{
 Returns a named list of data.frames.

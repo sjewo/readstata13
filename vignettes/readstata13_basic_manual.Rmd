@@ -135,7 +135,7 @@ In a blog post, Stata explained how it is possible to store binary data in strLs
 ```{r}
 # export the strl as binary file to the current working directory
 dir.create("res/strls/")
-dat_strl <- read.dta13("Stata_strl.dta", strlexport = TRUE, strlpath = "res/strls/")
+dat_strl <- read.dta13("stata_strl.dta", strlexport = TRUE, strlpath = "res/strls/")
 
 # The folder contains a file for each long string. The first file is a .txt file and the second a .png file.
 dir("res/strls/")

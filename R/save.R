@@ -105,7 +105,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     version <- 108
 
   if (version<102 | version == 109 | version == 116 | version>121)
-    stop("Version mismatch abort execution. No Data was saved.")
+    stop("Version mismatch abort execution. No data was saved.")
 
   sstr     <- 2045
   sstrl    <- 32768

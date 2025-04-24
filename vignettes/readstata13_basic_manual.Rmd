@@ -151,7 +151,7 @@ The second file is image in PNG format.
 
 ```{r}
 library(png)
-img <- readPNG("strls/16_1")
+img <- readPNG("res/strls/16_1")
 grid::grid.raster(img)
 ```
 

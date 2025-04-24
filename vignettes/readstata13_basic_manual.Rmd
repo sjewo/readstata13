@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 
 Due to changes in the Stata 13 dta file format, former import methods using the `foreign` package no longer work with files created by Stata releases after version 12. Starting with Stata 13, the dta format resembles XML files.[^1] Portions of the content are structured like XML nodes, e.g., `<N>1</N>` could represent the number of observations in the dta file. Since neither of us, my friend and former colleague Sebastian Jeworutzki co-authored the package, knew much about writing C code, and I was experimenting with Rcpp at the time, we decided to create what has since become a sort of Swiss Army knife for handling dta files in R. Among its many features are:
 
-[^1]: The dta format for current versions is well documented at <http://www.stata.com/help.cgi?dta> and also in the corresponding manuals.
+[^1]: The dta format for current versions is well documented at <https://www.stata.com/help.cgi?dta> and also in the corresponding manuals.
 
 -   Importing dta files of all previously known and many unknown and undocumented file formats. This includes both reading and writing of the mentioned files.
 -   Handling many dta features like string encoding, multilingual labels, business calendars, long strings (called strL), frames and even embedded binary data.
@@ -99,7 +99,7 @@ dat_2 <- read.dta13("res/cars.dta", select.cols = "dist"); head(dat_2)
 
 A real-world example where the selection of certain variables is helpful is the SOEP dataset.[^5] The dataset is divided among different files; it is best to think of it as tables in a database. As is common in a database environment, you need to make some connections between the files and therefore need to know some key variables of different files. The dataset has been collected annually since 1984 and has grown significantly, with many cases and many variables in different files. Selecting a particular variable from a file resulted in reading the entire file (all *n* cases and *k* variables), extracting the variable, and removing all other variables. Importing such a large file takes quite a while, and the import results in a large R object that is not needed at all. With a selection of variables, it is possible to import only the data you want and skip everything else, making the import process fast and memory efficient.
 
-[^5]: The SOEP is currently located at the DIW Berlin <https://www.diw.de/soep_en>.
+[^5]: The SOEP is currently located at the [DIW Berlin](https://www.diw.de/).
 
 ## Compression
 

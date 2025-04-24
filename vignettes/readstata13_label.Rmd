@@ -1,0 +1,119 @@
+---
+title: "readstata13: Working with Labelled Data"
+author: "Sebastian Jeworutzki"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{readstata13_label}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(readstata13)
+dir.create("res")
+options(rmarkdown.html_vignette.check_title = FALSE)
+
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## How label are stored
+
+Stata datasets contain metadata such as variable or value labels. Since base R doesn't support labelled data, this information is stored in different attributes of the data.frame returned by `read.stata13`. These data.frames have the same attributes as those from the `read.dta` function in the `foreign` package.
+
+For this example, we use the Stata file "statacar.dta" provided with the `readstata13` package. We disable the conversion of factors and start with numeric codes for categorical data.
+
+```{r}
+library(readstata13)
+x <- read.dta13(system.file("extdata/statacar.dta", package = "readstata13"),
+                convert.factors = FALSE)
+```
+
+Variable labels are stored in the `var.labels` attribute.
+```{r}
+attr(x, "var.labels")
+```
+
+Labels for a single variable might be retrieved using the `varlabel()` function.
+```{r}
+varlabel(x, var.name = "type")
+# TODO: this will fail if number of columns in x has changed
+```
+
+The information about value labels is stored in a more complex way. The `val.labels` attribute defines a label table for each column, which provides the codes and labels for a single variable. These label tables are stored as a list in the `label.table` attribute.
+
+The example dataset has only one column with labelled values.
+```{r}
+attr(x, "val.labels")
+```
+
+The corresponding label table for the fourth column is called `type_en`. This is a vector of numeric codes, and the labels are provided by the element names.
+
+```{r}
+attr(x, "label.table")$type_en
+```
+The function `get.label.name()` and `get.label()` will provide the same results.
+```{r}
+get.label.name(x, var.name = "type")
+get.label(x, "type_en")
+```
+
+Labels are most often used to create the levels of a factor variable. `readstata13` provides a command to simplify this process. `set.label()` returns a factor using the stored labels.
+
+```{r}
+# Create factor from variable "type"
+x$type_en <- set.label(x, "type")
+
+# Display results
+x[, c("type", "type_en")]
+```
+
+Since Stata supports multi-language files, labels can be provided in different languages. The `lang` option in `set.label()` allows you to choose labels for a specific language.
+
+```{r}
+# Show available and default language 
+get.lang(x)
+
+# Create factor with German labels
+x$type_de <- set.label(x, "type", lang = "de")
+
+# Display results
+x[, c("type", "type_en", "type_de")]
+```
+
+
+
+## Compability with other packages
+
+```{r, eval = packageVersion("labelled")>"2.8.0"}
+# version > 2.8.0 is needed due to a bug in to_label
+library(labelled)
+
+xl <- read.dta13(system.file("extdata/statacar.dta", package = "readstata13"),
+                convert.factors = FALSE)
+
+xl <- to_labelled(xl)
+xl
+```
+
+Packages like `expss` use the stored labels to produce descriptive headers in tables or to label the axes of a graph.
+
+```{r, eval = packageVersion("labelled")>"2.8.0"}
+library(expss)
+#xl <- add_labelled_class(xl) 
+
+# set negative hp values to na
+xl[xl$hp < 0 | is.na(xl$hp), "hp"] <- NA
+
+xl %>% 
+  tab_cells(hp) %>% 
+  tab_cols(brand) %>% 
+  tab_stat_mean_sd_n() %>% 
+  tab_pivot() %>%
+  set_caption("Horse power by car brand.")
+
+```
+

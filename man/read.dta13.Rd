@@ -36,7 +36,7 @@ are found, unique labels will be generated according the following scheme:
 
 \item{encoding}{\emph{character.} Strings can be converted from Windows-1252
 or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
-target encoding explicitly. Stata 14, 15 and 16 files are UTF-8 encoded and
+target encoding explicitly. Since Stata 14 files are UTF-8 encoded and
 may contain strings which can't be displayed in the current locale.
 Set encoding=NULL to stop reencoding.}
 
@@ -69,15 +69,16 @@ will be assigned to variables of type float and double.}
 value rows from 1:val are selected. If two values of a range are selected
 the rows in range will be selected.}
 
-\item{select.cols}{\emph{character.} Vector of variables to select.}
+\item{select.cols}{\emph{character.} or \emph{numeric.} Vector of variables
+to select. Either variable names or position.}
 
 \item{strlexport}{\emph{logical.} Should strl content be exported as binary
 files?}
 
 \item{strlpath}{\emph{character.} Path for strl export.}
 
-\item{tz}{\emph{character.} time zone specification to be used for 
-POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC 
+\item{tz}{\emph{character.} time zone specification to be used for
+POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC
 (Universal Time, Coordinated).}
 }
 \value{
@@ -140,6 +141,11 @@ In R, you may use rownames to store characters (see for instance
 
 Reading dta-files of older and newer versions than 13 was introduced
  with version 0.8.
+
+Stata 18 introduced alias variables and frame files. Alias variables are
+ currently ignored when reading the file and a warning is printed. Stata
+ frame files (file extension `.dtas`) contain zipped `dta` files which can
+ be imported with \code{\link{read.dtas}}.
 }
 \note{
 read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
@@ -149,7 +155,7 @@ read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
 \dontrun{
   library(readstata13)
   r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
-} 
+}
 }
 \references{
 Stata Corp (2014): Description of .dta file format

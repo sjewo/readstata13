@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2018 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,9 +21,11 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_pre13_dta(FILE * file, const bool missing,
+List read_pre13_dta(FILE * file,
+                    const bool missing,
                     const IntegerVector selectrows,
-                    const CharacterVector selectcols)
+                    const CharacterVector selectcols_chr,
+                    const IntegerVector selectcols_int)
 {
   int8_t release = 0;
 
@@ -407,15 +409,24 @@ List read_pre13_dta(FILE * file, const bool missing,
   uint64_t rlength = sum(rlen);
 
   // check if vars are selected
-  std::string selcols = as<std::string>(selectcols(0));
-  bool selectvars = selcols != "";
+  IntegerVector select = cvec, nselect;
 
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
-  IntegerVector select = cvec, nselect;
-  if (selectvars)
-    select = choose(selectcols, varnames);
+  //
+  // name selection was passed to selectcols
+  bool all_na_chr = all(is_na(selectcols_chr));
+  if (!all_na_chr) {
+    select = choose(selectcols_chr, varnames);
+  }
+
+  // numeric selection was passed to selectcols
+  bool all_na_int = all(is_na(selectcols_int));
+  if (!all_na_int) {
+    IntegerVector seq_varnames = seq_along(varnames);
+    select = choose(selectcols_int, seq_varnames);
+  }
 
   // separate the selected from the not selected cases
   LogicalVector ll = is_na(select);

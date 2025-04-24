@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
 # Copyright (C) of 'convert.dates' and 'missing.types' Thomas Lumley
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -29,7 +29,7 @@
 #'  "label_(integer code)".
 #' @param encoding \emph{character.} Strings can be converted from Windows-1252
 #'  or UTF-8 to system encoding. Options are "latin1" or "UTF-8" to specify
-#'  target encoding explicitly. Stata 14, 15 and 16 files are UTF-8 encoded and
+#'  target encoding explicitly. Since Stata 14 files are UTF-8 encoded and
 #'  may contain strings which can't be displayed in the current locale.
 #'  Set encoding=NULL to stop reencoding.
 #' @param fromEncoding \emph{character.} We expect strings to be encoded as
@@ -53,12 +53,13 @@
 #' @param select.rows \emph{integer.} Vector of one or two numbers. If single
 #'  value rows from 1:val are selected. If two values of a range are selected
 #'  the rows in range will be selected.
-#' @param select.cols \emph{character.} Vector of variables to select.
+#' @param select.cols \emph{character.} or \emph{numeric.} Vector of variables
+#'  to select. Either variable names or position.
 #' @param strlexport \emph{logical.} Should strl content be exported as binary
 #'  files?
 #' @param strlpath \emph{character.} Path for strl export.
-#' @param tz \emph{character.} time zone specification to be used for 
-#'  POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC 
+#' @param tz \emph{character.} time zone specification to be used for
+#'  POSIXct values. ‘""’ is the current time zone, and ‘"GMT"’ is UTC
 #'  (Universal Time, Coordinated).
 #'
 #' @details If the filename is a url, the file will be downloaded as a temporary
@@ -92,6 +93,12 @@
 #'
 #' Reading dta-files of older and newer versions than 13 was introduced
 #'  with version 0.8.
+#'
+#' Stata 18 introduced alias variables and frame files. Alias variables are
+#'  currently ignored when reading the file and a warning is printed. Stata
+#'  frame files (file extension `.dtas`) contain zipped `dta` files which can
+#'  be imported with \code{\link{read.dtas}}. 
+#'
 #' @return The function returns a data.frame with attributes. The attributes
 #'  include
 #' \describe{
@@ -126,7 +133,7 @@
 #' \dontrun{
 #'   library(readstata13)
 #'   r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
-#' } 
+#' }
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13, .registration = TRUE
@@ -189,17 +196,29 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
     select.rows <- c(0,0)
   }
 
-  if (is.null(select.cols)){
-    select.cols <- ""
+  select.cols_chr <- as.character(NA)
+  select.cols_int <- as.integer(NA)
+
+  # treat names and index differently
+  if (!is.null(select.cols)) {
+
+    if (is.character(select.cols))
+      select.cols_chr <- select.cols
+
+    # do we need factor too?
+    if (is.numeric(select.cols) | is.integer(select.cols))
+      select.cols_int <- select.cols
   }
 
-  data <- stata_read(filepath, missing.type, select.rows, select.cols,
+  data <- stata_read(filepath, missing.type, select.rows,
+                     select.cols_chr, select.cols_int,
                      strlexport, strlpath)
 
   version <- attr(data, "version")
 
   sstr     <- 2045
   sstrl    <- 32768
+  salias   <- 65525
   sdouble  <- 65526
   sfloat   <- 65527
   slong    <- 65528

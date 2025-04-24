@@ -11,18 +11,19 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // stata_read
-List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows, const CharacterVector selectcols, const bool strlexport, const CharacterVector strlpath);
-RcppExport SEXP _readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcolsSEXP, SEXP strlexportSEXP, SEXP strlpathSEXP) {
+List stata_read(const char * filePath, const bool missing, const IntegerVector selectrows, const CharacterVector selectcols_chr, const IntegerVector selectcols_int, const bool strlexport, const CharacterVector strlpath);
+RcppExport SEXP _readstata13_stata_read(SEXP filePathSEXP, SEXP missingSEXP, SEXP selectrowsSEXP, SEXP selectcols_chrSEXP, SEXP selectcols_intSEXP, SEXP strlexportSEXP, SEXP strlpathSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const char * >::type filePath(filePathSEXP);
     Rcpp::traits::input_parameter< const bool >::type missing(missingSEXP);
     Rcpp::traits::input_parameter< const IntegerVector >::type selectrows(selectrowsSEXP);
-    Rcpp::traits::input_parameter< const CharacterVector >::type selectcols(selectcolsSEXP);
+    Rcpp::traits::input_parameter< const CharacterVector >::type selectcols_chr(selectcols_chrSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector >::type selectcols_int(selectcols_intSEXP);
     Rcpp::traits::input_parameter< const bool >::type strlexport(strlexportSEXP);
     Rcpp::traits::input_parameter< const CharacterVector >::type strlpath(strlpathSEXP);
-    rcpp_result_gen = Rcpp::wrap(stata_read(filePath, missing, selectrows, selectcols, strlexport, strlpath));
+    rcpp_result_gen = Rcpp::wrap(stata_read(filePath, missing, selectrows, selectcols_chr, selectcols_int, strlexport, strlpath));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -52,7 +53,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_readstata13_stata_read", (DL_FUNC) &_readstata13_stata_read, 6},
+    {"_readstata13_stata_read", (DL_FUNC) &_readstata13_stata_read, 7},
     {"_readstata13_stata_save", (DL_FUNC) &_readstata13_stata_save, 2},
     {"_readstata13_stata_pre13_save", (DL_FUNC) &_readstata13_stata_pre13_save, 2},
     {NULL, NULL, 0}

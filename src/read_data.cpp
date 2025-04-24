@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2018 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -44,6 +44,12 @@ List read_data(FILE * file,
     case STATA_SHORTINT:
     case STATA_BYTE:
       SET_VECTOR_ELT(df, i, IntegerVector(no_init(nn)));
+      break;
+
+    // return correct column size and create a warning
+    case STATA_ALIAS:
+      SET_VECTOR_ELT(df, i, CharacterVector(no_init(nn)));
+      Rf_warning("File contains unhandled alias variable in column: %d", i + 1);
       break;
 
     default:
@@ -166,6 +172,7 @@ List read_data(FILE * file,
         break;
       }
       case 118:
+      case 120:
       {
         int16_t v = 0;
         int64_t o = 0, z = 0;
@@ -193,6 +200,7 @@ List read_data(FILE * file,
         break;
       }
       case 119:
+      case 121:
       {
         int32_t v = 0;
         int64_t o = 0, z = 0;
@@ -222,7 +230,12 @@ List read_data(FILE * file,
       }
         break;
       }
+      case STATA_ALIAS:
+      {
+        break; // do nothing
+      }
         // case < 0:
+        // case STATA_ALIAS
       default:
       {
         // skip to the next valid case

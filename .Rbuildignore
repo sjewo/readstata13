@@ -4,3 +4,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^data$
+News.html
+README.Rmd

@@ -186,10 +186,28 @@ test_that("Reading of strls", {
   expect_equal(ddstrl$model, ddstrl$modelStrL)
 })
 
+test_that("reading of many strls", {
+
+  # slow test
+  N = 1e4
+  big_strl <- data.frame(
+    x = 1:N,
+    y = sample(LETTERS, N, replace = TRUE),
+    z = c(paste(rep("a", 3000), collapse=""), sample(LETTERS, N-1, replace=TRUE))
+  )
+
+  # writing the file is slow
+  if (!file.exists("big_strl.dta"))
+    readstata13::save.dta13(big_strl, "big_strl.dta")
+
+  expect_silent(x <- readstata13::read.dta13("big_strl.dta", select.rows = 1))
+  unlink("big_strl.dta")
+
+})
 
 test_that("various datetime conversions", {
   datetime <- system.file("extdata", "datetime.dta", package="readstata13")
-  
+
   td       <- c("2001-05-15",
                 "1999-04-01",
                 "1975-11-15",
@@ -220,7 +238,7 @@ test_that("various datetime conversions", {
                 "2011-04-01",
                 "2012-01-01",
                 "2012-07-01")
-    
+
   dd <- data.frame(td = as.Date(td),
                    tc = as.POSIXct(tc, tz = "GMT"),
                    tc_hh_mm = as.POSIXct(tc_hh_mm, tz = "GMT"),
@@ -229,4 +247,109 @@ test_that("various datetime conversions", {
                    tq = as.Date(tq))
   dddates <- read.dta13(datetime, convert.dates = TRUE)
   expect_true(all.equal(dd, dddates, check.attributes = FALSE))
+})
+
+test_that("reading file format 120 works", {
+
+  fl <- system.file("extdata", "myproject2.dtas", package="readstata13")
+
+  tmp <- tempdir()
+
+  fls <- unzip(fl, exdir = tmp)
+
+  # data name, dta file name, dta version
+  data_fram <- strsplit(readLines(fls[1])[-c(1:2)], " ")
+  data_fram <- as.data.frame(do.call("rbind", data_fram))
+
+  expect_equal(data_fram$V1, c("persons", "counties"))
+
+  # read dtas
+  dtas <- fls[tools::file_ext(fls) == "dta"]
+  expect_equal(basename(dtas), paste0(data_fram$V2, ".dta"))
+
+  expect_warning(
+    df1 <- read.dta13(dtas[1]),
+    "File contains unhandled alias variable in column: 5"
+  )
+  df2 <- read.dta13(dtas[2], convert.factors = FALSE)
+
+  expect_equal(attr(df1, "version"), as.integer(data_fram$V3[1]))
+  expect_equal(attr(df2, "version"), as.integer(data_fram$V3[2]))
+
+  # backup order
+  nams <- names(df1)
+
+  # merge: fralias_from in attr(df1, "expansion.fields") tells what to merge
+  df <- merge(
+    df1[-which(names(df1) == "median")],
+    df2,
+    by = "countyid",
+    all.x = TRUE
+  )
+
+  # update names
+  as_name <- attr(df1, "expansion.fields")[[16]]
+  nams2 <- names(df)
+  nams2[nams2 == as_name[3]] <- as_name[1]
+  names(df) <- nams2
+
+  # resore expected order
+  df <- df[nams]
+
+  # restore order
+  df <- df[order(df$personid), ]
+
+  expect_equal(
+    df$personid, 1:20
+  )
+
+  expect_equal(
+    c("personid", "countyid", "income", "counties", "median", "ratio"),
+    names(df)
+  )
+
+  
+  # read all frames in myproject2.dtas
+  expect_warning(
+    dtas1 <- read.dtas(fl),
+    "File contains unhandled alias variable in column: 5")
+  
+  expect_equal(
+    c("persons", "counties"),
+    names(dtas1)
+  )
+  
+  # read selected frames
+  expect_warning(
+    dtas2 <- read.dtas(fl, select.frames = c("persons", "counties")),
+    "File contains unhandled alias variable in column: 5")
+  
+  expect_equal(
+    c("persons", "counties"),
+    names(dtas2)
+  )
+  
+  # read only frame counties
+  dtas3 <- read.dtas(fl, select.frames = c("counties"))
+
+  expect_equal(
+    "counties",
+    names(dtas3)
+  )
+  
+  # read frames with different arguments
+  dtas4 <- read.dtas(fl, 
+            read.dta13.options = list(counties = list(select.cols = "median_income"),
+                                      persons = list(select.cols = "income")))
+  
+  expect_equal(names(dtas4$persons), "income")  
+  expect_equal(names(dtas4$counties), "median_income")
+
+  # read frames with different arguments
+  dtas5 <- read.dtas(fl, 
+                     read.dta13.options = list(persons = list(select.cols = c("income", "countyid"))))
+  
+  expect_equal(ncol(dtas5$persons), 2)  
+  expect_equal(names(dtas5$persons), c("countyid", "income"))
+  
 })

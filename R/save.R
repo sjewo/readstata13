@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2014-2021 Jan Marvin Garbuszus and Sebastian Jeworutzki
+# Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -33,8 +33,8 @@
 #'  to Stata date time format. Code from \code{foreign::write.dta}
 #' @param convert.underscore \emph{logical.} If \code{TRUE}, all non numerics or
 #' non alphabet characters will be converted to underscores.
-#' @param tz \emph{character.} time zone specification to be used for 
-#'  POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current 
+#' @param tz \emph{character.} time zone specification to be used for
+#'  POSIXct values and dates (if convert.dates is TRUE). ‘""’ is the current
 #'  time zone, and ‘"GMT"’ is UTC  (Universal Time, Coordinated).
 #' @param add.rownames \emph{logical.} If \code{TRUE}, a new variable rownames
 #'  will be added to the dta-file.
@@ -42,7 +42,7 @@
 #'  use all of Statas numeric-vartypes.
 #' @param version \emph{numeric.} Stata format for the resulting dta-file either
 #'  Stata version number (6 - 16) or the internal Stata dta-format (e.g. 117 for
-#'  Stata 13). Experimental support for large datasets: Use version="15mp" to 
+#'  Stata 13). Support for large datasets: Use version="15mp" to
 #'  save the dataset in the new Stata 15/16 MP file format. This feature is not
 #'  thoroughly tested yet.
 #' @return The function writes a dta-file to disk. The following features of the
@@ -68,7 +68,7 @@
 #' \dontrun{
 #'   library(readstata13)
 #'   save.dta13(cars, file="cars.dta")
-#' } 
+#' }
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @useDynLib readstata13, .registration = TRUE
@@ -104,11 +104,8 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if (version==6)
     version <- 108
 
-  if (version == 119)
-    message("Support for Stata 15/16 MP (119) format is experimental and not thoroughly tested.")
-
-  if (version<102 | version == 109 | version == 116 | version>119)
-    stop("Version mismatch abort execution. No Data was saved.")
+  if (version<102 | version == 109 | version == 116 | version>121)
+    stop("Version mismatch abort execution. No data was saved.")
 
   sstr     <- 2045
   sstrl    <- 32768

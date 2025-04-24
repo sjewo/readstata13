@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -76,6 +76,8 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     break;
   case 118:
   case 119:
+  case 120:
+  case 121:
     nvarnameslen = 129;
     nformatslen = 57;
     nvalLabelslen = 129;
@@ -152,14 +154,14 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     writestr(byteord, byteord.size(), dta);
     writestr(sbyteorder, 3, dta); // LSF
     writestr(K, K.size(), dta);
-    if (release < 119)
+    if (release < 119 || release == 120)
       writebin((int16_t)k, dta, swapit);
-    if (release == 119)
+    if (release == 119 || release == 121)
       writebin(k, dta, swapit);
     writestr(num, num.size(), dta);
     if (release == 117)
       writebin((int32_t)n, dta, swapit);
-    if ((release == 118) | (release == 119))
+    if ((release == 118) | (release == 119) | (release == 120) | (release == 121))
       writebin(n, dta, swapit);
     writestr(lab, lab.size(), dta);
 
@@ -178,7 +180,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
 
       if (release == 117)
         writebin((uint8_t)ndlabel, dta, swapit);
-      if ((release == 118) | (release == 119))
+      if ((release == 118) | (release == 119) | (release == 120) | (release == 121))
         writebin(ndlabel, dta, swapit);
 
       writestr(datalabel,datalabel.size(), dta);
@@ -189,7 +191,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       if (release == 117) {
         writebin(zero, dta, swapit);
       }
-      if ((release == 118) | (release == 119)) {
+      if ((release == 118) | (release == 119) | (release == 120) | (release == 121)) {
         writebin(zero, dta, swapit);
         writebin(zero, dta, swapit);
       }
@@ -257,10 +259,10 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
     {
       uint32_t nsortlist = 0;
 
-      if ((release == 117) | (release == 118)) {
+      if ((release == 117) | (release == 118) | (release == 120)) {
         writebin((uint16_t)nsortlist, dta, swapit);
       }
-      if (release == 119) {
+      if ((release == 119) | (release == 121)) {
         writebin(nsortlist, dta, swapit);
       }
     }
@@ -496,6 +498,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             break;
           }
             case 118:
+            case 120:
           {
             int16_t v = i+1;
             int64_t o = j+1;
@@ -519,6 +522,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
             break;
           }
             case 119:
+            case 121:
           {
             int32_t v = i+1;
             int64_t o = j+1;
@@ -575,7 +579,7 @@ int stata_save(const char * filePath, Rcpp::DataFrame dat)
       writebin(v, dta, swapit);
       if (release == 117)
         writebin((uint32_t)o, dta, swapit);
-      if ((release == 118) | (release == 119))
+      if ((release == 118) | (release == 119) | (release == 120) | (release == 121))
         writebin(o, dta, swapit);
       writebin(t, dta, swapit);
       writebin(len, dta, swapit);

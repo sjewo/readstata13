@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2015-2024 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -18,7 +18,13 @@
 #ifndef READSTATA_H
 #define READSTATA_H
 
+// check for 1.0.8.0
+#if RCPP_DEV_VERSION >= 1000800
+#include <Rcpp/Lightest>
+#else
 #include <Rcpp.h>
+#endif
+
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -40,7 +46,7 @@ typedef unsigned int uint32_t;
 #include <stdint.h>
 #endif
 
-#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__APPLE__) || defined(__ANDROID__)
+#if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__OpenBSD__) || defined(__APPLE__) || defined(__ANDROID__) || (defined(__linux__) && !defined(__GLIBC__))
 #  define fseeko64 fseeko
 #endif
 
@@ -155,6 +161,8 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
     case STATA_STRL:
       rlen(i) = 8;
       break;
+    case STATA_ALIAS: // 0
+      break;
     default:
       rlen(i) = type;
     break;
@@ -167,9 +175,8 @@ inline Rcpp::IntegerVector calc_rowlength(Rcpp::IntegerVector vartype) {
 // return only the matched positions. Either Rcpps in() can't handle Character-
 // Vectors or I could not make it work. Wanted to select the selected varname
 // position from the varnames vector.
-inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
-                                  Rcpp::CharacterVector y)
-{
+template <typename T>
+inline Rcpp::IntegerVector choose(T x, T y) {
   // ToDo: Maybe we can skip the select and nselect in read_dta.cpp if we match
   // the other way around and use Rcpp::is_na on the result which then could be
   // used as an additional index
@@ -178,10 +185,10 @@ inline Rcpp::IntegerVector choose(Rcpp::CharacterVector x,
   if (Rcpp::any(Rcpp::is_na(mm))) {
     Rcpp::LogicalVector ll = !Rcpp::is_na(mm);
 
-    Rcpp::CharacterVector ms = x[ll==0];
+    Rcpp::CharacterVector ms = Rcpp::as<Rcpp::CharacterVector>(x[ll==0]);
 
     // does not work if ms contains multiple names: Rcpp::as<std::string>(ms)
-    Rcpp::Rcout << "Variable " << ms <<
+    Rcpp::Rcout << "selected.col " << ms <<
       " was not found in dta-file." << std::endl;
   }
 

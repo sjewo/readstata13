@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2019 Jan Marvin Garbuszus and Sebastian Jeworutzki
+ * Copyright (C) 2014-2025 Jan Marvin Garbuszus and Sebastian Jeworutzki
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,9 +21,13 @@
 using namespace Rcpp;
 using namespace std;
 
-List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
-              const CharacterVector selectcols,
-              const bool strlexport, const CharacterVector strlpath)
+List read_dta(FILE * file,
+              const bool missing,
+              const IntegerVector selectrows,
+              const CharacterVector selectcols_chr,
+              const IntegerVector selectcols_int,
+              const bool strlexport,
+              const CharacterVector strlpath)
 {
   // stata_dta><header>
   test("stata_dta><header>", file);
@@ -34,7 +38,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   */
 
   int8_t fversion = 117L; //f = first
-  int8_t lversion = 119L; //l = last
+  int8_t lversion = 121L; //l = last
 
   std::string version(3, '\0');
   readstring(version, file, version.size());
@@ -70,6 +74,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     break;
   case 118:
   case 119:
+  case 120:
+  case 121:
     nvarnameslen = 129;
     nformatslen = 57;
     nvalLabelslen = 129;
@@ -102,9 +108,9 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   */
 
   uint32_t k = 0;
-  if (release < 119)
+  if (release < 119 || release == 120)
     k = readbin((uint16_t)k, file, swapit);
-  if (release == 119)
+  if (release == 119 || release == 121)
     k = readbin(k, file, swapit);
 
   //</K>
@@ -119,7 +125,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   if (release == 117)
     n = readbin((uint32_t)n, file, swapit);
-  if ((release == 118) | (release == 119))
+  if ((release >= 118) && (release <= 121))
     n = readbin(n, file, swapit);
 
   //</N>
@@ -142,7 +148,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
   if (release == 117)
     ndlabel = readbin((int8_t)ndlabel, file, swapit);
-  if ((release == 118) | (release == 119))
+  if ((release >= 118) && (release <= 121))
     ndlabel = readbin(ndlabel, file, swapit);
 
   std::string datalabel(ndlabel, '\0');
@@ -220,6 +226,7 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   * vartypes.
   * 0-2045: strf (String: Max length 2045)
   * 32768:  strL (long String: Max length 2 billion)
+  * 65525:  alias
   * 65526:  double
   * 65527:  float
   * 65528:  long
@@ -269,12 +276,12 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   for (uint64_t i=0; i<big_k; ++i)
   {
     uint32_t nsortlist = 0;
-    
-    if ((release == 117) | (release == 118))
+
+    if ((release == 117) || (release == 118) || (release == 120))
       nsortlist = readbin((uint16_t)nsortlist, file, swapit);
-    if (release == 119)
+    if (release == 119 || release == 121)
       nsortlist = readbin(nsortlist, file, swapit);
-    
+
     sortlist[i] = nsortlist;
   }
 
@@ -424,15 +431,25 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   uint64_t rlength = sum(rlen);
 
   // check if vars are selected
-  std::string selcols = as<std::string>(selectcols(0));
-  bool selectvars = selcols != "";
+  IntegerVector select = cvec, nselect;
 
   // select vars: either select every var or only matched cases. This will
   // return index positions of the selected variables. If non are selected the
   // index position is cvec
-  IntegerVector select = cvec, nselect;
-  if (selectvars)
-    select = choose(selectcols, varnames);
+  //
+  // name selection was passed to selectcols
+  bool all_na_chr = all(is_na(selectcols_chr));
+  if (!all_na_chr) {
+    select = choose(selectcols_chr, varnames);
+  }
+
+  // numeric selection was passed to selectcols
+  bool all_na_int = all(is_na(selectcols_int));
+  if (!all_na_int) {
+    IntegerVector seq_varnames = seq_along(varnames);
+    select = choose(selectcols_int, seq_varnames);
+  }
+
 
   // separate the selected from the not selected cases
   LogicalVector ll = is_na(select);
@@ -491,12 +508,11 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
   readstring(tags, file, tags.size());
 
   //put strLs into a named vector
-  CharacterVector strlvalues(0);
-  CharacterVector strlnames(0);
+  std::vector<std::string> vec_strlvalues(0);
+  std::vector<std::string> vec_strlnames(0);
 
   while (gso.compare(tags)==0)
   {
-    CharacterVector strls(2);
     string ref;
 
     // FixMe: Strl in 118
@@ -517,6 +533,8 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
     }
     case 118:
     case 119:
+    case 120:
+    case 121:
     {
       uint32_t v = 0;
       uint64_t o = 0;
@@ -562,14 +580,15 @@ List read_dta(FILE * file, const bool missing, const IntegerVector selectrows,
 
     }
 
-    strlvalues.push_back( strl );
-    strlnames.push_back( ref );
+    vec_strlvalues.push_back( strl );
+    vec_strlnames.push_back( ref );
 
     readstring(tags, file, tags.size());
   }
 
   // set identifier as name
-  strlvalues.attr("names") = strlnames;
+  CharacterVector strlvalues = wrap(vec_strlvalues);
+  strlvalues.attr("names") = vec_strlnames;
 
   // after strls
   //[</s]trls>

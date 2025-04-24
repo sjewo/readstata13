@@ -155,7 +155,7 @@ x[, c("type", "type_en", "type_de")]
 
 ### Compability with other Packages
 
-```{r, eval = packageVersion("labelled")>"2.8.0"}
+```{r, eval = isTRUE(requireNamespace("labelled"))}
 # version > 2.8.0 is needed due to a bug in to_label
 library(labelled)
 
@@ -168,7 +168,7 @@ xl
 
 Packages like `expss` use the stored labels to produce descriptive headers in tables or to label the axes of a graph.
 
-```{r, eval = packageVersion("labelled")>"2.8.0"}
+```{r, eval = isTRUE(requireNamespace("expss")) & isTRUE(requireNamespace("labelled"))}
 library(expss)
 #xl <- add_labelled_class(xl) 
 

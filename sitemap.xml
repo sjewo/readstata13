@@ -1,9 +1,13 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>/404.html</loc></url>
 <url><loc>/LICENSE-text.html</loc></url>
+<url><loc>/articles/index.html</loc></url>
+<url><loc>/articles/readstata13_basic_manual.html</loc></url>
 <url><loc>/authors.html</loc></url>
 <url><loc>/index.html</loc></url>
+<url><loc>/news/index.html</loc></url>
 <url><loc>/reference/as.caldays.html</loc></url>
+<url><loc>/reference/get.frames.html</loc></url>
 <url><loc>/reference/get.label.html</loc></url>
 <url><loc>/reference/get.label.name.html</loc></url>
 <url><loc>/reference/get.label.tables.html</loc></url>
@@ -12,6 +16,7 @@
 <url><loc>/reference/index.html</loc></url>
 <url><loc>/reference/maxchar.html</loc></url>
 <url><loc>/reference/read.dta13.html</loc></url>
+<url><loc>/reference/read.dtas.html</loc></url>
 <url><loc>/reference/readstata13.html</loc></url>
 <url><loc>/reference/save.dta13.html</loc></url>
 <url><loc>/reference/saveToExport.html</loc></url>

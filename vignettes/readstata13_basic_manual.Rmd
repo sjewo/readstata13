@@ -51,7 +51,7 @@ While often only the imported data is of interest to the user, additional inform
 # prints the attributes
 attributes(dat)
 ```
-It is easy to see that this file was created using format 117, which was implemented in Stata 13 and can be processed by all later versions of Stata. The attributes include the data label, a string that Stata users can see, a timestamp, and formats and types needed to represent the data in Stata. In this case, the `save.dta13` function used binary `double`s to write the data because the data type in R is `numeric`. The byte order refers to endianness. This file was created with Little Endian, but `read.dta13`` handle reads and writes on both.[^2]
+It is easy to see that this file was created using format 117, which was implemented in Stata 13 and can be processed by all later versions of Stata. The attributes include the data label, a string that Stata users can see, a timestamp, and formats and types needed to represent the data in Stata. In this case, the `save.dta13` function used binary `double`s to write the data because the data type in R is `numeric`. The byte order refers to endianness. This file was created with Little Endian, but `read.dta13` handles reads and writes for both endianness types.[^2]
 
 [^2]: A detailed explanation can be found here: <https://en.wikipedia.org/wiki/Endianness>.
 

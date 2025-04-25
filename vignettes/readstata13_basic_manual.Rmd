@@ -286,7 +286,7 @@ readLines("res/strls/15_1")
 
 The second file is image in PNG format.
 
-```{r}
+```{r, fig.alt="Display of the R logo extracted from a long string."}
 library(png)
 img <- readPNG("res/strls/16_1")
 grid::grid.raster(img)

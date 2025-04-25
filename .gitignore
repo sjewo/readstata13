@@ -10,3 +10,5 @@ src/*.dll
 .*.Rnb.cached
 tests/*
 docs
+NEWS.html
+*.DS_Store

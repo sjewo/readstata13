@@ -68,46 +68,51 @@ Garbuszus &amp; Sebastian Jeworutzki</h4>
 
     
     
-<p>Due to changes in the Stata 13 dta file format, former import methods
-using the <code>foreign</code> package no longer work with files created
-by Stata releases after version 12. Starting with Stata 13, the dta
-format resembles XML files.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;The dta format for current versions is well documented
+<p>The <code>readstata13</code> package was developed to address
+compatibility issues arising from changes in the Stata 13 dta file
+format. Prior to Stata 13, packages like <code>foreign</code> could
+handle dta files. However, Stata 13 introduced a new format that
+resembles XML.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;The dta format for current versions is well documented
 at &lt;a href="https://www.stata.com/help.cgi?dta" class="external-link uri"&gt;https://www.stata.com/help.cgi?dta&lt;/a&gt; and also in the
-corresponding manuals.&lt;/p&gt;'><sup>1</sup></a> Portions of the content are structured like
-XML nodes, e.g., <code>&lt;N&gt;1&lt;/N&gt;</code> could represent the
-number of observations in the dta file. Since neither of us, my friend
-and former colleague Sebastian Jeworutzki co-authored the package, knew
-much about writing C code, and I was experimenting with Rcpp at the
-time, we decided to create what has since become a sort of Swiss Army
-knife for handling dta files in R. Among its many features are:</p>
+corresponding manuals.&lt;/p&gt;'><sup>1</sup></a> Recognizing the need for a new solution, we
+(Jan Marvin Garbuszus and Sebastian Jeworutzki) created
+<code>readstata13</code>. Leveraging Rcpp for performance, the package
+has evolved into a comprehensive tool for working with dta files in
+R.</p>
+<p>Key features of <code>readstata13</code> include:</p>
 <ul>
-<li>Importing dta files of all previously known and many unknown and
-undocumented file formats. This includes both reading and writing of the
-mentioned files.</li>
-<li>Handling many dta features like string encoding, multilingual
-labels, business calendars, long strings (called strL), frames and even
-embedded binary data.</li>
+<li>
+<strong>Broad Format Support:</strong> Ability to import and export
+dta files across a wide range of Stata versions, including many
+undocumented formats.</li>
+<li>
+<strong>Handling Advanced Features:</strong> Support for features
+like string encoding, multilingual labels, business calendars, long
+strings (<code>strL</code>), frames, and embedded binary data.</li>
+<li>
+<strong>Enhanced Functionality:</strong> Built as a direct
+replacement for <code>foreign</code>’s dta functions, with added
+capabilities for improved label handling (including generation) and
+partial data reading (selecting specific rows or variables).</li>
 </ul>
-<p>Created as a drop-in replacement for <code>foreign</code>’s dta
-reading, we included many additional features to improve label handling
-(label generation) and partial reading to read only selected rows or
-variables.</p>
 <div class="section level2">
-<h2 id="basics-reading-and-writing-stata-files">Basics: Reading and Writing Stata files<a class="anchor" aria-label="anchor" href="#basics-reading-and-writing-stata-files"></a>
+<h2 id="core-functionality-reading-and-writing-stata-files">Core Functionality: Reading and Writing Stata files<a class="anchor" aria-label="anchor" href="#core-functionality-reading-and-writing-stata-files"></a>
 </h2>
-<p>Similar to <code>foreign</code>, you can use <code>read.dta13</code>
-to import a file.</p>
+<p>Importing a Stata file using <code>readstata13</code> is
+straightforward, similar to using the <code>foreign</code> package. The
+primary function is <code>read.dta13</code>. To save an R data frame to
+the Stata dta format, you use the <code>save.dta13</code> function.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span> <span class="op">(</span><span class="va">cars</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># save file cars.dta</span></span>
+<span><span class="co"># Save the 'cars' dataset to a Stata file</span></span>
 <span><span class="fu"><a href="../reference/save.dta13.html">save.dta13</a></span><span class="op">(</span><span class="va">cars</span>, file <span class="op">=</span> <span class="st">"res/cars.dta"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># read file cars.dta</span></span>
+<span><span class="co"># Read the saved Stata file back into R</span></span>
 <span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"res/cars.dta"</span><span class="op">)</span></span></code></pre></div>
-<p>While often only the imported data is of interest to the user,
-additional information is available in the attributes of the imported
-file.</p>
+<p>Beyond the data itself, <code>readstata13</code> preserves important
+metadata from the Stata file. This information is stored as attributes
+of the imported data frame.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># prints the attributes</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attributes.html" class="external-link">attributes</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span></span>
@@ -125,7 +130,7 @@ file.</p>
 <span><span class="co">#&gt; [1] "Written by R"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $time.stamp</span></span>
-<span><span class="co">#&gt; [1] "25 Apr 2025 07:26"</span></span>
+<span><span class="co">#&gt; [1] "25 Apr 2025 09:12"</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $formats</span></span>
 <span><span class="co">#&gt; [1] "%9.0g" "%9.0g"</span></span>
@@ -157,29 +162,30 @@ file.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; $data.label</span></span>
 <span><span class="co">#&gt; character(0)</span></span></code></pre></div>
-<p>It is easy to see that this file was created using format 117, which
-was implemented in Stata 13 and can be processed by all later versions
-of Stata. The attributes include the data label, a string that Stata
-users can see, a timestamp, and formats and types needed to represent
-the data in Stata. In this case, the <code>save.dta13</code> function
-used binary <code>double</code>s to write the data because the data type
-in R is <code>numeric</code>. The byte order refers to endianness. This
-file was created with Little Endian, but <code>read.dta13</code> handles
-reads and writes for both endianness types.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;A detailed explanation can be found here: &lt;a href="https://en.wikipedia.org/wiki/Endianness" class="external-link uri"&gt;https://en.wikipedia.org/wiki/Endianness&lt;/a&gt;.&lt;/p&gt;'><sup>2</sup></a></p>
-<p>The read and write functions take care of the conversion of missing
-values, value labels, and variable labels.</p>
+<p>Examining the attributes reveals details such as the Stata format
+version (e.g., format 117, introduced in Stata 13), a data label, a
+timestamp, and information about the data types and formats used in
+Stata. In this example, the <code>save.dta13</code> function wrote the
+numeric data from R as binary <code>double</code>s in the dta file. The
+byte order (endianness) is also recorded; <code>readstata13</code> is
+designed to handle both Little Endian (used here) and Big Endian formats
+during reading and writing.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;A detailed explanation can be found here: &lt;a href="https://en.wikipedia.org/wiki/Endianness" class="external-link uri"&gt;https://en.wikipedia.org/wiki/Endianness&lt;/a&gt;.&lt;/p&gt;'><sup>2</sup></a></p>
+<p>The package automatically manages the conversion of Stata’s missing
+values, value labels, and variable labels during both import and
+export.</p>
 </div>
 <div class="section level2">
 <h2 id="supported-stata-versions">Supported Stata Versions<a class="anchor" aria-label="anchor" href="#supported-stata-versions"></a>
 </h2>
-<p>Since we were forced to write our own dta-file reader, we made sure
-that we could write files that were readable by earlier versions of
-Stata. This can be achieved with the <code>version</code> argument in
-<code>save.dta13</code>. Available versions are:</p>
+<p>A key advantage of <code>readstata13</code> is its ability to write
+dta files compatible with older and newer versions of Stata. This is
+controlled using the <code>version</code> argument in the
+<code>save.dta13</code> function. The table below lists supported Stata
+versions and their corresponding file formats:</p>
 <table class="table">
 <thead><tr class="header">
-<th>version</th>
-<th>format</th>
+<th>Stata Version</th>
+<th>File Format</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -224,25 +230,25 @@ Stata. This can be achieved with the <code>version</code> argument in
 </tr>
 </tbody>
 </table>
-<p>These are only the versions and formats that users are most likely to
-find. We support any format that is included in Stata versions. The
-minimum format we support is <code>102</code> (Stata 1), and the maximum
-is <code>121</code> (Files with more than 32,767 variables. Those are
-only readable by Stata 18 &amp; 19 MP.).<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;In a branch on GitHub, we even support reading the
-never-released &lt;code&gt;116&lt;/code&gt; format, for which a single publicly
-available Stata sample file exists.&lt;/p&gt;"><sup>3</sup></a> Over the years, the
-format has changed to allow more observations (sometimes introduced in
-SE and MP releases of Stata), longer strings, variable names, labels,
-etc. We support reading any file format, although we currently have no
-control over Stata’s limits. If you do not want to experiment or are
-unsure if your data will fit in the specific version of Stata you are
-targeting, it is a good idea not to choose versions &lt; 7 or formats
-&lt; 110, which is the default in <code><a href="https://rdrr.io/pkg/foreign/man/write.dta.html" class="external-link">foreign::write.dta</a></code>.</p>
+<p>While this table shows the most common formats,
+<code>readstata13</code> supports reading files from Stata version 1
+(format 102) up to the latest format 121 (used for files with over
+32,767 variables, readable by Stata 18 &amp; 19 MP).<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;A &lt;a href="https://github.com/sjewo/readstata13/tree/116" class="external-link"&gt;development
+branch&lt;/a&gt; on GitHub even include support for the rarely seen
+&lt;code&gt;116&lt;/code&gt; format, for which only one public sample file is known
+to exist.&lt;/p&gt;'><sup>3</sup></a> The dta format has
+evolved over time to accommodate larger datasets and longer variable
+names or labels. Although <code>readstata13</code> can read virtually
+any format, its ability to write files that <em>fit</em> within Stata’s
+historical limits depends on the data size. For general compatibility,
+it’s recommended to target versions 7 or later (formats 110+), which
+aligns with the default in <code><a href="https://rdrr.io/pkg/foreign/man/write.dta.html" class="external-link">foreign::write.dta</a></code>.</p>
+<p>Here’s an example of saving a file compatible with Stata 7:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># save a Stata 7 dta file</span></span>
+<code class="sourceCode R"><span><span class="co"># Save the cars dataset as a Stata 7 dta file</span></span>
 <span><span class="fu"><a href="../reference/save.dta13.html">save.dta13</a></span><span class="op">(</span><span class="va">cars</span>, <span class="st">"res/cars_version.dta"</span>, version <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># read this file and print the format</span></span>
+<span><span class="co"># Read the file back and check its reported version</span></span>
 <span><span class="va">dat3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"res/cars_version.dta"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat3</span>, <span class="st">"version"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 110</span></span></code></pre></div>
@@ -250,54 +256,56 @@ targeting, it is a good idea not to choose versions &lt; 7 or formats
 <div class="section level2">
 <h2 id="working-with-labelled-data">Working with Labelled Data<a class="anchor" aria-label="anchor" href="#working-with-labelled-data"></a>
 </h2>
-<p>Stata datasets contain metadata such as variable or value labels.
-Since base R doesn’t support labelled data, this information is stored
-in different attributes of the data.frame returned by
-<code>read.stata13</code>. These data.frames have the same attributes as
-those from the <code>read.dta</code> function in the
-<code>foreign</code> package.</p>
-<p>For this example, we use the Stata file “statacar.dta” provided with
-the <code>readstata13</code> package. We disable the conversion of
-factors and start with numeric codes for categorical data.</p>
+<p>Stata datasets often include rich metadata like variable and value
+labels. Since base R data frames don’t natively support this,
+<code>readstata13</code> stores this information in various attributes
+of the imported data frame, mirroring the approach used by
+<code><a href="https://rdrr.io/pkg/foreign/man/read.dta.html" class="external-link">foreign::read.dta</a></code>.</p>
+<p>Let’s use the example dataset “statacar.dta” included with the
+<code>readstata13</code> package. We’ll initially import it without
+converting categorical data to R factors, keeping the original numeric
+codes.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sjewo/readstata13" class="external-link">readstata13</a></span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package <span class="op">=</span> <span class="st">"readstata13"</span><span class="op">)</span>,</span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, </span>
+<span>                            package <span class="op">=</span> <span class="st">"readstata13"</span><span class="op">)</span>,</span>
 <span>                convert.factors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
-<p>Variable labels are stored in the <code>var.labels</code>
-attribute.</p>
+<p>Variable labels are accessible via the <code>var.labels</code>
+attribute:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"var.labels"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;  [1] "Numeric ID"             "Brand of car"           "Car model"             </span></span>
 <span><span class="co">#&gt;  [4] "Car classification"     "Horse Power"            "Maximum speed"         </span></span>
 <span><span class="co">#&gt;  [7] ""                       ""                       "Launch date"           </span></span>
 <span><span class="co">#&gt; [10] "Launch date (calendar)" ""</span></span></code></pre></div>
-<p>Labels for a single variable might be retrieved using the
-<code><a href="../reference/varlabel.html">varlabel()</a></code> function.</p>
+<p>You can retrieve the label for a specific variable using the
+<code><a href="../reference/varlabel.html">varlabel()</a></code> function:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/varlabel.html">varlabel</a></span><span class="op">(</span><span class="va">x</span>, var.name <span class="op">=</span> <span class="st">"type"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                 type </span></span>
 <span><span class="co">#&gt; "Car classification"</span></span></code></pre></div>
-<p>The information about value labels is stored in a more complex way.
-The <code>val.labels</code> attribute defines a label table for each
-column, which provides the codes and labels for a single variable. These
-label tables are stored as a list in the <code>label.table</code>
-attribute.</p>
-<p>The example dataset has only one column with labelled values.</p>
+<p>Value labels, which map numeric codes to descriptive text, are stored
+in a more structured way. The <code>val.labels</code> attribute
+indicates which variables have associated value labels. The actual label
+definitions (the mapping from codes to labels) are stored as a list in
+the <code>label.table</code> attribute.</p>
+<p>In our example dataset, only one column has value labels:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"val.labels"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;                                 type_en                                         </span></span>
 <span><span class="co">#&gt;        ""        ""        "" "type_en"        ""        ""        ""        "" </span></span>
 <span><span class="co">#&gt;                               </span></span>
 <span><span class="co">#&gt;        ""        ""        ""</span></span></code></pre></div>
-<p>The corresponding label table for the fourth column is called
-<code>type_en</code>. This is a vector of numeric codes, and the labels
-are provided by the element names.</p>
+<p>The corresponding label table for the ‘type’ variable is named
+<code>type_en</code>. It’s a named vector where the numeric codes are
+the vector values and the labels are the names:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"label.table"</span><span class="op">)</span><span class="op">$</span><span class="va">type_en</span></span>
 <span><span class="co">#&gt;         min    Off-Road    Roadster    City car  Family car         max </span></span>
 <span><span class="co">#&gt; -2147483647           1           2           3           4  2147483620</span></span></code></pre></div>
-<p>The function <code><a href="../reference/get.label.name.html">get.label.name()</a></code> and
-<code><a href="../reference/get.label.html">get.label()</a></code> will provide the same results.</p>
+<p>Convenience functions like <code><a href="../reference/get.label.name.html">get.label.name()</a></code> and
+<code><a href="../reference/get.label.html">get.label()</a></code> provide alternative ways to access this
+information:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/get.label.name.html">get.label.name</a></span><span class="op">(</span><span class="va">x</span>, var.name <span class="op">=</span> <span class="st">"type"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;      type </span></span>
@@ -305,14 +313,15 @@ are provided by the element names.</p>
 <span><span class="fu"><a href="../reference/get.label.html">get.label</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"type_en"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;         min    Off-Road    Roadster    City car  Family car         max </span></span>
 <span><span class="co">#&gt; -2147483647           1           2           3           4  2147483620</span></span></code></pre></div>
-<p>Labels are most often used to create the levels of a factor variable.
-<code>readstata13</code> provides a command to simplify this process.
-<code><a href="../reference/set.label.html">set.label()</a></code> returns a factor using the stored labels.</p>
+<p>A common task is converting a numeric variable with value labels into
+an R factor. <code>readstata13</code> simplifies this with the
+<code><a href="../reference/set.label.html">set.label()</a></code> function, which uses the stored label
+information to create the factor levels.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Create factor from variable "type"</span></span>
+<code class="sourceCode R"><span><span class="co"># Create a factor variable 'type_en' from the 'type' variable using stored labels</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">type_en</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/set.label.html">set.label</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"type"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Display results</span></span>
+<span><span class="co"># Display the original numeric column and the new factor column</span></span>
 <span><span class="va">x</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"type"</span>, <span class="st">"type_en"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;          type    type_en</span></span>
 <span><span class="co">#&gt; 1           2   Roadster</span></span>
@@ -324,14 +333,14 @@ are provided by the element names.</p>
 <span><span class="co">#&gt; 7  2147483620        max</span></span>
 <span><span class="co">#&gt; 8 -2147483647        min</span></span></code></pre></div>
 <div class="section level3">
-<h3 id="multi-language-support">Multi Language Support<a class="anchor" aria-label="anchor" href="#multi-language-support"></a>
+<h3 id="multi-language-support-for-labels">Multi-Language Support for Labels<a class="anchor" aria-label="anchor" href="#multi-language-support-for-labels"></a>
 </h3>
-<p>Since Stata supports multi-language files, labels can be provided in
-different languages. The <code>lang</code> option in
-<code><a href="../reference/set.label.html">set.label()</a></code> allows you to choose labels for a specific
-language.</p>
+<p>Stata allows datasets to include labels in multiple languages.
+<code>readstata13</code> supports this, and the <code>lang</code> option
+in <code><a href="../reference/set.label.html">set.label()</a></code> lets you specify which language’s labels to
+use when creating a factor.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Show available and default language </span></span>
+<code class="sourceCode R"><span><span class="co"># Check available languages and the default language</span></span>
 <span><span class="fu"><a href="../reference/get.lang.html">get.lang</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Available languages:</span></span>
 <span><span class="co">#&gt;  en</span></span>
@@ -340,10 +349,10 @@ language.</p>
 <span><span class="co">#&gt; Default language:</span></span>
 <span><span class="co">#&gt;  en</span></span>
 <span></span>
-<span><span class="co"># Create factor with German labels</span></span>
+<span><span class="co"># Create a factor using the German labels</span></span>
 <span><span class="va">x</span><span class="op">$</span><span class="va">type_de</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/set.label.html">set.label</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"type"</span>, lang <span class="op">=</span> <span class="st">"de"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Display results</span></span>
+<span><span class="co"># Display the original and both language factor columns</span></span>
 <span><span class="va">x</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"type"</span>, <span class="st">"type_en"</span>, <span class="st">"type_de"</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="co">#&gt;          type    type_en      type_de</span></span>
 <span><span class="co">#&gt; 1           2   Roadster   Sportwagen</span></span>
@@ -356,13 +365,18 @@ language.</p>
 <span><span class="co">#&gt; 8 -2147483647        min          min</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="compability-with-other-packages">Compability with other Packages<a class="anchor" aria-label="anchor" href="#compability-with-other-packages"></a>
+<h3 id="compatibility-with-other-packages">Compatibility with Other Packages<a class="anchor" aria-label="anchor" href="#compatibility-with-other-packages"></a>
 </h3>
+<p><code>readstata13</code> is designed to integrate well with other R
+packages that work with labelled data, such as <code>labelled</code> and
+<code>expss</code>.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># version &gt; 2.8.0 is needed due to a bug in to_label</span></span>
+<code class="sourceCode R"><span><span class="co"># Requires labelled package version &gt; 2.8.0 due to a past bug</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://larmarange.github.io/labelled/" class="external-link">labelled</a></span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, package <span class="op">=</span> <span class="st">"readstata13"</span><span class="op">)</span>,</span>
+<span><span class="co"># Read the data and convert to the 'labelled' class format</span></span>
+<span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata/statacar.dta"</span>, </span>
+<span>                             package <span class="op">=</span> <span class="st">"readstata13"</span><span class="op">)</span>,</span>
 <span>                convert.factors <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">xl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://larmarange.github.io/labelled/reference/to_labelled.html" class="external-link">to_labelled</a></span><span class="op">(</span><span class="va">xl</span><span class="op">)</span></span>
@@ -379,8 +393,9 @@ language.</p>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">7</span>     7 Erikson Maxi…  2.15<span style="color: #949494;">e</span>9  <span style="text-decoration: underline;">32</span>740    8.99<span style="color: #949494;">e</span>307  1.70<span style="color: #949494;">e</span>38   100    19 2001-01-30</span></span>
 <span><span class="co">#&gt; <span style="color: #BCBCBC;">8</span>     7 Erikson Mimi… -<span style="color: #BB0000;">2.15</span><span style="color: #949494;">e</span>9 -<span style="color: #BB0000; text-decoration: underline;">32</span><span style="color: #BB0000;">767</span> -<span style="color: #BB0000;">Inf</span>   <span style="color: #949494;"> </span>    -<span style="color: #BB0000;">1.70</span><span style="color: #949494;">e</span>38  -<span style="color: #BB0000;">127</span>     1 2001-01-03</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: modelStrL &lt;chr&gt;</span></span></span></code></pre></div>
-<p>Packages like <code>expss</code> use the stored labels to produce
-descriptive headers in tables or to label the axes of a graph.</p>
+<p>Packages like <code>expss</code> can utilize the label information
+stored by <code>readstata13</code> (and converted by
+<code>labelled</code>) for creating descriptive tables and plots.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://gdemin.github.io/expss/" class="external-link">expss</a></span><span class="op">)</span></span>
 <span><span class="co">#&gt; Loading required package: maditr</span></span>
@@ -398,17 +413,18 @@ descriptive headers in tables or to label the axes of a graph.</p>
 <span><span class="co">#&gt; The following object is masked from 'package:labelled':</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt;     is.labelled</span></span>
-<span><span class="co">#xl &lt;- add_labelled_class(xl) </span></span>
 <span></span>
-<span><span class="co"># set negative hp values to na</span></span>
+<span><span class="co"># Example: Use expss to create a table summarizing horse power by car brand</span></span>
+<span><span class="co"># First, handle missing or negative HP values</span></span>
 <span><span class="va">xl</span><span class="op">[</span><span class="va">xl</span><span class="op">$</span><span class="va">hp</span> <span class="op">&lt;</span> <span class="fl">0</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">xl</span><span class="op">$</span><span class="va">hp</span><span class="op">)</span>, <span class="st">"hp"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="cn">NA</span></span>
 <span></span>
-<span><span class="va">xl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_cells</a></span><span class="op">(</span><span class="va">hp</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_cols</a></span><span class="op">(</span><span class="va">brand</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_stat_mean_sd_n</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_pivot</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/set_caption.html" class="external-link">set_caption</a></span><span class="op">(</span><span class="st">"Horse power by car brand."</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># Create the table using expss piping syntax</span></span>
+<span><span class="va">xl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_cells</a></span><span class="op">(</span><span class="va">hp</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Specify the variable for cells</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_cols</a></span><span class="op">(</span><span class="va">brand</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Specify the variable for columns</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_stat_mean_sd_n</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Calculate mean, standard deviation, and N</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/tables.html" class="external-link">tab_pivot</a></span><span class="op">(</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="co"># Pivot the table</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/expss/man/set_caption.html" class="external-link">set_caption</a></span><span class="op">(</span><span class="st">"Horse power by car brand."</span><span class="op">)</span> <span class="co"># Add a caption</span></span></code></pre></div>
 <table class="table gmisc_table" style="border-collapse: collapse; margin-top: 1em; margin-bottom: 1em;">
 <thead>
 <tr>
@@ -500,34 +516,27 @@ Horse power by car brand.
 </div>
 </div>
 <div class="section level2">
-<h2 id="working-with-large-datasets">Working with Large Datasets<a class="anchor" aria-label="anchor" href="#working-with-large-datasets"></a>
+<h2 id="handling-large-datasets">Handling Large Datasets<a class="anchor" aria-label="anchor" href="#handling-large-datasets"></a>
 </h2>
+<p>As datasets grow, importing and managing them in memory can become
+challenging. <code>readstata13</code> provides features to work
+efficiently with large dta files.</p>
 <div class="section level3">
 <h3 id="partial-reading">Partial Reading<a class="anchor" aria-label="anchor" href="#partial-reading"></a>
 </h3>
-<p>Over the years, data files have grown in size. In the early days of
-Stata, the maximum number of observations was stored as
-<code>uint32_t</code> and the variables as <code>uint16_t</code>. This
-allowed a maximum number of 4,294,967,295 observations and 65,535
-variables. Nowadays, the limit is <code>uint64_t</code> for observations
-(18,446,744,073,709,551,615) and <code>uint32_t</code> for variables.
-Thus, it is easier to store large data sets in a single file, but the
-advantages of simply storing data come with longer import times and
-limited memory as bottlenecks. Even though handling gigabyte-wide data
-works on newer workstations, not all of us want to invest in such a
-workstation, especially if we only need a fraction of the data set. For
-such cases, <code>readstata13</code> offers selections for ranges of
-observations (the first/last n observations or, e.g., rows 5-10) and
-selections of specific variables.</p>
+<p>To avoid loading an entire large dataset when only a subset is
+needed, <code>readstata13</code> allows you to read specific rows or
+columns. This is particularly useful for exploring large files or
+extracting key variables without consuming excessive memory or time.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Read rows 1 to 3</span></span>
+<code class="sourceCode R"><span><span class="co"># Read only the first 3 rows of the dataset</span></span>
 <span><span class="va">dat_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"res/cars.dta"</span>, select.rows <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">3</span><span class="op">)</span><span class="op">)</span>; <span class="va">dat_1</span></span>
 <span><span class="co">#&gt;   speed dist</span></span>
 <span><span class="co">#&gt; 1     4    2</span></span>
 <span><span class="co">#&gt; 2     4   10</span></span>
 <span><span class="co">#&gt; 3     7    4</span></span>
 <span></span>
-<span><span class="co"># Read only variable "dist"</span></span>
+<span><span class="co"># Read only the 'dist' variable from the dataset</span></span>
 <span><span class="va">dat_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"res/cars.dta"</span>, select.cols <span class="op">=</span> <span class="st">"dist"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">dat_2</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   dist</span></span>
 <span><span class="co">#&gt; 1    2</span></span>
@@ -536,41 +545,35 @@ selections of specific variables.</p>
 <span><span class="co">#&gt; 4   22</span></span>
 <span><span class="co">#&gt; 5   16</span></span>
 <span><span class="co">#&gt; 6   10</span></span></code></pre></div>
-<p>A real-world example where the selection of certain variables is
-helpful is the SOEP dataset.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;The SOEP is currently located at the &lt;a href="https://www.diw.de/" class="external-link"&gt;DIW Berlin&lt;/a&gt;.&lt;/p&gt;'><sup>4</sup></a> The dataset is divided among different
-files; it is best to think of it as tables in a database. As is common
-in a database environment, you need to make some connections between the
-files and therefore need to know some key variables of different files.
-The dataset has been collected annually since 1984 and has grown
-significantly, with many cases and many variables in different files.
-Selecting a particular variable from a file resulted in reading the
-entire file (all <em>n</em> cases and <em>k</em> variables), extracting
-the variable, and removing all other variables. Importing such a large
-file takes quite a while, and the import results in a large R object
-that is not needed at all. With a selection of variables, it is possible
-to import only the data you want and skip everything else, making the
-import process fast and memory efficient.</p>
+<p>A practical application of partial reading is working with large
+survey datasets like the SOEP (German Socio-Economic Panel).<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;The SOEP is currently located at the &lt;a href="https://www.diw.de/" class="external-link"&gt;DIW Berlin&lt;/a&gt;.&lt;/p&gt;'><sup>4</sup></a> These
+datasets are often distributed across multiple files, structured like
+tables in a database. To link information across files, you need key
+identifier variables. Instead of importing entire multi-gigabyte files
+just to get a few ID columns, you can use <code>select.cols</code> to
+quickly and efficiently read only the necessary variables.</p>
 </div>
 <div class="section level3">
 <h3 id="compression">Compression<a class="anchor" aria-label="anchor" href="#compression"></a>
 </h3>
-<p>If you want to minimize the memory size of the written files, you can
-instruct <code>save.dta13</code> with <code>compress = TRUE</code> to
-use the smallest available type for writing a file.</p>
+<p>When saving data to a dta file, you can use the
+<code>compress = TRUE</code> option in <code>save.dta13</code>. This
+instructs the package to use the smallest possible Stata data type for
+each variable, potentially reducing the file size.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Save with compression</span></span>
+<code class="sourceCode R"><span><span class="co"># Save the cars dataset with compression enabled</span></span>
 <span><span class="fu"><a href="../reference/save.dta13.html">save.dta13</a></span><span class="op">(</span><span class="va">cars</span>, file <span class="op">=</span> <span class="st">"res/cars_compress.dta"</span>, compress <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Import and compare types</span></span>
+<span><span class="co"># Import the compressed file and check the resulting data types</span></span>
 <span><span class="va">dat2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span>file <span class="op">=</span> <span class="st">"res/cars_compress.dta"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/attr.html" class="external-link">attr</a></span><span class="op">(</span><span class="va">dat2</span>, <span class="st">"types"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 65530 65529</span></span></code></pre></div>
-<p>First, <code>save.dta13</code> evaluated that it is safe to store the
-<code>numeric</code> vector as an <code>integer</code>. In a second
-step, the smallest binary type was chosen. For the R user, the only
-notable change is that after re-import, the former <code>numeric</code>
-has become an <code>integer</code>. The most significant change is the
-file size of the written dta file.</p>
+<p>In this example, the <code>numeric</code> vector in R was safely
+stored as an <code>integer</code> in the compressed dta file because its
+values fit within the integer range. The main benefit of compression is
+the reduction in file size. The only notable change is that after
+re-import, the former <code>numeric</code> column has become an
+<code>integer</code>.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="st">"res/cars.dta"</span><span class="op">)</span><span class="op">[</span><span class="st">"size"</span><span class="op">]</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/file.info.html" class="external-link">file.info</a></span><span class="op">(</span><span class="st">"res/cars_compress.dta"</span><span class="op">)</span><span class="op">[</span><span class="st">"size"</span><span class="op">]</span><span class="op">)</span></span>
@@ -585,26 +588,28 @@ file size of the written dta file.</p>
 <div class="section level3">
 <h3 id="frames">Frames<a class="anchor" aria-label="anchor" href="#frames"></a>
 </h3>
-<p>Starting with version 16, Stata users can store multiple data <a href="https://www.stata.com/help.cgi?frames" class="external-link">frames</a> simultaneously
-in memory (short: frames) and save them to disk as a “Stata frameset.”
-The corresponding Stata function will create a “.dtas” file, which is a
-zip file that contains a dta file for each frame.</p>
-<p>The function <code>get.frames</code> prints information about the
-frames from a dtas file: <code>name</code> is the frame name defined in
-Stata.</p>
+<p>Stata version 16 introduced the concept of data <a href="https://www.stata.com/help.cgi?frames" class="external-link">frames</a>, allowing
+multiple datasets to be held in memory simultaneously and saved together
+in a “.dtas” file (a Stata frameset). A “.dtas” file is essentially a
+zip archive containing a separate dta file for each frame.</p>
+<p>The <code>get.frames</code> function in <code>readstata13</code> can
+inspect a “.dtas” file and list the names (defined within Stata), the
+internal filename and version of the frames it contains:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">dtas_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"myproject2.dtas"</span>, package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">dtas_path</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"myproject2.dtas"</span>,</span>
+<span>                         package<span class="op">=</span><span class="st">"readstata13"</span><span class="op">)</span></span>
 <span></span>
+<span><span class="co"># Get information about frames in the .dtas file</span></span>
 <span><span class="fu"><a href="../reference/get.frames.html">get.frames</a></span><span class="op">(</span><span class="va">dtas_path</span><span class="op">)</span></span>
 <span><span class="co">#&gt;       name      filename version</span></span>
 <span><span class="co">#&gt; 1  persons  persons~0000     120</span></span>
 <span><span class="co">#&gt; 2 counties counties~0001     118</span></span></code></pre></div>
-<p>Use <code>read.dtas</code> to import all or selected frames from a
-dtas file. By default, <code>read.dtas</code> imports all frames and
-returns a <code>list</code> of <code>data.frames</code>. Each frame is
-accessible in the list by the name defined in Stata.</p>
+<p>To import data from a “.dtas” file, use <code>read.dtas</code>. By
+default, it imports all frames and returns them as a named list of R
+data frames.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/read.dtas.html">read.dtas</a></span><span class="op">(</span><span class="va">dtas_path</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Read all frames from the .dtas file</span></span>
+<span><span class="fu"><a href="../reference/read.dtas.html">read.dtas</a></span><span class="op">(</span><span class="va">dtas_path</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Warning in stata_read(filepath, missing.type, select.rows, select.cols_chr, :</span></span>
 <span><span class="co">#&gt; File contains unhandled alias variable in column: 5</span></span>
 <span><span class="co">#&gt; $persons</span></span>
@@ -640,10 +645,10 @@ accessible in the list by the name defined in Stata.</p>
 <span><span class="co">#&gt; 6   El Paso         44120</span></span>
 <span><span class="co">#&gt; 7     Bowie         49153</span></span>
 <span><span class="co">#&gt; 8 Galveston         69674</span></span></code></pre></div>
-<p>To restrict the import to one or several frames you may use the
-<code>select.frames</code> argument.</p>
+<p>You can import only specific frames using the
+<code>select.frames</code> argument:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># read selected frames</span></span>
+<code class="sourceCode R"><span><span class="co"># Read only the "counties" frame</span></span>
 <span><span class="fu"><a href="../reference/read.dtas.html">read.dtas</a></span><span class="op">(</span><span class="va">dtas_path</span>, select.frames <span class="op">=</span> <span class="st">"counties"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $counties</span></span>
 <span><span class="co">#&gt;    countyid median_income</span></span>
@@ -655,14 +660,15 @@ accessible in the list by the name defined in Stata.</p>
 <span><span class="co">#&gt; 6   El Paso         44120</span></span>
 <span><span class="co">#&gt; 7     Bowie         49153</span></span>
 <span><span class="co">#&gt; 8 Galveston         69674</span></span></code></pre></div>
-<p>You may also define additional options for each frame individually.
-The options must be provided as a list with the structure
+<p>Furthermore, you can apply specific <code>read.dta13</code> options
+to individual frames within the “.dtas” file by providing a list to the
+<code>read.dta13.options</code> argument. The list structure should be
 <code>list(framename = list(param = value))</code>.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># read frames with different arguments</span></span>
-<span><span class="fu"><a href="../reference/read.dtas.html">read.dtas</a></span><span class="op">(</span><span class="va">dtas_path</span>, </span>
+<code class="sourceCode R"><span><span class="co"># Read frames with different column selections for each</span></span>
+<span><span class="fu"><a href="../reference/read.dtas.html">read.dtas</a></span><span class="op">(</span><span class="va">dtas_path</span>,</span>
 <span>          read.dta13.options <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>counties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>select.cols <span class="op">=</span> <span class="st">"median_income"</span><span class="op">)</span>,</span>
-<span>                                     persons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>select.cols <span class="op">=</span> <span class="st">"income"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span>                                    persons <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>select.cols <span class="op">=</span> <span class="st">"income"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt; $persons</span></span>
 <span><span class="co">#&gt;    income</span></span>
 <span><span class="co">#&gt; 1   30818</span></span>
@@ -698,51 +704,66 @@ The options must be provided as a list with the structure
 <span><span class="co">#&gt; 8         69674</span></span></code></pre></div>
 </div>
 <div class="section level3">
-<h3 id="long-strings-strl">Long Strings (strL)<a class="anchor" aria-label="anchor" href="#long-strings-strl"></a>
+<h3 id="long-strings-strl-and-binary-data">Long Strings (strL) and Binary Data<a class="anchor" aria-label="anchor" href="#long-strings-strl-and-binary-data"></a>
 </h3>
-<p>With Stata 13, long strings were introduced. Such strings are stored
-in the dta file below the data part. This keeps the data part compact,
-containing only a reference to the string. Since long strings are
-capable of storing entire novels, we leave the decision of how to handle
-such files to the user. By default, they are replaced; if not desired,
-they are stored as an attribute to the R object.</p>
-<p>In a blog post, Stata explained how it is possible to store binary
-data in strLs.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;The blog post describes how physicians could use the
-feature to store images of X-rays alongside patient data. &lt;a href="https://www.stata.com/stata-news/news31-4/spotlight/" class="external-link"&gt;“In the
+<p>Stata 13 introduced “long strings” (<code>strL</code>), capable of
+storing very large text values. These are stored separately from the
+main data matrix in the dta file, with only a reference kept in the data
+part. <code>readstata13</code> handles these; by default, they are read
+into R character vectors.</p>
+<p>Interestingly, Stata also allows embedding binary data (like images,
+audio, or other files) within <code>strL</code> variables.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content='&lt;p&gt;A Stata blog post illustrates this feature, showing how
+physicians could store X-ray images alongside patient data: &lt;a href="https://www.stata.com/stata-news/news31-4/spotlight/" class="external-link"&gt;“In the
 spotlight: Storing long strings and entire files in Stata
-datasets”&lt;/a&gt;.&lt;/p&gt;'><sup>5</sup></a> This allows image, video, audio, or text
-files to be stored alongside the data. Although interesting, it is
-currently not possible to handle such data in a <code>data.frame</code>
-in R.<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Part of the issue is that there is no R vector object
-capable of image processing, and R’s &lt;code&gt;character&lt;/code&gt; vector is
-not exactly a good place to store binary data. This is also why we are
-(currently) not able to create such a file from R.&lt;/p&gt;"><sup>6</sup></a>
-Since <code>readstata13</code> release <code>0.9.1</code>, it possible
-to export such files to a user-defined folder, by default the current
-working directory.</p>
+datasets”&lt;/a&gt;.&lt;/p&gt;'><sup>5</sup></a> While R’s standard
+data structures aren’t ideal for directly handling such embedded binary
+data within a data frame,<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;The challenge lies in R’s vector types; standard
+character vectors aren’t designed for arbitrary binary data, and there’s
+no native vector type for image processing or other binary formats
+within a data frame context. This also means &lt;code&gt;readstata13&lt;/code&gt;
+currently cannot create dta files &lt;em&gt;with&lt;/em&gt; embedded binary data
+from R.&lt;/p&gt;"><sup>6</sup></a> <code>readstata13</code> version
+<code>0.9.1</code> and later provides the <code>strlexport</code> option
+to extract these binary contents to files.</p>
+<p>Using <code>strlexport = TRUE</code> and specifying a path with
+<code>strlpath</code>, you can save the contents of <code>strL</code>
+variables as separate files in a designated directory.</p>
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># export the strl as binary file to the current working directory</span></span>
+<code class="sourceCode R"><span><span class="co"># Create a directory for exporting strLs</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/files2.html" class="external-link">dir.create</a></span><span class="op">(</span><span class="st">"res/strls/"</span><span class="op">)</span></span>
-<span><span class="va">dat_strl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"stata_strl.dta"</span>, strlexport <span class="op">=</span> <span class="cn">TRUE</span>, strlpath <span class="op">=</span> <span class="st">"res/strls/"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># The folder contains a file for each long string. The first file is a .txt file and the second a .png file.</span></span>
+<span><span class="co"># Read a dta file containing strLs and export their content</span></span>
+<span><span class="va">dat_strl</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/read.dta13.html">read.dta13</a></span><span class="op">(</span><span class="st">"stata_strl.dta"</span>, </span>
+<span>                       strlexport <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>                       strlpath <span class="op">=</span> <span class="st">"res/strls/"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># List the files created in the export directory.</span></span>
+<span><span class="co"># The filenames indicate the variable and observation index (e.g., 15_1).</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html" class="external-link">dir</a></span><span class="op">(</span><span class="st">"res/strls/"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "15_1" "16_1"</span></span></code></pre></div>
-<p>The exported files are without a file extension because a specific
-file type is not known (and may be different for each cell). Therefore,
-the binary file is named only by its position in the data (15_1 is the
-15th variable and 1st observation), leaving the user to choose how to
-process its content. In this example, the first file is a txt file.</p>
+<p>The exported files do not have extensions because the file type is
+not inherently known from the <code>strL</code> data itself (and could
+vary cell by cell). The user is responsible for determining the correct
+file type and processing the content. In this example, the first
+exported file (<code>15_1</code>) is a text file.</p>
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="st">"res/strls/15_1"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="co"># Read the content of the text file strL export</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/readLines.html" class="external-link">readLines</a></span><span class="op">(</span><span class="st">"res/strls/15_1"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] "R is a free software environment for statistical computing and graphics. It compiles and runs on a wide variety of UNIX platforms, Windows and MacOS. To download R, please choose your preferred CRAN mirror."</span></span>
 <span><span class="co">#&gt; [2] ""                                                                                                                                                                                                              </span></span>
 <span><span class="co">#&gt; [3] "If you have questions about R like how to download and install the software, or what the license terms are, please read our answers to frequently asked questions before you send an email."                   </span></span>
 <span><span class="co">#&gt; [4] ""</span></span></code></pre></div>
-<p>The second file is image in PNG format.</p>
+<p>The second file (<code>16_1</code>) is a PNG image. You can read and
+display it using appropriate R packages like <code>png</code> and
+<code>grid</code>.</p>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://www.rforge.net/png/" class="external-link">png</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">grid</span><span class="op">)</span> <span class="co"># grid is needed for grid.raster</span></span>
+<span></span>
+<span><span class="co"># Read the PNG image file</span></span>
 <span><span class="va">img</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/png/man/readPNG.html" class="external-link">readPNG</a></span><span class="op">(</span><span class="st">"res/strls/16_1"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Display the image</span></span>
 <span><span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/grid.raster.html" class="external-link">grid.raster</a></span><span class="op">(</span><span class="va">img</span><span class="op">)</span></span></code></pre></div>
 <p><img src="readstata13_basic_manual_files/figure-html/unnamed-chunk-23-1.png" alt="Display of the R logo extracted from a long string." width="700"></p>
 </div>

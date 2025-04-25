@@ -510,9 +510,9 @@ maxchar <- function(x) {
   z
 }
 
-#' Read frames from Stata dtas-files
+#' Read frames from Stata dtas files
 #'
-#' Stata 18 introduced frame files (file extension `.dtas`) that contain zipped `dta`
+#' Stata 18 introduced framesets (file extension `.dtas`) that contain zipped `dta`
 #' files. This helper functions imports those files and returns a list of data.frames.
 #'
 #' @param path path to .dtas file
@@ -572,9 +572,9 @@ read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
   return(dtas)
 }
 
-#' List frames in Stata dtas-files
+#' List frames in Stata dtas files
 #'
-#' Stata 18 introduced frame files (file extension `.dtas`) that contain zipped `dta`
+#' Stata 18 introduced framesets (file extension `.dtas`) that contain zipped `dta`
 #' files. This helper functions imports those files and returns a list of data.frames.
 #'
 #' @param path path to .dtas file

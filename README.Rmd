@@ -86,7 +86,7 @@ See [News](NEWS) for the full changelog.
 # create NEWS.MD for pagedown
 
 news <- readLines("NEWS")
-newsmd <- gsub("^\\[(.*)\\]", "## readstata13 -- \\1", news)
+newsmd <- gsub("^\\[(.*)\\]", "## readstata13 \\1 \n", news)
 cat(newsmd, file ="NEWS.md", sep = "\n")
 ```
 

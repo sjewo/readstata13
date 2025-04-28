@@ -57,17 +57,17 @@ stbcal <- function(stbcalfile) {
   close(stbcal)
 
   # Dateformat can be ymd, ydm, myd, mdy, dym or dmy
-  if(any(grepl("dateformat ymd", x)))
+  if (any(grepl("dateformat ymd", x)))
     dateformat <- "%Y%b%d"
-  if(any(grepl("dateformat ydm", x)))
+  if (any(grepl("dateformat ydm", x)))
     dateformat <- "%Y%d%b"
-  if(any(grepl("dateformat myd", x)))
+  if (any(grepl("dateformat myd", x)))
     dateformat <- "%b%Y%d"
-  if(any(grepl("dateformat mdy", x)))
+  if (any(grepl("dateformat mdy", x)))
     dateformat <- "%b%d%Y"
-  if(any(grepl("dateformat dym", x)))
+  if (any(grepl("dateformat dym", x)))
     dateformat <- "%b%Y%d"
-  if(any(grepl("dateformat dmy", x)))
+  if (any(grepl("dateformat dmy", x)))
     dateformat <- "%d%b%Y"
 
   # Range of stbcal. Range is required, contains start and end.
@@ -170,7 +170,7 @@ as.caldays  <- function(buisdays, cal, format = "%Y-%m-%d") {
   rownames(cal) <- cal$buisdays
   dates  <- cal[as.character(buisdays), "range"]
 
-  if(!is.null(format))
+  if (!is.null(format))
     as.Date(dates, format = format)
   return(dates)
 }

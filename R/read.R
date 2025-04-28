@@ -286,12 +286,12 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
   datalabel <- attr(data, "data.label")
 
   ## Encoding
-  if(!is.null(encoding)) {
+  if (!is.null(encoding)) {
 
     # set from encoding by dta version
-    if(is.null(fromEncoding)) {
+    if (is.null(fromEncoding)) {
       fromEncoding <- "CP1252"
-      if(attr(data, "version") >= 118L)
+      if (attr(data, "version") >= 118L)
         fromEncoding <- "UTF-8"
     }
 
@@ -392,8 +392,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
       if (labname %in% names(label)) {
-        if((vartype == sdouble || vartype == sfloat)) {
-          if(!nonint.factors) {
+        if ((vartype == sdouble || vartype == sfloat)) {
+          if (!nonint.factors) {
 
             # collect variables which need a warning
             collected_warnings[["floatfact"]] <- c(collected_warnings[["floatfact"]], vnames[i])
@@ -405,7 +405,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
 
         #check for duplicated labels
         labcount <- table(names(labtable))
-        if(any(labcount > 1)) {
+        if (any(labcount > 1)) {
 
           # collect variables which need a warning
           collected_warnings[["dublifact"]] <- c(collected_warnings[["dublifact"]], vnames[i])
@@ -451,7 +451,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
 
   ## issue warnings
   #dublifact
-  if(length(collected_warnings[["dublifact"]]) > 0) {
+  if (length(collected_warnings[["dublifact"]]) > 0) {
     dublifactvars <- paste(collected_warnings[["dublifact"]], collapse = ", ")
 
     warning(paste0("\n   Duplicated factor levels for variables\n\n",
@@ -463,7 +463,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
   }
 
   # floatfact
-  if(length(collected_warnings[["floatfact"]]) > 0) {
+  if (length(collected_warnings[["floatfact"]]) > 0) {
 
     floatfactvars <- paste(collected_warnings[["floatfact"]], collapse = ", ")
 
@@ -476,7 +476,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
                "\n   Set option 'nonint.factors = TRUE' to assign labels anyway.\n"))
   }
   # misslab
-  if(length(collected_warnings[["misslab"]]) > 0) {
+  if (length(collected_warnings[["misslab"]]) > 0) {
 
     misslabvars <- paste(collected_warnings[["misslab"]], collapse = ", ")
 

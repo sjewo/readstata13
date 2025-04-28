@@ -128,7 +128,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     sstrl   <- 80
 
 
-  if(!is.data.frame(data)) {
+  if (!is.data.frame(data)) {
     stop("Object is not of class data.frame.")
   }
 
@@ -189,7 +189,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   for (v in names(vartypen[vartypen == "POSIXt"]))
     data[[v]] <- (as.double(data[[v]]) + 315622800 - 60 * 60) * 1000
 
-  if(convert.factors) {
+  if (convert.factors) {
     if (version < 106) {
 
       hasfactors <- sapply(data, is.factor)
@@ -304,9 +304,9 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   }
 
   # recode character variables. >118 wants utf-8, so encoding may be required
-  if(doRecode) {
+  if (doRecode) {
     #TODO: use seq_len ?
-    for(v in (1:ncol(data))[vartypen == "character"]) {
+    for (v in (1:ncol(data))[vartypen == "character"]) {
       data[, v] <- save.encoding(data[, v], toEncoding)
     }
   }

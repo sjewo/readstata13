@@ -1171,7 +1171,7 @@ version_list <- c(102, 103, 104, 105, 106, 107, 108, 110, 111,
                   112, 113, 114, 115, 117, 118, 119, 120, 121)
 
 # write variable label attribute
-for(v in version_list) {
+for (v in version_list) {
   save.dta13(dd, paste0("data/dta_", v, ".dta"), version = v)
 }
 
@@ -1187,7 +1187,7 @@ unlink("data", recursive = TRUE)
 
 test_that("save and read varlabels", {
 
-  for(v in as.character(version_list)) {
+  for (v in as.character(version_list)) {
     expect_equal(varlabeldd, varlabeldd_read[[v]])
   }
 

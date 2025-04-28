@@ -35,8 +35,8 @@ save.encoding <- function(x, encoding) {
                  sub = "byte"),
            iconv(s,  from = Encoding(s),
                  to = encoding,
-                 sub = "byte") 
-    ) 
+                 sub = "byte")
+    )
   }
   )
 }
@@ -550,7 +550,7 @@ read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
   frames <- as.data.frame(do.call("rbind", frames))
 
   # select frames
-  if(!is.null(select.frames)) {
+  if (!is.null(select.frames)) {
     frames <- frames[frames$V1 %in% select.frames, ]
   }
 
@@ -558,9 +558,9 @@ read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
   opts <- vector(mode = "list", length = length(frames$V1))
   names(opts) <- frames$V1
 
-  for(f in frames$V1) {
+  for (f in frames$V1) {
 
-    if(is.list(read.dta13.options)) {
+    if (is.list(read.dta13.options)) {
       opts[[f]] <- read.dta13.options[[f]]
     }
 

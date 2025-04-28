@@ -6,7 +6,7 @@ output:
   rmarkdown::html_vignette:
     toc: true
 vignette: >
-  %\VignetteIndexEntry{readstata13_basic_manual}
+  %\VignetteIndexEntry{readstata13: Basic Manual}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -22,277 +22,311 @@ knitr::opts_chunk$set(
 )
 ```
 
-Due to changes in the Stata 13 dta file format, former import methods using the `foreign` package no longer work with files created by Stata releases after version 12. Starting with Stata 13, the dta format resembles XML files.[^1] Portions of the content are structured like XML nodes, e.g., `<N>1</N>` could represent the number of observations in the dta file. Since neither of us, my friend and former colleague Sebastian Jeworutzki co-authored the package, knew much about writing C code, and I was experimenting with Rcpp at the time, we decided to create what has since become a sort of Swiss Army knife for handling dta files in R. Among its many features are:
+The `readstata13` package was developed to address compatibility issues arising from changes in the Stata 13 dta file format. Prior to Stata 13, packages like `foreign` could handle dta files. However, Stata 13 introduced a new format that resembles XML.[^1] Recognizing the need for a new solution, we (Jan Marvin Garbuszus and Sebastian Jeworutzki) created `readstata13`. Leveraging Rcpp for performance, the package has evolved into a comprehensive tool for working with dta files in R.
 
 [^1]: The dta format for current versions is well documented at <https://www.stata.com/help.cgi?dta> and also in the corresponding manuals.
 
--   Importing dta files of all previously known and many unknown and undocumented file formats. This includes both reading and writing of the mentioned files.
--   Handling many dta features like string encoding, multilingual labels, business calendars, long strings (called strL), frames and even embedded binary data.
+Key features of `readstata13` include:
 
-Created as a drop-in replacement for `foreign`'s dta reading, we included many additional features to improve label handling (label generation) and partial reading to read only selected rows or variables.
+* **Broad Format Support:** Ability to import and export dta files across a wide range of Stata versions, including many undocumented formats.
+* **Handling Advanced Features:** Support for features like string encoding, multilingual labels, business calendars, long strings (`strL`), frames, and embedded binary data.
+* **Enhanced Functionality:** Built as a direct replacement for `foreign`'s dta functions, with added capabilities for improved label handling (including generation) and partial data reading (selecting specific rows or variables).
 
-## Basics:  Reading and Writing Stata files
+## Core Functionality: Reading and Writing Stata files
 
-Similar to `foreign`, you can use `read.dta13` to import a file.
+Importing a Stata file using `readstata13` is straightforward, similar to using the `foreign` package. The primary function is `read.dta13`. To save an R data frame to the Stata dta format, you use the `save.dta13` function.
 
 ```{R}
 data (cars)
 
-# save file cars.dta
+# Save the 'cars' dataset to a Stata file
 save.dta13(cars, file = "res/cars.dta")
 
-# read file cars.dta
+# Read the saved Stata file back into R
 dat <- read.dta13("res/cars.dta")
 ```
 
-While often only the imported data is of interest to the user, additional information is available in the attributes of the imported file.
+Beyond the data itself, `readstata13` preserves important metadata from the Stata file. This information is stored as attributes of the imported data frame.
 
 ```{R}
 # prints the attributes
 attributes(dat)
 ```
-It is easy to see that this file was created using format 117, which was implemented in Stata 13 and can be processed by all later versions of Stata. The attributes include the data label, a string that Stata users can see, a timestamp, and formats and types needed to represent the data in Stata. In this case, the `save.dta13` function used binary `double`s to write the data because the data type in R is `numeric`. The byte order refers to endianness. This file was created with Little Endian, but `read.dta13` handles reads and writes for both endianness types.[^2]
+
+Examining the attributes reveals details such as the Stata format version (e.g., format 117, introduced in Stata 13), a data label, a timestamp, and information about the data types and formats used in Stata. In this example, the `save.dta13` function wrote the numeric data from R as binary `double`s in the dta file. The byte order (endianness) is also recorded; `readstata13` is designed to handle both Little Endian (used here) and Big Endian formats during reading and writing.[^2]
 
 [^2]: A detailed explanation can be found here: <https://en.wikipedia.org/wiki/Endianness>.
 
-The read and write functions take care of the conversion of missing values, value labels, and variable labels.
+The package automatically manages the conversion of Stata's missing values, value labels, and variable labels during both import and export.
 
 ## Supported Stata Versions
 
-Since we were forced to write our own dta-file reader, we made sure that we could write files that were readable by earlier versions of Stata. This can be achieved with the `version` argument in `save.dta13`. Available versions are:
+A key advantage of `readstata13` is its ability to write dta files compatible with older and newer versions of Stata. This is controlled using the `version` argument in the `save.dta13` function. The table below lists supported Stata versions and their corresponding file formats:
 
-| version | format |
-|---------|--------|
-| 18 - 19 | 121    |
-| 18 - 19 | 120    |
-| 15 - 19 | 119    |
-| 14 - 19 | 118    |
-| 13      | 117    |
-| 12      | 115    |
-| 10 - 11 | 114    |
-| 8 - 9   | 113    |
-| 7       | 110    |
-| 6       | 108    |
+| Stata Version | File Format |
+|---------------|-------------|
+| 18 - 19       | 121         |
+| 18 - 19       | 120         |
+| 15 - 19       | 119         |
+| 14 - 19       | 118         |
+| 13            | 117         |
+| 12            | 115         |
+| 10 - 11       | 114         |
+| 8 - 9         | 113         |
+| 7             | 110         |
+| 6             | 108         |
 
-These are only the versions and formats that users are most likely to find. We support any format that is included in Stata versions. The minimum format we support is `102` (Stata 1), and the maximum is `121` (Files with more than 32,767 variables. Those are only readable by Stata 18 & 19 MP.).[^4] Over the years, the format has changed to allow more observations (sometimes introduced in SE and MP releases of Stata), longer strings, variable names, labels, etc. We support reading any file format, although we currently have no control over Stata's limits. If you do not want to experiment or are unsure if your data will fit in the specific version of Stata you are targeting, it is a good idea not to choose versions < 7 or formats < 110, which is the default in `foreign::write.dta`.
+While this table shows the most common formats, `readstata13` supports reading files from Stata version 1 (format 102) up to the latest format 121 (used for files with over 32,767 variables, readable by Stata 18 & 19 MP).[^4] The dta format has evolved over time to accommodate larger datasets and longer variable names or labels. Although `readstata13` can read virtually any format, its ability to write files that *fit* within Stata's historical limits depends on the data size. For general compatibility, it's recommended to target versions 7 or later (formats 110+), which aligns with the default in `foreign::write.dta`.
 
-[^4]: In a branch on GitHub, we even support reading the never-released `116` format, for which a single publicly available Stata sample file exists.
+[^4]: A [development branch](https://github.com/sjewo/readstata13/tree/116) on GitHub even include support for the rarely seen `116` format, for which only one public sample file is known to exist.
+
+Here's an example of saving a file compatible with Stata 7:
 
 ```{r}
-# save a Stata 7 dta file
+# Save the cars dataset as a Stata 7 dta file
 save.dta13(cars, "res/cars_version.dta", version = 7)
 
-# read this file and print the format
+# Read the file back and check its reported version
 dat3 <- read.dta13("res/cars_version.dta")
 attr(dat3, "version")
 ```
 
 ## Working with Labelled Data
 
-Stata datasets contain metadata such as variable or value labels. Since base R doesn't support labelled data, this information is stored in different attributes of the data.frame returned by `read.stata13`. These data.frames have the same attributes as those from the `read.dta` function in the `foreign` package.
+Stata datasets often include rich metadata like variable and value labels. Since base R data frames don't natively support this, `readstata13` stores this information in various attributes of the imported data frame, mirroring the approach used by `foreign::read.dta`.
 
-For this example, we use the Stata file "statacar.dta" provided with the `readstata13` package. We disable the conversion of factors and start with numeric codes for categorical data.
+Let's use the example dataset "statacar.dta" included with the `readstata13` package. We'll initially import it without converting categorical data to R factors, keeping the original numeric codes.
 
 ```{r}
 library(readstata13)
-x <- read.dta13(system.file("extdata/statacar.dta", package = "readstata13"),
+x <- read.dta13(system.file("extdata/statacar.dta", 
+                            package = "readstata13"),
                 convert.factors = FALSE)
 ```
 
-Variable labels are stored in the `var.labels` attribute.
+Variable labels are accessible via the `var.labels` attribute:
+
 ```{r}
 attr(x, "var.labels")
 ```
 
-Labels for a single variable might be retrieved using the `varlabel()` function.
+You can retrieve the label for a specific variable using the `varlabel()` function:
+
 ```{r}
 varlabel(x, var.name = "type")
 ```
 
-The information about value labels is stored in a more complex way. The `val.labels` attribute defines a label table for each column, which provides the codes and labels for a single variable. These label tables are stored as a list in the `label.table` attribute.
+Value labels, which map numeric codes to descriptive text, are stored in a more structured way. The `val.labels` attribute indicates which variables have associated value labels. The actual label definitions (the mapping from codes to labels) are stored as a list in the `label.table` attribute.
 
-The example dataset has only one column with labelled values.
+In our example dataset, only one column has value labels:
+
 ```{r}
 attr(x, "val.labels")
 ```
 
-The corresponding label table for the fourth column is called `type_en`. This is a vector of numeric codes, and the labels are provided by the element names.
+The corresponding label table for the 'type' variable is named `type_en`. It's a named vector where the numeric codes are the vector values and the labels are the names:
 
 ```{r}
 attr(x, "label.table")$type_en
 ```
-The function `get.label.name()` and `get.label()` will provide the same results.
+
+Convenience functions like `get.label.name()` and `get.label()` provide alternative ways to access this information:
+
 ```{r}
 get.label.name(x, var.name = "type")
 get.label(x, "type_en")
 ```
 
-Labels are most often used to create the levels of a factor variable. `readstata13` provides a command to simplify this process. `set.label()` returns a factor using the stored labels.
+A common task is converting a numeric variable with value labels into an R factor. `readstata13` simplifies this with the `set.label()` function, which uses the stored label information to create the factor levels.
 
 ```{r}
-# Create factor from variable "type"
+# Create a factor variable 'type_en' from the 'type' variable using stored labels
 x$type_en <- set.label(x, "type")
 
-# Display results
+# Display the original numeric column and the new factor column
 x[, c("type", "type_en")]
 ```
 
-### Multi Language Support
+### Multi-Language Support for Labels
 
-Since Stata supports multi-language files, labels can be provided in different languages. The `lang` option in `set.label()` allows you to choose labels for a specific language.
+Stata allows datasets to include labels in multiple languages. `readstata13` supports this, and the `lang` option in `set.label()` lets you specify which language's labels to use when creating a factor.
 
 ```{r}
-# Show available and default language 
+# Check available languages and the default language
 get.lang(x)
 
-# Create factor with German labels
+# Create a factor using the German labels
 x$type_de <- set.label(x, "type", lang = "de")
 
-# Display results
+# Display the original and both language factor columns
 x[, c("type", "type_en", "type_de")]
 ```
 
 
-### Compability with other Packages
+### Compatibility with Other Packages
+
+`readstata13` is designed to integrate well with other R packages that work with labelled data, such as `labelled` and `expss`.
 
 ```{r, eval = isTRUE(requireNamespace("labelled"))}
-# version > 2.8.0 is needed due to a bug in to_label
+# Requires labelled package version > 2.8.0 due to a past bug
 library(labelled)
 
-xl <- read.dta13(system.file("extdata/statacar.dta", package = "readstata13"),
+# Read the data and convert to the 'labelled' class format
+xl <- read.dta13(system.file("extdata/statacar.dta", 
+                             package = "readstata13"),
                 convert.factors = FALSE)
 
 xl <- to_labelled(xl)
 xl
 ```
 
-Packages like `expss` use the stored labels to produce descriptive headers in tables or to label the axes of a graph.
+Packages like `expss` can utilize the label information stored by `readstata13` (and converted by `labelled`) for creating descriptive tables and plots.
 
 ```{r, eval = isTRUE(requireNamespace("expss")) & isTRUE(requireNamespace("labelled"))}
 library(expss)
-#xl <- add_labelled_class(xl) 
 
-# set negative hp values to na
+# Example: Use expss to create a table summarizing horse power by car brand
+# First, handle missing or negative HP values
 xl[xl$hp < 0 | is.na(xl$hp), "hp"] <- NA
 
-xl %>% 
-  tab_cells(hp) %>% 
-  tab_cols(brand) %>% 
-  tab_stat_mean_sd_n() %>% 
-  tab_pivot() %>%
-  set_caption("Horse power by car brand.")
-
+# Create the table using expss piping syntax
+xl %>%
+  tab_cells(hp) %>% # Specify the variable for cells
+  tab_cols(brand) %>% # Specify the variable for columns
+  tab_stat_mean_sd_n() %>% # Calculate mean, standard deviation, and N
+  tab_pivot() %>% # Pivot the table
+  set_caption("Horse power by car brand.") # Add a caption
 ```
 
 
-## Working with Large Datasets
+## Handling Large Datasets
+
+As datasets grow, importing and managing them in memory can become challenging. `readstata13` provides features to work efficiently with large dta files.
+
 ### Partial Reading
 
-Over the years, data files have grown in size. In the early days of Stata, the maximum number of observations was stored as `uint32_t` and the variables as `uint16_t`. This allowed a maximum number of 4,294,967,295 observations and 65,535 variables. Nowadays, the limit is `uint64_t` for observations (18,446,744,073,709,551,615) and `uint32_t` for variables. Thus, it is easier to store large data sets in a single file, but the advantages of simply storing data come with longer import times and limited memory as bottlenecks. Even though handling gigabyte-wide data works on newer workstations, not all of us want to invest in such a workstation, especially if we only need a fraction of the data set. For such cases, `readstata13` offers selections for ranges of observations (the first/last n observations or, e.g., rows 5-10) and selections of specific variables.
+To avoid loading an entire large dataset when only a subset is needed, `readstata13` allows you to read specific rows or columns. This is particularly useful for exploring large files or extracting key variables without consuming excessive memory or time.
 
 ```{r}
-# Read rows 1 to 3
+# Read only the first 3 rows of the dataset
 dat_1 <- read.dta13("res/cars.dta", select.rows = c(1,3)); dat_1
 
-# Read only variable "dist"
+# Read only the 'dist' variable from the dataset
 dat_2 <- read.dta13("res/cars.dta", select.cols = "dist"); head(dat_2)
 ```
 
-A real-world example where the selection of certain variables is helpful is the SOEP dataset.[^5] The dataset is divided among different files; it is best to think of it as tables in a database. As is common in a database environment, you need to make some connections between the files and therefore need to know some key variables of different files. The dataset has been collected annually since 1984 and has grown significantly, with many cases and many variables in different files. Selecting a particular variable from a file resulted in reading the entire file (all *n* cases and *k* variables), extracting the variable, and removing all other variables. Importing such a large file takes quite a while, and the import results in a large R object that is not needed at all. With a selection of variables, it is possible to import only the data you want and skip everything else, making the import process fast and memory efficient.
+A practical application of partial reading is working with large survey datasets like the SOEP (German Socio-Economic Panel).[^5] These datasets are often distributed across multiple files, structured like tables in a database. To link information across files, you need key identifier variables. Instead of importing entire multi-gigabyte files just to get a few ID columns, you can use `select.cols` to quickly and efficiently read only the necessary variables.
 
 [^5]: The SOEP is currently located at the [DIW Berlin](https://www.diw.de/).
 
 ### Compression
 
-If you want to minimize the memory size of the written files, you can instruct `save.dta13` with `compress = TRUE` to use the smallest available type for writing a file.
+When saving data to a dta file, you can use the `compress = TRUE` option in `save.dta13`. This instructs the package to use the smallest possible Stata data type for each variable, potentially reducing the file size.
 
 ```{r}
-# Save with compression
+# Save the cars dataset with compression enabled
 save.dta13(cars, file = "res/cars_compress.dta", compress = TRUE)
 
-# Import and compare types
+# Import the compressed file and check the resulting data types
 dat2 <- read.dta13(file = "res/cars_compress.dta")
 attr(dat2, "types")
 ```
 
-First, `save.dta13` evaluated that it is safe to store the `numeric` vector as an `integer`. In a second step, the smallest binary type was chosen. For the R user, the only notable change is that after re-import, the former `numeric` has become an `integer`. The most significant change is the file size of the written dta file.
-
+In this example, the `numeric` vector in R was safely stored as an `integer` in the compressed dta file because its values fit within the integer range. The main benefit of compression is the reduction in file size. The only notable change is that after re-import, the former `numeric` column has become an `integer`. 
 
 ```{r}
 rbind(file.info("res/cars.dta")["size"],
       file.info("res/cars_compress.dta")["size"])
 ```
+
 ## Advanced Features
 
 ### Frames
 
-Starting with version 16, Stata users can store multiple data [frames](https://www.stata.com/help.cgi?frames) simultaneously in memory (short: frames) and save them to disk as a "Stata frameset." The corresponding Stata function will create a ".dtas" file, which is a zip file that contains a dta file for each frame.
+Stata version 16 introduced the concept of data [frames](https://www.stata.com/help.cgi?frames), allowing multiple datasets to be held in memory simultaneously and saved together in a ".dtas" file (a Stata frameset). A ".dtas" file is essentially a zip archive containing a separate dta file for each frame.
 
-The function `get.frames` prints information about the frames from a dtas file: `name` is the frame name defined in Stata.
+The `get.frames` function in `readstata13` can inspect a ".dtas" file and list the names (defined within Stata), the internal filename and version of the frames it contains:
 
 ```{r}
-dtas_path <- system.file("extdata", "myproject2.dtas", package="readstata13")
+dtas_path <- system.file("extdata", "myproject2.dtas",
+                         package="readstata13")
 
+# Get information about frames in the .dtas file
 get.frames(dtas_path)
 ```
 
-Use `read.dtas` to import all or selected frames from a dtas file. By default, `read.dtas` imports all frames and returns a `list` of `data.frames`. Each frame is accessible in the list by the name defined in Stata.
-
+To import data from a ".dtas" file, use `read.dtas`. By default, it imports all frames and returns them as a named list of R data frames.
 
 ```{r}
+# Read all frames from the .dtas file
 read.dtas(dtas_path)
 ```
-To restrict the import to one or several frames you may use the `select.frames` argument.
+
+You can import only specific frames using the `select.frames` argument:
 
 ```{r}
-# read selected frames
+# Read only the "counties" frame
 read.dtas(dtas_path, select.frames = "counties")
 ```
-You may also define additional options for each frame individually. The options must be provided as a list with the structure `list(framename = list(param = value))`.
+
+Furthermore, you can apply specific `read.dta13` options to individual frames within the ".dtas" file by providing a list to the `read.dta13.options` argument. The list structure should be `list(framename = list(param = value))`.
 
 ```{r}
-# read frames with different arguments
-read.dtas(dtas_path, 
+# Read frames with different column selections for each
+read.dtas(dtas_path,
           read.dta13.options = list(counties = list(select.cols = "median_income"),
-                                     persons = list(select.cols = "income")))
-
+                                    persons = list(select.cols = "income")))
 ```
 
 
-### Long Strings (strL)
+### Long Strings (strL) and Binary Data
 
-With Stata 13, long strings were introduced. Such strings are stored in the dta file below the data part. This keeps the data part compact, containing only a reference to the string. Since long strings are capable of storing entire novels, we leave the decision of how to handle such files to the user. By default, they are replaced; if not desired, they are stored as an attribute to the R object.
+Stata 13 introduced "long strings" (`strL`), capable of storing very large text values. These are stored separately from the main data matrix in the dta file, with only a reference kept in the data part. `readstata13` handles these; by default, they are read into R character vectors.
 
-In a blog post, Stata explained how it is possible to store binary data in strLs.[^6] This allows image, video, audio, or text files to be stored alongside the data. Although interesting, it is currently not possible to handle such data in a `data.frame` in R.[^7] Since `readstata13` release `0.9.1`, it possible to export such files to a user-defined folder, by default the current working directory.
+Interestingly, Stata also allows embedding binary data (like images, audio, or other files) within `strL` variables.[^6] While R's standard data structures aren't ideal for directly handling such embedded binary data within a data frame,[^7] `readstata13` version `0.9.1` and later provides the `strlexport` option to extract these binary contents to files.
 
-[^6]: The blog post describes how physicians could use the feature to store images of X-rays alongside patient data. ["In the spotlight: Storing long strings and entire files in Stata datasets"](https://www.stata.com/stata-news/news31-4/spotlight/).
+[^6]: A Stata blog post illustrates this feature, showing how physicians could store X-ray images alongside patient data: ["In the spotlight: Storing long strings and entire files in Stata datasets"](https://www.stata.com/stata-news/news31-4/spotlight/).
 
-[^7]: Part of the issue is that there is no R vector object capable of image processing, and R's `character` vector is not exactly a good place to store binary data. This is also why we are (currently) not able to create such a file from R.
+[^7]: The challenge lies in R's vector types; standard character vectors aren't designed for arbitrary binary data, and there's no native vector type for image processing or other binary formats within a data frame context. This also means `readstata13` currently cannot create dta files *with* embedded binary data from R.
+
+Using `strlexport = TRUE` and specifying a path with `strlpath`, you can save the contents of `strL` variables as separate files in a designated directory.
 
 ```{r}
-# export the strl as binary file to the current working directory
+# Create a directory for exporting strLs
 dir.create("res/strls/")
-dat_strl <- read.dta13("stata_strl.dta", strlexport = TRUE, strlpath = "res/strls/")
 
-# The folder contains a file for each long string. The first file is a .txt file and the second a .png file.
+# Read a dta file containing strLs and export their content
+dat_strl <- read.dta13("stata_strl.dta", 
+                       strlexport = TRUE, 
+                       strlpath = "res/strls/")
+
+# List the files created in the export directory.
+# The filenames indicate the variable and observation index (e.g., 15_1).
 dir("res/strls/")
 ```
 
-The exported files are without a file extension because a specific file type is not known (and may be different for each cell). Therefore, the binary file is named only by its position in the data (15_1 is the 15th variable and 1st observation), leaving the user to choose how to process its content. In this example, the first file is a txt file.
+The exported files do not have extensions because the file type is not inherently known from the `strL` data itself (and could vary cell by cell). The user is responsible for determining the correct file type and processing the content. In this example, the first exported file (`15_1`) is a text file.
 
 ```{r}
+# Read the content of the text file strL export
 readLines("res/strls/15_1")
 ```
 
-The second file is image in PNG format.
+The second file (`16_1`) is a PNG image. You can read and display it using appropriate R packages like `png` and `grid`.
 
-```{r}
+```{r, fig.alt="Display of the R logo extracted from a long string."}
 library(png)
+library(grid) # grid is needed for grid.raster
+
+# Read the PNG image file
 img <- readPNG("res/strls/16_1")
+
+# Display the image
 grid::grid.raster(img)
 ```
 
 
 ```{r include=FALSE}
+# Clean up the created directory and files
 unlink("res/", recursive = TRUE)
 ```

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{read.dtas}
 \alias{read.dtas}
-\title{Read frames from Stata dtas-files}
+\title{Read frames from Stata dtas files}
 \usage{
 read.dtas(path, select.frames = NULL, read.dta13.options = NULL)
 }
@@ -17,7 +17,7 @@ read.dtas(path, select.frames = NULL, read.dta13.options = NULL)
 Returns a named list of data.frames.
 }
 \description{
-Stata 18 introduced frame files (file extension `.dtas`) that contain zipped `dta`
+Stata 18 introduced framesets (file extension `.dtas`) that contain zipped `dta`
 files. This helper functions imports those files and returns a list of data.frames.
 }
 \examples{

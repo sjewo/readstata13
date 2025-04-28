@@ -2,7 +2,7 @@
 % Please edit documentation in R/tools.R
 \name{get.frames}
 \alias{get.frames}
-\title{List frames in Stata dtas-files}
+\title{List frames in Stata dtas files}
 \usage{
 get.frames(path)
 }
@@ -13,7 +13,7 @@ get.frames(path)
 Returns a data.frame with frame names, internal filenames and dta file format version.
 }
 \description{
-Stata 18 introduced frame files (file extension `.dtas`) that contain zipped `dta`
+Stata 18 introduced framesets (file extension `.dtas`) that contain zipped `dta`
 files. This helper functions imports those files and returns a list of data.frames.
 }
 \examples{

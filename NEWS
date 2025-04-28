@@ -1,11 +1,11 @@
-[0.11]
-- Initial support for Stata 18 files. Import ".dtas"" files with multiple data frames via read.dtas(). Alias variables are currently ignored with a warning.
-- The ‘select.cols’ argument accepts either variable names or column indices.
+[0.11.0]
+- Initial support for Stata 18. Import .dtas files (Stata framesets) via `read.dtas()`. Alias variables are currently ignored with a warning.
+- The `select.cols` argument accepts either variable names or column indices.
 - Fix compilation on musl and other non-glibc based systems.
 - Add package alias to readstata13.Rd
 
 [0.10.1]
-- Fix writing "NA" and "NA_character_" values
+- Fix writing `NA` and `NA_character_` values
 - Fix writing of STRLs on big endian systems
 
 [0.10.0]
@@ -88,7 +88,7 @@
 - Various fixes
 - Reading stbcal-files
 
-[0.5]
+[0.5-3]
 - Write dta-files
 - Read/write LSF and MSF files
 - Source testing and cleaning

@@ -75,8 +75,8 @@ stbcal <- function(stbcalfile) {
   range <- strsplit(range, " ")
   rangestart <- range[[1]][2]
   rangestop <- range[[1]][3]
-  range <- seq(from= as.Date(rangestart, dateformat),
-               to= as.Date(rangestop, dateformat), "days")
+  range <- seq(from = as.Date(rangestart, dateformat),
+               to = as.Date(rangestop, dateformat), "days")
 
   # Centerdate of stbcal. Date that matches 0.
   centerpos <- grep("centerdate", x)
@@ -91,23 +91,23 @@ stbcal <- function(stbcalfile) {
   # Mo, Tu, We, Th, Fr, Sa, Su
   daysofweek <- weekdays(as.Date(range))
 
-  stbcal <- data.frame(range = range, daysofweek=daysofweek)
+  stbcal <- data.frame(range = range, daysofweek = daysofweek)
 
   # Weekdays every week
   if (any(grepl("Mo", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Monday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Monday"] <- NA
   if (any(grepl("Tu", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Tuesday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Tuesday"] <- NA
   if (any(grepl("We", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Wednesday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Wednesday"] <- NA
   if (any(grepl("Th", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Thursday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Thursday"] <- NA
   if (any(grepl("Fr", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Friday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Friday"] <- NA
   if (any(grepl("Sa", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Saturday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Saturday"] <- NA
   if (any(grepl("Su", omitdayofweek)))
-    stbcal$daysofweek[stbcal$daysofweek=="Sunday"] <- NA
+    stbcal$daysofweek[stbcal$daysofweek == "Sunday"] <- NA
 
   # Special days to be omitted
   if (any(grepl("omit date", x))) {
@@ -117,7 +117,7 @@ stbcal <- function(stbcalfile) {
     omitdates <- gsub("omit date ", "", omitdates)
     dates <- as.Date(omitdates, dateformat)
 
-    stbcal$daysofweek[which(stbcal$range%in%dates)] <- NA
+    stbcal$daysofweek[which(stbcal$range %in% dates)] <- NA
 
     # Keep only wanted days stbcal$daysofweek behalten
     stbcal <- stbcal[complete.cases(stbcal$daysofweek),]
@@ -125,13 +125,13 @@ stbcal <- function(stbcalfile) {
 
   # In case centerdate is not rangestart:
   stbcal$buisdays <- NA
-  stbcal$buisdays[stbcal$range==centerdate] <- 0
-  stbcal$buisdays[stbcal$range<centerdate] <- seq(
-    from=-length(stbcal$range[stbcal$range<centerdate]),
-    to=-1)
-  stbcal$buisdays[stbcal$range>centerdate] <- seq(
-    from=1,
-    to=length(stbcal$range[stbcal$range>centerdate]))
+  stbcal$buisdays[stbcal$range == centerdate] <- 0
+  stbcal$buisdays[stbcal$range < centerdate] <- seq(
+    from = -length(stbcal$range[stbcal$range < centerdate]),
+    to = -1)
+  stbcal$buisdays[stbcal$range > centerdate] <- seq(
+    from = 1,
+    to = length(stbcal$range[stbcal$range > centerdate]))
 
   # Add purpose
   if (any(grepl("purpose", x))) {
@@ -165,7 +165,7 @@ stbcal <- function(stbcalfile) {
 #' dat$ldatescal2 <- as.caldays(dat$ldate, sp500)
 #' all(dat$ldatescal2==dat$ldatescal)
 #' @export
-as.caldays  <- function(buisdays, cal, format="%Y-%m-%d") {
+as.caldays  <- function(buisdays, cal, format = "%Y-%m-%d") {
   rownames(cal) <- cal$buisdays
   dates  <- cal[as.character(buisdays), "range"]
 

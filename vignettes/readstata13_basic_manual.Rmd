@@ -249,7 +249,7 @@ The `get.frames` function in `readstata13` can inspect a ".dtas" file and list t
 
 ```{r}
 dtas_path <- system.file("extdata", "myproject2.dtas",
-                         package="readstata13")
+                         package = "readstata13")
 
 # Get information about frames in the .dtas file
 get.frames(dtas_path)

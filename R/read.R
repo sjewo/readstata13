@@ -140,8 +140,8 @@
 #' @importFrom utils download.file
 #' @importFrom stats na.omit
 #' @export
-read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
-                       encoding = "UTF-8", fromEncoding=NULL,
+read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
+                       encoding = "UTF-8", fromEncoding = NULL,
                        convert.underscore = FALSE, missing.type = FALSE,
                        convert.dates = TRUE, replace.strl = TRUE,
                        add.rownames = FALSE, nonint.factors = FALSE,
@@ -254,8 +254,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
       for (v in which(types > 250L)) {
         this.type <- types[v] - 250L
         nas <- is.na(data[[v]]) | data[[v]] >= stata.na$min[this.type]
-        natype <- (data[[v]][nas] - stata.na$min[this.type])/
-          stata.na$inc[this.type]
+        natype <- (data[[v]][nas] - stata.na$min[this.type]) / stata.na$inc[this.type]
         natype[is.na(natype)] <- 0L
         missings[[v]] <- rep(NA, NROW(data))
         missings[[v]][nas] <- natype
@@ -322,7 +321,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
     # recode character variables
     for (v in (1:ncol(data))[types <= sstr]) {
-      data[, v] <- iconv(data[, v], from=fromEncoding, to=encoding, sub="byte")
+      data[, v] <- iconv(data[, v], from = fromEncoding, to = encoding, sub = "byte")
     }
 
     # expansion.field
@@ -419,16 +418,16 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors=FALSE,
 
         # assign label if label set is complete
         if (all(varunique %in% labtable)) {
-          data[, i] <- factor(data[, i], levels=labtable,
-                              labels=names(labtable))
+          data[, i] <- factor(data[, i], levels = labtable,
+                              labels = names(labtable))
           # else generate labels from codes
         } else if (generate.factors) {
 
           names(varunique) <- varunique
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-          data[, i] <- factor(data[, i], levels=gen.lab,
-                              labels=names(gen.lab))
+          data[, i] <- factor(data[, i], levels = gen.lab,
+                              labels = names(gen.lab))
 
           # add generated labels to label.table
           gen.lab.name <- paste0("gen_",vnames[i])

@@ -22,27 +22,27 @@
 # @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 read.encoding <- function(x, fromEncoding, encoding) {
   iconv(x,
-        from=fromEncoding,
-        to=encoding ,
-        sub="byte")
+        from = fromEncoding,
+        to = encoding ,
+        sub = "byte")
 }
 
 save.encoding <- function(x, encoding) {
   sapply(x, function(s)
            ifelse(Encoding(s) == "unknown",
                     iconv(s,
-                          to=encoding,
-                          sub="byte"),
-                    iconv(s,  from=Encoding(s),
-                          to=encoding,
-                          sub="byte")
+                          to = encoding,
+                          sub = "byte"),
+                    iconv(s,  from = Encoding(s),
+                          to = encoding,
+                          sub = "byte")
            )
         )
 }
 
 # Function to check if directory exists
 # @param x file path
-dir.exists13 <-function(x) {
+dir.exists13 <- function(x) {
   path <- dirname(x)
   return(file.exists(path))
 }
@@ -52,7 +52,7 @@ dir.exists13 <-function(x) {
 # @param path path to dta file
 # @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 # @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
-get.filepath <- function(path="") {
+get.filepath <- function(path = "") {
   if (substring(path, 1, 1) == "~") {
     filepath <- path.expand(path)
   } else {
@@ -83,7 +83,7 @@ get.filepath <- function(path="") {
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @export
-get.lang <- function(dat, print=T) {
+get.lang <- function(dat, print = T) {
   ex <- attr(dat, "expansion.fields")
 
   lang <- list()
@@ -123,7 +123,7 @@ get.lang <- function(dat, print=T) {
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @export
-get.label.name <- function(dat, var.name=NULL, lang=NA) {
+get.label.name <- function(dat, var.name = NULL, lang = NA) {
   vnames  <- names(dat)
   if (is.na(lang) | lang == get.lang(dat, F)$default) {
     labelsets <- attr(dat, "val.labels")
@@ -133,7 +133,7 @@ get.label.name <- function(dat, var.name=NULL, lang=NA) {
 
     has_no_label_lang <- identical(
       integer(0),
-      unlist(lapply(ex, grep, pattern ="_lang_l_"))
+      unlist(lapply(ex, grep, pattern = "_lang_l_"))
     )
 
     if (has_no_label_lang) {
@@ -252,7 +252,7 @@ get.label.tables <- function(dat) {
 #' # German label
 #' set.label(dat, "type", "de")
 #' @export
-set.label <- function(dat, var.name, lang=NA) {
+set.label <- function(dat, var.name, lang = NA) {
   if (is.factor(dat[,var.name])) {
     tmp <- get.origin.codes(dat[,var.name],
                             get.label(dat, get.label.name(dat, var.name)))
@@ -275,8 +275,8 @@ set.label <- function(dat, var.name, lang=NA) {
                                        labtable[labdups], ")")
   }
 
-  return(factor(tmp, levels=labtable,
-                labels=names(labtable))
+  return(factor(tmp, levels = labtable,
+                labels = names(labtable))
   )
 }
 
@@ -319,7 +319,7 @@ NULL
 
 #' @rdname varlabel
 #' @export
-varlabel <- function(dat, var.name=NULL, lang=NA) {
+varlabel <- function(dat, var.name = NULL, lang = NA) {
   vnames <- names(dat)
   if (is.na(lang) | lang == get.lang(dat, F)$default) {
     varlabel <- attr(dat, "var.labels")
@@ -342,7 +342,7 @@ varlabel <- function(dat, var.name=NULL, lang=NA) {
 #' @export
 'varlabel<-' <- function(dat, value) {
   nlabs <- ncol(dat)
-  if (length(value)==nlabs) {
+  if (length(value) == nlabs) {
     attr(dat, "var.labels") <- value
   } else {
       warning(paste("Vector of new labels must have", nlabs, "entries."))
@@ -376,7 +376,7 @@ varlabel <- function(dat, var.name=NULL, lang=NA) {
 #' @importFrom stats na.omit
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
-set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
+set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
   if (is.na(lang) | lang == get.lang(dat, F)$default) {
     return(dat)
   } else if (is.character(lang)) {
@@ -391,7 +391,7 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
     oldlang <- get.lang(dat, F)$default
 
     cat("Replacing value labels. This might take some time...\n")
-    pb <- txtProgressBar(min=1,max=length(val.labels)+1)
+    pb <- txtProgressBar(min = 1,max = length(val.labels) + 1)
 
 
 
@@ -417,16 +417,16 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
           # assign label if label set is complete
           if (all(varunique %in% labtable)) {
 
-            dat[,varname] <- factor(codes, levels=labtable,
-                                    labels=names(labtable))
+            dat[,varname] <- factor(codes, levels = labtable,
+                                    labels = names(labtable))
           }
           # else generate labels from codes
         } else if (generate.factors) {
           names(varunique) <- as.character(varunique)
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-          dat[,varname] <- factor(codes, levels=gen.lab,
-                                  labels=names(gen.lab))
+          dat[,varname] <- factor(codes, levels = gen.lab,
+                                  labels = names(gen.lab))
         } else {
           warning(paste(vnames[i], "Missing factor labels - no labels assigned.
                         Set option generate.factors=T to generate labels."))
@@ -501,7 +501,7 @@ saveToExport <- function(x) {
 #'
 #' @param x vector of data frame
 maxchar <- function(x) {
-  z <- max(nchar(x, type="byte"), na.rm = TRUE)
+  z <- max(nchar(x, type = "byte"), na.rm = TRUE)
 
   # Stata does not allow storing a string of size 0
   if (is.infinite(z) | (z == 0))

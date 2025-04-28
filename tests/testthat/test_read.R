@@ -189,7 +189,7 @@ test_that("Reading of strls", {
 test_that("reading of many strls", {
 
   # slow test
-  N = 1e4
+  N <- 1e4
   big_strl <- data.frame(
     x = 1:N,
     y = sample(LETTERS, N, replace = TRUE),

@@ -48,7 +48,8 @@
 stbcal <- function(stbcalfile) {
 
   # Otherwise localised dates will be used.
-  lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
+  lct <- Sys.getlocale("LC_TIME")
+  Sys.setlocale("LC_TIME", "C")
 
   # Parse full file
   stbcal <- file(stbcalfile, "rb")

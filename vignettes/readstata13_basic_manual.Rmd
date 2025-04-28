@@ -209,10 +209,12 @@ To avoid loading an entire large dataset when only a subset is needed, `readstat
 
 ```{r}
 # Read only the first 3 rows of the dataset
-dat_1 <- read.dta13("res/cars.dta", select.rows = c(1, 3)); dat_1
+dat_1 <- read.dta13("res/cars.dta", select.rows = c(1, 3))
+dat_1
 
 # Read only the 'dist' variable from the dataset
-dat_2 <- read.dta13("res/cars.dta", select.cols = "dist"); head(dat_2)
+dat_2 <- read.dta13("res/cars.dta", select.cols = "dist")
+head(dat_2)
 ```
 
 A practical application of partial reading is working with large survey datasets like the SOEP (German Socio-Economic Panel).[^5] These datasets are often distributed across multiple files, structured like tables in a database. To link information across files, you need key identifier variables. Instead of importing entire multi-gigabyte files just to get a few ID columns, you can use `select.cols` to quickly and efficiently read only the necessary variables.

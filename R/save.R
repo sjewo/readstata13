@@ -277,8 +277,12 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
 
     vartypen[ff] <- sdouble
 
-    bmin <- -127; bmax <- 100
-    imin <- -32767; imax <- 32740
+    bmin <- -127
+    bmax <- 100
+
+    imin <- -32767
+    imax <- 32740
+
     # check if integer is byte, int or long
     for (k in names(which(ii & !empty))) {
       vartypen[k][varTmin[k] < imin | varTmax[k] > imax] <- slong
@@ -378,7 +382,8 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   if (!time.stamp) {
     attr(data, "timestamp") <- ""
   } else {
-    lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
+    lct <- Sys.getlocale("LC_TIME")
+    Sys.setlocale("LC_TIME", "C")
     attr(data, "timestamp") <- format(Sys.time(), "%d %b %Y %H:%M")
     Sys.setlocale("LC_TIME", lct)
   }

@@ -301,15 +301,15 @@ set.label <- function(dat, var.name, lang=NA) {
 #' dat <- read.dta13(system.file("extdata/statacar.dta", package="readstata13"),
 #'                   convert.factors=FALSE)
 #'
-#' # display variable labels 
+#' # display variable labels
 #' varlabel(dat)
-#' 
+#'
 #' # display german variable labels
 #' varlabel(dat, lang="de")
-#' 
+#'
 #' # display german variable label for brand
 #' varlabel(dat, var.name = "brand", lang="de")
-#' 
+#'
 #' # define new variable labels
 #' varlabel(dat) <- letters[1:ncol(dat)]
 #'
@@ -353,7 +353,7 @@ varlabel <- function(dat, var.name=NULL, lang=NA) {
 
 #' Assign Stata Language Labels
 #'
-#' Changes default label language for a dataset. 
+#' Changes default label language for a dataset.
 #' Variables with generated labels (option generate.labels=TRUE) are kept unchanged.
 #'
 #' @param dat \emph{data.frame.} Data.frame created by \code{read.dta13}.
@@ -480,8 +480,8 @@ set.lang <- function(dat, lang=NA, generate.factors=FALSE) {
 #'
 #' @param x vector of data frame
 saveToExport <- function(x) {
-  ifelse(any(is.infinite(x)), FALSE, 
-         ifelse(any(!is.na(x) & (x > .Machine$integer.max | x < -.Machine$integer.max)), FALSE, 
+  ifelse(any(is.infinite(x)), FALSE,
+         ifelse(any(!is.na(x) & (x > .Machine$integer.max | x < -.Machine$integer.max)), FALSE,
                 isTRUE(all.equal(x, as.integer(x)))))
 }
 
@@ -516,59 +516,59 @@ maxchar <- function(x) {
 #' files. This helper functions imports those files and returns a list of data.frames.
 #'
 #' @param path path to .dtas file
-#' @param select.frames character vector 
+#' @param select.frames character vector
 #' @param read.dta13.options list of parameters used in  \code{\link[readstata13]{read.dta13}}. The list must have the following structure: \code{list(framename = list(param = value))}
 #' @return Returns a named list of data.frames.
 #' @importFrom utils unzip
 #' @export
 #' @examples
-#' 
+#'
 #' path <- system.file("extdata", "myproject2.dtas", package="readstata13")
-#' 
+#'
 #' # read all frames in myproject2.dtas
 #' read.dtas(path)
-#' 
+#'
 #' # read selected frames
 #' read.dtas(path, select.frames = c("persons", "counties"))
-#' 
+#'
 #' # read only frame counties
 #' read.dtas(path, select.frames = c("counties"))
-#' 
+#'
 #' # read frames with different arguments
-#' read.dtas(path, 
+#' read.dtas(path,
 #'           read.dta13.options = list(counties = list(select.cols = "median_income"),
 #'                                      persons = list(select.cols = "income")))
-#' 
+#'
 read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
   tmp <- tempdir()
-  
+
   fls <- utils::unzip(path, exdir = tmp)
-  
+
   # data name, dta file name, dta version
   frames <- strsplit(readLines(fls[grep(".frameinfo", fls)])[-c(1:2)], " ")
   frames <- as.data.frame(do.call("rbind", frames))
-  
+
   # select frames
   if(!is.null(select.frames)) {
     frames <- frames[frames$V1 %in% select.frames, ]
   }
-  
+
   # read dtas
   opts <- vector(mode = "list", length = length(frames$V1))
   names(opts) <- frames$V1
-  
+
   for(f in frames$V1) {
-    
+
     if(is.list(read.dta13.options)) {
       opts[[f]] <- read.dta13.options[[f]]
     }
-    
+
     opts[[f]][["file"]] <- file.path(tmp, paste0(frames$V2[frames$V1 == f], ".dta"))
   }
-  
+
   dtas <- lapply(opts, function(f) do.call(read.dta13, f))
   names(dtas) <- names(opts)
-  
+
   return(dtas)
 }
 
@@ -581,21 +581,21 @@ read.dtas <- function(path, select.frames = NULL, read.dta13.options = NULL) {
 #' @return Returns a data.frame with frame names, internal filenames and dta file format version.
 #' @export
 #' @examples
-#' 
+#'
 #' path <- system.file("extdata", "myproject2.dtas", package="readstata13")
-#' 
+#'
 #' # print all frames in myproject2.dtas
 #' get.frames(path)
-#' 
+#'
 get.frames <- function(path) {
   tmp <- tempdir()
-  
+
   fls <- unzip(path, exdir = tmp, files = ".frameinfo")
-  
+
   # data name, dta file name, dta version
   frames <- strsplit(readLines(fls[grep(".frameinfo", fls)])[-c(1:2)], " ")
   frames <- as.data.frame(do.call("rbind", frames))
   names(frames) <- c("name", "filename", "version")
-  
+
   return(frames)
 }

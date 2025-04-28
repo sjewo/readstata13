@@ -99,7 +99,7 @@ Let's use the example dataset "statacar.dta" included with the `readstata13` pac
 
 ```{r}
 library(readstata13)
-x <- read.dta13(system.file("extdata/statacar.dta", 
+x <- read.dta13(system.file("extdata/statacar.dta",
                             package = "readstata13"),
                 convert.factors = FALSE)
 ```
@@ -172,7 +172,7 @@ x[, c("type", "type_en", "type_de")]
 library(labelled)
 
 # Read the data and convert to the 'labelled' class format
-xl <- read.dta13(system.file("extdata/statacar.dta", 
+xl <- read.dta13(system.file("extdata/statacar.dta",
                              package = "readstata13"),
                 convert.factors = FALSE)
 
@@ -296,8 +296,8 @@ Using `strlexport = TRUE` and specifying a path with `strlpath`, you can save th
 dir.create("res/strls/")
 
 # Read a dta file containing strLs and export their content
-dat_strl <- read.dta13("stata_strl.dta", 
-                       strlexport = TRUE, 
+dat_strl <- read.dta13("stata_strl.dta",
+                       strlexport = TRUE,
                        strlpath = "res/strls/")
 
 # List the files created in the export directory.

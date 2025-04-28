@@ -38,7 +38,7 @@ convert_dt_m <- function(x) {
   z <- x / 12 # divide by 12 to create years
   mth <- x %% 12 + 1
   yr <- 1960 + floor(z)
-  
+
   z <- ifelse(is.na(z), NA, paste0(yr, "-", mth, "-1"))
   z <- as.Date(z, "%Y-%m-%d")
   z
@@ -50,13 +50,13 @@ convert_dt_m <- function(x) {
 # @param x element to be converted
 # @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 # @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
-convert_dt_q <- function(x) { 
-  z <- x / 4 
+convert_dt_q <- function(x) {
+  z <- x / 4
   yr <- 1960 + floor(z)
-  
+
   qrt <- x %% 4 + 1
   qrt_month <- c(1, 4, 7, 10)
-  
+
   z <- ifelse(is.na(z), NA, paste0(yr, "-", qrt_month[qrt], "-1"))
   z <- as.Date(z, "%Y-%m-%d")
   z

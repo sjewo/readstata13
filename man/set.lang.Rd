@@ -19,7 +19,7 @@ are generated.}
 Returns a data.frame with value labels in language "lang".
 }
 \description{
-Changes default label language for a dataset. 
+Changes default label language for a dataset.
 Variables with generated labels (option generate.labels=TRUE) are kept unchanged.
 }
 \examples{

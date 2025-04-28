@@ -308,27 +308,27 @@ test_that("reading file format 120 works", {
     names(df)
   )
 
-  
+
   # read all frames in myproject2.dtas
   expect_warning(
     dtas1 <- read.dtas(fl),
     "File contains unhandled alias variable in column: 5")
-  
+
   expect_equal(
     c("persons", "counties"),
     names(dtas1)
   )
-  
+
   # read selected frames
   expect_warning(
     dtas2 <- read.dtas(fl, select.frames = c("persons", "counties")),
     "File contains unhandled alias variable in column: 5")
-  
+
   expect_equal(
     c("persons", "counties"),
     names(dtas2)
   )
-  
+
   # read only frame counties
   dtas3 <- read.dtas(fl, select.frames = c("counties"))
 
@@ -336,20 +336,20 @@ test_that("reading file format 120 works", {
     "counties",
     names(dtas3)
   )
-  
+
   # read frames with different arguments
-  dtas4 <- read.dtas(fl, 
+  dtas4 <- read.dtas(fl,
             read.dta13.options = list(counties = list(select.cols = "median_income"),
                                       persons = list(select.cols = "income")))
-  
-  expect_equal(names(dtas4$persons), "income")  
+
+  expect_equal(names(dtas4$persons), "income")
   expect_equal(names(dtas4$counties), "median_income")
 
   # read frames with different arguments
-  dtas5 <- read.dtas(fl, 
+  dtas5 <- read.dtas(fl,
                      read.dta13.options = list(persons = list(select.cols = c("income", "countyid"))))
-  
-  expect_equal(ncol(dtas5$persons), 2)  
+
+  expect_equal(ncol(dtas5$persons), 2)
   expect_equal(names(dtas5$persons), c("countyid", "income"))
-  
+
 })

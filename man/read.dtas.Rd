@@ -34,7 +34,7 @@ read.dtas(path, select.frames = c("persons", "counties"))
 read.dtas(path, select.frames = c("counties"))
 
 # read frames with different arguments
-read.dtas(path, 
+read.dtas(path,
           read.dta13.options = list(counties = list(select.cols = "median_income"),
                                      persons = list(select.cols = "income")))
 

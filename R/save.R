@@ -131,7 +131,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   if(!is.data.frame(data)) {
     stop("Object is not of class data.frame.")
   }
-  
+
   is_utf8 <- l10n_info()[["UTF-8"]]
 
   # Is recoding necessary?
@@ -179,7 +179,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
   vartypen <- vtyp <- sapply(data, class)
 
   # Identify POSIXt
-  posix_datetime <- which(sapply(data, 
+  posix_datetime <- which(sapply(data,
                          function(x) inherits(x, "POSIXt")))
   vartypen[posix_datetime] <- vtyp[posix_datetime] <- "POSIXt"
 
@@ -264,7 +264,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
-    
+
     if (any(numToCompress)) {
       saveToConvert <- names(data[ff])[numToCompress]
       # replace numerics as integers
@@ -341,7 +341,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
     maxlen <- 8
   if (version >= 118)
     maxlen <- 128
-  
+
   if (any (lenvarnames > maxlen)) {
     message ("Varname to long. Resizing. Max size is ", maxlen, ".")
     names(data) <- sapply(varnames, strtrim, width = maxlen)
@@ -406,7 +406,7 @@ save.dta13 <- function(data, file, data.label=NULL, time.stamp=TRUE,
 
   if (doRecode) {
       attr(data, "var.labels") <- save.encoding(varlabels, toEncoding)
-  } 
+  }
   if (!is.null(varlabels) & (length(varlabels)!=ncol(data))) {
     attr(data, "var.labels") <- NULL
     warning("Number of variable labels does not match number of variables.

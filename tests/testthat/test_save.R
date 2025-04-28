@@ -21,7 +21,7 @@ datacompare <- function(x, y) {
   all(unlist(Map(all.equal, x, y)))
 }
 
-namescompare <- function(x, y){
+namescompare <- function(x, y) {
   all(identical(names(x), names(y)))
 }
 
@@ -613,7 +613,7 @@ dir.create("data")
 
 # strLs can be of length any length up to 2 billion characters. Starting with
 # 2046 a string is handled as a strL
-dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
+dd <- data.frame(dat = c(paste(replicate(2046, "a"), collapse = ""),
                           paste(replicate(2046, "b"), collapse = "")),
                   stringsAsFactors = FALSE)
 
@@ -1269,7 +1269,7 @@ dir.create("data")
 
 # strLs can be of length any length up to 2 billion characters. Starting with
 # 2046 a string is handled as a strL
-dd <- data.frame( dat = c(paste(replicate(2046, "a"), collapse = ""),
+dd <- data.frame(dat = c(paste(replicate(2046, "a"), collapse = ""),
                           paste(replicate(2046, "b"), collapse = ""),
                           "NA", NA_character_),
                   stringsAsFactors = FALSE)

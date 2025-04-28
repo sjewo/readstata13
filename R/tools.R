@@ -413,7 +413,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
         }
 
         if (labname %in% names(label) && is.factor(dat[, varname])) {
-                     
+
           # assign label if label set is complete
           if (all(varunique %in% labtable)) {
 

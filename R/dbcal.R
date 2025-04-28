@@ -86,7 +86,7 @@ stbcal <- function(stbcalfile) {
   centerdate <- as.Date(centerdate, dateformat)
 
   # Omit Dayofweek
-  omitdayofweekpos <- grep ("omit dayofweek", x)
+  omitdayofweekpos <- grep("omit dayofweek", x)
   omitdayofweek <- x[omitdayofweekpos]
 
   # Mo, Tu, We, Th, Fr, Sa, Su

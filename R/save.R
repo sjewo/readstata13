@@ -76,7 +76,7 @@
 save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
                        convert.factors = TRUE, convert.dates = TRUE, tz = "GMT",
                        add.rownames = FALSE, compress = FALSE, version = 117,
-                       convert.underscore = FALSE){
+                       convert.underscore = FALSE) {
 
 
   if (!is.data.frame(data))
@@ -164,7 +164,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   if (convert.underscore) {
     names(data) <- gsub("[^a-zA-Z0-9_]", "_", names(data))
     names(data)[grepl("^[0-9]", names(data))] <-
-      paste0( "_", names(data)[grepl("^[0-9]", names(data))])
+      paste0("_", names(data)[grepl("^[0-9]", names(data))])
   }
 
   filepath <- path.expand(file)
@@ -189,7 +189,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   for (v in names(vartypen[vartypen == "POSIXt"]))
     data[[v]] <- (as.double(data[[v]]) + 315622800 - 60 * 60) * 1000
 
-  if (convert.factors){
+  if(convert.factors) {
     if (version < 106) {
 
       hasfactors <- sapply(data, is.factor)
@@ -219,7 +219,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
       f.labels <-  as.integer(labels(levels(data[[v]])))
       attr(f.labels, "names") <- f.levels
       f.labels <- f.labels[names(f.labels) != ".."]
-      label.table[[ (f.names[i]) ]] <- f.labels
+      label.table[[(f.names[i])]] <- f.labels
 
       valLabel[v] <- f.names[i]
     }
@@ -316,8 +316,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   str.length[str.length > sstr] <- sstrl
 
   # vartypen for character
-  for (v in names(vartypen[vartypen == "character"]))
-  {
+  for (v in names(vartypen[vartypen == "character"])) {
    # str.length[str.length > sstr] <- sstrl # no loop necessary!
 
     vartypen[[v]] <- str.length[[v]]
@@ -346,8 +345,8 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   if (version >= 118)
     maxlen <- 128
 
-  if (any (lenvarnames > maxlen)) {
-    message ("Varname to long. Resizing. Max size is ", maxlen, ".")
+  if (any(lenvarnames > maxlen)) {
+    message("Varname to long. Resizing. Max size is ", maxlen, ".")
     names(data) <- sapply(varnames, strtrim, width = maxlen)
   }
 
@@ -420,7 +419,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
 
 
   if (version >= 117)
-    invisible( stata_save(filePath = filepath, dat = data) )
+    invisible(stata_save(filePath = filepath, dat = data))
   else
-    invisible( stata_pre13_save(filePath = filepath, dat = data) )
+    invisible(stata_pre13_save(filePath = filepath, dat = data))
 }

@@ -169,11 +169,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
   # some select.row checks
   if (!is.null(select.rows)) {
     # check that it is a numeric
-    if (!is.numeric(select.rows)){
+    if (!is.numeric(select.rows)) {
       return(message("select.rows must be of type numeric"))
     } else {
       # guard against negative values
-      if (any(select.rows < 0) )
+      if (any(select.rows < 0))
         select.rows <- abs(select.rows)
 
       # check that length is not > 2
@@ -352,7 +352,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
     strl <- c("")
     names(strl) <- "00000000000000000000"
     strl <- c(strl, attr(data, "strl"))
-    for (j in seq(ncol(data))[types == sstrl] ) {
+    for (j in seq(ncol(data))[types == sstrl]) {
       data[, j] <- strl[data[, j]]
     }
     # if strls are in data.frame remove attribute strl

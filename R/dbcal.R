@@ -81,7 +81,7 @@ stbcal <- function(stbcalfile) {
   # Centerdate of stbcal. Date that matches 0.
   centerpos <- grep("centerdate", x)
   centerdate <- x[centerpos]
-  centerdate <- gsub("centerdate ","",centerdate)
+  centerdate <- gsub("centerdate ", "", centerdate)
   centerdate <- as.Date(centerdate, dateformat)
 
   # Omit Dayofweek
@@ -120,7 +120,7 @@ stbcal <- function(stbcalfile) {
     stbcal$daysofweek[which(stbcal$range %in% dates)] <- NA
 
     # Keep only wanted days stbcal$daysofweek behalten
-    stbcal <- stbcal[complete.cases(stbcal$daysofweek),]
+    stbcal <- stbcal[complete.cases(stbcal$daysofweek), ]
   }
 
   # In case centerdate is not rangestart:

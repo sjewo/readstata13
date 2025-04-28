@@ -193,7 +193,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
       select.rows[1] <- 1
   } else {
     # set a value
-    select.rows <- c(0,0)
+    select.rows <- c(0, 0)
   }
 
   select.cols_chr <- as.character(NA)
@@ -351,9 +351,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
   if (replace.strl & version >= 117L) {
     strl <- c("")
     names(strl) <- "00000000000000000000"
-    strl <- c(strl, attr(data,"strl"))
+    strl <- c(strl, attr(data, "strl"))
     for (j in seq(ncol(data))[types == sstrl] ) {
-      data[, j] <- strl[data[,j]]
+      data[, j] <- strl[data[, j]]
     }
     # if strls are in data.frame remove attribute strl
     attr(data, "strl") <- NULL
@@ -430,7 +430,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
                               labels = names(gen.lab))
 
           # add generated labels to label.table
-          gen.lab.name <- paste0("gen_",vnames[i])
+          gen.lab.name <- paste0("gen_", vnames[i])
           attr(data, "label.table")[[gen.lab.name]] <- gen.lab
           attr(data, "val.labels")[i] <- gen.lab.name
 

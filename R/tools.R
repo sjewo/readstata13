@@ -23,7 +23,7 @@
 read.encoding <- function(x, fromEncoding, encoding) {
   iconv(x,
         from = fromEncoding,
-        to = encoding ,
+        to = encoding,
         sub = "byte")
 }
 
@@ -100,7 +100,7 @@ get.lang <- function(dat, print = TRUE) {
     cat("Available languages:\n ")
     cat(paste0(lang$languages, "\n"))
     cat("\nDefault language:\n")
-    cat(paste0(" ",lang$default, "\n"))
+    cat(paste0(" ", lang$default, "\n"))
     return(invisible(lang))
   }
 
@@ -253,11 +253,11 @@ get.label.tables <- function(dat) {
 #' set.label(dat, "type", "de")
 #' @export
 set.label <- function(dat, var.name, lang = NA) {
-  if (is.factor(dat[,var.name])) {
-    tmp <- get.origin.codes(dat[,var.name],
+  if (is.factor(dat[, var.name])) {
+    tmp <- get.origin.codes(dat[, var.name],
                             get.label(dat, get.label.name(dat, var.name)))
   } else {
-    tmp <- dat[,var.name]
+    tmp <- dat[, var.name]
   }
 
   labtable <- get.label(dat, get.label.name(dat, var.name, lang))
@@ -267,7 +267,7 @@ set.label <- function(dat, var.name, lang = NA) {
   if (any(labcount > 1)) {
 
 
-    warning(paste0("\n  ",var.name, ":\n  Duplicated factor levels detected -",
+    warning(paste0("\n  ", var.name, ":\n  Duplicated factor levels detected -",
                    "generating unique labels.\n"))
     labdups <- names(labtable) %in% names(labcount[labcount > 1])
     # generate unique labels from assigned label and code number
@@ -391,7 +391,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
     oldlang <- get.lang(dat, FALSE)$default
 
     cat("Replacing value labels. This might take some time...\n")
-    pb <- txtProgressBar(min = 1,max = length(val.labels) + 1)
+    pb <- txtProgressBar(min = 1, max = length(val.labels) + 1)
 
 
 
@@ -406,18 +406,18 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
         if (is.factor(dat[, varname])) {
           oldlabname <- oldval.labels[names(oldval.labels) == varname]
           oldlabtab <- oldval.labtab[[names(oldlabname)]]
-          codes <- get.origin.codes(dat[,varname], oldlabtab)
+          codes <- get.origin.codes(dat[, varname], oldlabtab)
           varunique <- na.omit(unique(codes))
         } else {
-          varunique <- na.omit(unique(dat[,varname]))
+          varunique <- na.omit(unique(dat[, varname]))
         }
 
-        if (labname %in% names(label) & is.factor(dat[,varname])) {
+        if (labname %in% names(label) & is.factor(dat[, varname])) {
                      
           # assign label if label set is complete
           if (all(varunique %in% labtable)) {
 
-            dat[,varname] <- factor(codes, levels = labtable,
+            dat[, varname] <- factor(codes, levels = labtable,
                                     labels = names(labtable))
           }
           # else generate labels from codes
@@ -425,7 +425,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
           names(varunique) <- as.character(varunique)
           gen.lab  <- sort(c(varunique[!varunique %in% labtable], labtable))
 
-          dat[,varname] <- factor(codes, levels = gen.lab,
+          dat[, varname] <- factor(codes, levels = gen.lab,
                                   labels = names(gen.lab))
         } else {
           warning(paste(vnames[i], "Missing factor labels - no labels assigned.
@@ -442,17 +442,17 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
     names(oldval.labels) <- NULL
     tmp <- list()
     for (i in seq_along(val.labels)) {
-      tmp[[i]] <- c(vnames[i],paste0("_lang_l_",oldlang), oldval.labels[i])
+      tmp[[i]] <- c(vnames[i], paste0("_lang_l_", oldlang), oldval.labels[i])
     }
-    attr(dat, "expansion.fields") <- c(attr(dat, "expansion.fields"),tmp)
+    attr(dat, "expansion.fields") <- c(attr(dat, "expansion.fields"), tmp)
 
     # variable label
     old.varlabel <- attr(dat, "var.labels")
     tmp <- list()
     for (i in seq_along(old.varlabel)) {
-      tmp[[i]] <- c(vnames[i],paste0("_lang_v_", oldlang), old.varlabel[i])
+      tmp[[i]] <- c(vnames[i], paste0("_lang_v_", oldlang), old.varlabel[i])
     }
-    attr(dat, "expansion.fields") <- c(attr(dat, "expansion.fields"),tmp)
+    attr(dat, "expansion.fields") <- c(attr(dat, "expansion.fields"), tmp)
 
     ex <- attr(dat, "expansion.fields")
     varname <- sapply(ex[grep(paste0("_lang_v_", lang), ex)], function(x) x[1])

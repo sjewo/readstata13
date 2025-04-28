@@ -188,7 +188,7 @@ if (readstata13:::dir.exists13("data"))
 dir.create("data")
 
 dd <- mtcars
-dd$am <- factor(x = dd$am, levels = c(0,1), labels = c("auto", "man"))
+dd$am <- factor(x = dd$am, levels = c(0, 1), labels = c("auto", "man"))
 
 save.dta13(dd, "data/dta_121.dta", version = 121, convert.factors = TRUE)
 save.dta13(dd, "data/dta_120.dta", version = 120, convert.factors = TRUE)
@@ -261,7 +261,7 @@ if (readstata13:::dir.exists13("data"))
 dir.create("data")
 
 dd <- mtcars
-dd$am <- factor(x = dd$am, levels = c(0,1), labels = c("auto", "man"))
+dd$am <- factor(x = dd$am, levels = c(0, 1), labels = c("auto", "man"))
 
 save.dta13(dd, "data/dta_121.dta", version = 121, convert.factors = FALSE)
 save.dta13(dd, "data/dta_120.dta", version = 120, convert.factors = FALSE)
@@ -820,7 +820,7 @@ dd102 <- read.dta13("data/dta_102.dta", select.rows = 5)
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[1:5,]
+dd <- dd[1:5, ]
 
 test_that("select.rows = 5", {
   # check numerics
@@ -869,28 +869,28 @@ save.dta13(dd, "data/dta_104.dta", version = 104)
 save.dta13(dd, "data/dta_103.dta", version = 103)
 save.dta13(dd, "data/dta_102.dta", version = 102)
 
-dd121 <- read.dta13("data/dta_121.dta", select.rows = c(5,10))
-dd120 <- read.dta13("data/dta_120.dta", select.rows = c(5,10))
-dd119 <- read.dta13("data/dta_119.dta", select.rows = c(5,10))
-dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5,10))
-dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5,10))
-dd115 <- read.dta13("data/dta_115.dta", select.rows = c(5,10))
-dd114 <- read.dta13("data/dta_114.dta", select.rows = c(5,10))
-dd113 <- read.dta13("data/dta_113.dta", select.rows = c(5,10))
-dd112 <- read.dta13("data/dta_112.dta", select.rows = c(5,10))
-dd111 <- read.dta13("data/dta_111.dta", select.rows = c(5,10))
-dd110 <- read.dta13("data/dta_110.dta", select.rows = c(5,10))
-dd108 <- read.dta13("data/dta_108.dta", select.rows = c(5,10))
-dd107 <- read.dta13("data/dta_107.dta", select.rows = c(5,10))
-dd106 <- read.dta13("data/dta_106.dta", select.rows = c(5,10))
-dd105 <- read.dta13("data/dta_105.dta", select.rows = c(5,10))
-dd104 <- read.dta13("data/dta_104.dta", select.rows = c(5,10))
-dd103 <- read.dta13("data/dta_103.dta", select.rows = c(5,10))
-dd102 <- read.dta13("data/dta_102.dta", select.rows = c(5,10))
+dd121 <- read.dta13("data/dta_121.dta", select.rows = c(5, 10))
+dd120 <- read.dta13("data/dta_120.dta", select.rows = c(5, 10))
+dd119 <- read.dta13("data/dta_119.dta", select.rows = c(5, 10))
+dd118 <- read.dta13("data/dta_118.dta", select.rows = c(5, 10))
+dd117 <- read.dta13("data/dta_117.dta", select.rows = c(5, 10))
+dd115 <- read.dta13("data/dta_115.dta", select.rows = c(5, 10))
+dd114 <- read.dta13("data/dta_114.dta", select.rows = c(5, 10))
+dd113 <- read.dta13("data/dta_113.dta", select.rows = c(5, 10))
+dd112 <- read.dta13("data/dta_112.dta", select.rows = c(5, 10))
+dd111 <- read.dta13("data/dta_111.dta", select.rows = c(5, 10))
+dd110 <- read.dta13("data/dta_110.dta", select.rows = c(5, 10))
+dd108 <- read.dta13("data/dta_108.dta", select.rows = c(5, 10))
+dd107 <- read.dta13("data/dta_107.dta", select.rows = c(5, 10))
+dd106 <- read.dta13("data/dta_106.dta", select.rows = c(5, 10))
+dd105 <- read.dta13("data/dta_105.dta", select.rows = c(5, 10))
+dd104 <- read.dta13("data/dta_104.dta", select.rows = c(5, 10))
+dd103 <- read.dta13("data/dta_103.dta", select.rows = c(5, 10))
+dd102 <- read.dta13("data/dta_102.dta", select.rows = c(5, 10))
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[5:10,]
+dd <- dd[5:10, ]
 
 test_that("select.rows = c(5,10)", {
   # check numerics
@@ -964,7 +964,7 @@ dd102 <- read.dta13("data/dta_102.dta", select.cols = c("disp", "drat"))
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[,c("disp", "drat")]
+dd <- dd[, c("disp", "drat")]
 
 test_that("select.cols = c('disp', 'drat')", {
   # check numerics
@@ -1034,7 +1034,7 @@ dd102 <- read.dta13("data/dta_102.dta", select.cols = c(3, 5))
 
 unlink("data", recursive = TRUE)
 
-dd <- dd[,c("disp", "drat")]
+dd <- dd[, c("disp", "drat")]
 
 test_that("select.cols = c('disp', 'drat')", {
   # check numerics
@@ -1167,8 +1167,8 @@ dd <- mtcars
 varlabeldd <- LETTERS[seq_len(ncol(dd))]
 varlabel(dd) <- varlabeldd
 
-version_list <- c(102,103,104,105,106,107,108,110,111,
-                  112,113,114,115,117,118,119,120,121)
+version_list <- c(102, 103, 104, 105, 106, 107, 108, 110, 111,
+                  112, 113, 114, 115, 117, 118, 119, 120, 121)
 
 # write variable label attribute
 for(v in version_list) {

@@ -209,7 +209,7 @@ To avoid loading an entire large dataset when only a subset is needed, `readstat
 
 ```{r}
 # Read only the first 3 rows of the dataset
-dat_1 <- read.dta13("res/cars.dta", select.rows = c(1,3)); dat_1
+dat_1 <- read.dta13("res/cars.dta", select.rows = c(1, 3)); dat_1
 
 # Read only the 'dist' variable from the dataset
 dat_2 <- read.dta13("res/cars.dta", select.cols = "dist"); head(dat_2)

@@ -200,7 +200,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     }
     # If our data.frame contains factors, we create a label.table
     factors <- which(sapply(data, is.factor))
-    f.names <- attr(factors,"names")
+    f.names <- attr(factors, "names")
 
     label.table <- vector("list", length(f.names))
     names(label.table) <- f.names
@@ -230,7 +230,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     attr(data, "vallabels") <- valLabel
   } else {
     attr(data, "label.table") <- NULL
-    attr(data, "vallabels") <- rep("",length(data))
+    attr(data, "vallabels") <- rep("", length(data))
   }
 
   if (convert.dates) {
@@ -239,7 +239,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     )
     for (v in dates)
       data[[v]] <- as.vector(
-        julian(data[[v]],as.Date("1960-1-1", tz = "GMT"))
+        julian(data[[v]], as.Date("1960-1-1", tz = "GMT"))
       )
   }
 
@@ -259,8 +259,8 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     vartypen[ddates] <- -sdouble
     vartypen[empty] <- sbyte
   } else {
-    varTmin <- sapply(data[(ff | ii) & !empty], function(x) min(x,na.rm = TRUE))
-    varTmax <- sapply(data[(ff | ii) & !empty], function(x) max(x,na.rm = TRUE))
+    varTmin <- sapply(data[(ff | ii) & !empty], function(x) min(x, na.rm = TRUE))
+    varTmax <- sapply(data[(ff | ii) & !empty], function(x) max(x, na.rm = TRUE))
 
     # check if numerics can be stored as integers
     numToCompress <- sapply(data[ff], saveToExport)
@@ -308,7 +308,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   }
 
   # str and strL are stored by maximum length of chars in a variable
-  str.length <- sapply(data[vartypen == "character"], FUN=maxchar)
+  str.length <- sapply(data[vartypen == "character"], FUN = maxchar)
   str.length[str.length > sstr] <- sstrl
 
   # vartypen for character
@@ -380,7 +380,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   } else {
     lct <- Sys.getlocale("LC_TIME"); Sys.setlocale("LC_TIME", "C")
     attr(data, "timestamp") <- format(Sys.time(), "%d %b %Y %H:%M")
-    Sys.setlocale("LC_TIME",lct)
+    Sys.setlocale("LC_TIME", lct)
   }
 
   expfield <- attr(data, "expansion.fields")

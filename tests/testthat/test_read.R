@@ -41,9 +41,9 @@ test_that("missings", {
 # rm(list = files)
 
 #### missings msf/lsf ####
-dd <- data.frame(b = as.logical(c(1,NA)),
-                 i = as.integer(c(1,NA)),
-                 n = as.numeric(c(1,NA)),
+dd <- data.frame(b = as.logical(c(1, NA)),
+                 i = as.integer(c(1, NA)),
+                 n = as.numeric(c(1, NA)),
                  s = c("1", ""),
                  stringsAsFactors = FALSE)
 
@@ -142,15 +142,15 @@ test_that("nonint.factors TRUE", {
 
 #### encoding TRUE ####
 
-umlauts <- c("ä","ö","ü","ß","€","Œ")
+umlauts <- c("ä", "ö", "ü", "ß", "€", "Œ")
 Encoding(umlauts) <- "UTF-8"
 
 ddcp <- dd <- data.frame(num = factor(1:6, levels = 1:6, labels = umlauts),
                  chr = umlauts, stringsAsFactors = FALSE)
 
 # Dataset in CP1252
-levels(ddcp$num)[5:6] <- c("EUR","OE")
-ddcp$chr[5:6] <- c("EUR","OE")
+levels(ddcp$num)[5:6] <- c("EUR", "OE")
+ddcp$chr[5:6] <- c("EUR", "OE")
 
 
 # Stata 14
@@ -206,7 +206,7 @@ test_that("reading of many strls", {
 })
 
 test_that("various datetime conversions", {
-  datetime <- system.file("extdata", "datetime.dta", package="readstata13")
+  datetime <- system.file("extdata", "datetime.dta", package = "readstata13")
 
   td       <- c("2001-05-15",
                 "1999-04-01",

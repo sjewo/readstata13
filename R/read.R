@@ -313,7 +313,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
     names(label) <- read.encoding(names(label), fromEncoding, encoding)
 
     if (length(label) > 0) {
-      for (i in 1:length(label))  {
+      for (i in seq_along(label))  {
         names(label[[i]]) <- read.encoding(names(label[[i]]), fromEncoding,
                                            encoding)
       }
@@ -321,7 +321,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
     }
 
     # recode character variables
-    for (v in (1:ncol(data))[types <= sstr]) {
+    for (v in (seq_len(ncol(data)))[types <= sstr]) {
       data[, v] <- iconv(data[, v], from = fromEncoding, to = encoding, sub = "byte")
     }
 
@@ -329,7 +329,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
     efi <- attr(data, "expansion.fields")
     if (length(efi) > 0) {
       efiChar <- unlist(lapply(efi, is.character))
-      for (i in (1:length(efi))[efiChar])  {
+      for (i in (seq_along(efi))[efiChar])  {
         efi[[i]] <- read.encoding(efi[[i]], fromEncoding, encoding)
       }
       attr(data, "expansion.fields") <- efi
@@ -339,7 +339,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
       #strl
       strl <- attr(data, "strl")
       if (length(strl) > 0) {
-        for (i in 1:length(strl))  {
+        for (i in seq_along(strl))  {
           strl[[i]] <- read.encoding(strl[[i]], fromEncoding, encoding)
         }
         attr(data, "strl") <- strl
@@ -353,7 +353,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
     strl <- c("")
     names(strl) <- "00000000000000000000"
     strl <- c(strl, attr(data, "strl"))
-    for (j in seq(ncol(data))[types == sstrl]) {
+    for (j in seq_len(ncol(data))[types == sstrl]) {
       data[, j] <- strl[data[, j]]
     }
     # if strls are in data.frame remove attribute strl

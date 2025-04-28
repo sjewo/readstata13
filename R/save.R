@@ -306,7 +306,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   # recode character variables. >118 wants utf-8, so encoding may be required
   if (doRecode) {
     #TODO: use seq_len ?
-    for (v in (1:ncol(data))[vartypen == "character"]) {
+    for (v in (seq_len(ncol(data)))[vartypen == "character"]) {
       data[, v] <- save.encoding(data[, v], toEncoding)
     }
   }

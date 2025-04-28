@@ -39,7 +39,7 @@ if (readstata13:::dir.exists13("data"))
 dir.create("data")
 
 dduni <- dd <- mtcars
-dduni$char_latin <- dd$char_latin <- sapply(1:nrow(dd), function(x) paste0(sample(c(letters, LETTERS), 9), collapse = ""))
+dduni$char_latin <- dd$char_latin <- sapply(seq_len(nrow(dd)), function(x) paste0(sample(c(letters, LETTERS), 9), collapse = ""))
 dduni$char_unicode <- rep(c("5ü省謹陵3_滑",  "۱碌櫓۹ۘ戀"), 16)
 
 save.dta13(dd, "data/dta_15mp.dta", version = "15mp")

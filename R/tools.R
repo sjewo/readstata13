@@ -125,7 +125,7 @@ get.lang <- function(dat, print = TRUE) {
 #' @export
 get.label.name <- function(dat, var.name = NULL, lang = NA) {
   vnames  <- names(dat)
-  if (is.na(lang) | lang == get.lang(dat, FALSE)$default) {
+  if (is.na(lang) || lang == get.lang(dat, FALSE)$default) {
     labelsets <- attr(dat, "val.labels")
     names(labelsets) <- vnames
   } else if (is.character(lang)) {
@@ -321,7 +321,7 @@ NULL
 #' @export
 varlabel <- function(dat, var.name = NULL, lang = NA) {
   vnames <- names(dat)
-  if (is.na(lang) | lang == get.lang(dat, FALSE)$default) {
+  if (is.na(lang) || lang == get.lang(dat, FALSE)$default) {
     varlabel <- attr(dat, "var.labels")
     names(varlabel) <- vnames
   } else if (is.character(lang)) {
@@ -377,7 +377,7 @@ varlabel <- function(dat, var.name = NULL, lang = NA) {
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
-  if (is.na(lang) | lang == get.lang(dat, FALSE)$default) {
+  if (is.na(lang) || lang == get.lang(dat, FALSE)$default) {
     return(dat)
   } else if (is.character(lang)) {
     vnames <- names(dat)
@@ -412,7 +412,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
           varunique <- na.omit(unique(dat[, varname]))
         }
 
-        if (labname %in% names(label) & is.factor(dat[, varname])) {
+        if (labname %in% names(label) && is.factor(dat[, varname])) {
                      
           # assign label if label set is complete
           if (all(varunique %in% labtable)) {
@@ -504,7 +504,7 @@ maxchar <- function(x) {
   z <- max(nchar(x, type = "byte"), na.rm = TRUE)
 
   # Stata does not allow storing a string of size 0
-  if (is.infinite(z) | (z == 0))
+  if (is.infinite(z) || (z == 0))
     z <- 1
 
   z

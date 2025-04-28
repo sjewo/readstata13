@@ -85,9 +85,9 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     stop("Path is invalid. Possibly a non-existing directory.")
 
   # Allow writing version as Stata version not Stata format
-  if (version == "15mp" | version == "16mp")
+  if (version == "15mp" || version == "16mp")
     version <- 119
-  if (version == 15L | version == 16L)
+  if (version == 15L || version == 16L)
     version <- 118
   if (version == 14L)
     version <- 118
@@ -95,16 +95,16 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     version <- 117
   if (version == 12L)
     version <- 115
-  if (version == 11L | version == 10L)
+  if (version == 11L || version == 10L)
     version <- 114
-  if (version == 9L | version == 8L)
+  if (version == 9L || version == 8L)
     version <- 113
   if (version == 7)
     version <- 110
   if (version == 6)
     version <- 108
 
-  if (version < 102 | version == 109 | version == 116 | version > 121)
+  if (version < 102 || version == 109 || version == 116 || version > 121)
     stop("Version mismatch abort execution. No data was saved.")
 
   sstr     <- 2045
@@ -124,7 +124,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     sint    <- 252
     sbyte   <- 251
   }
-  if (version < 111 | version == 112)
+  if (version < 111 || version == 112)
     sstrl   <- 80
 
 
@@ -407,7 +407,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
   if (doRecode) {
       attr(data, "var.labels") <- save.encoding(varlabels, toEncoding)
   }
-  if (!is.null(varlabels) & (length(varlabels) != ncol(data))) {
+  if (!is.null(varlabels) && (length(varlabels) != ncol(data))) {
     attr(data, "var.labels") <- NULL
     warning("Number of variable labels does not match number of variables.
             Variable labels dropped.")

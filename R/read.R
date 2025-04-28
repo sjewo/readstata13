@@ -189,7 +189,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
       select.rows <- c(select.rows[2], select.rows[1])
 
     # make sure to start at index position 1 if select.rows[2] > 0
-    if (select.rows[2] > 0 & select.rows[1] == 0)
+    if (select.rows[2] > 0 && select.rows[1] == 0)
       select.rows[1] <- 1
   } else {
     # set a value
@@ -206,7 +206,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
       select.cols_chr <- select.cols
 
     # do we need factor too?
-    if (is.numeric(select.cols) | is.integer(select.cols))
+    if (is.numeric(select.cols) || is.integer(select.cols))
       select.cols_int <- select.cols
   }
 
@@ -248,7 +248,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
                            inc = c(1, 1, 1, 2 ^ 115, 2 ^ 1011)
     )
 
-    if (version >= 113L & version < 117L) {
+    if (version >= 113L && version < 117L) {
       missings <- vector("list", length(data))
       names(missings) <- names(data)
       for (v in which(types > 250L)) {
@@ -348,7 +348,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
 
   var.labels <- attr(data, "var.labels")
 
-  if (replace.strl & version >= 117L) {
+  if (replace.strl && version >= 117L) {
     strl <- c("")
     names(strl) <- "00000000000000000000"
     strl <- c(strl, attr(data, "strl"))
@@ -391,7 +391,7 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
       labtable <- label[[labname]]
       #don't convert columns of type double or float to factor
       if (labname %in% names(label)) {
-        if((vartype == sdouble | vartype == sfloat)) {
+        if((vartype == sdouble || vartype == sfloat)) {
           if(!nonint.factors) {
 
             # collect variables which need a warning

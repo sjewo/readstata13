@@ -100,7 +100,7 @@ dd <- data.frame(v.1 = as.numeric(1:2),
 
 underscore <- system.file("extdata", "underscore.dta", package = "readstata13")
 
-dd118 <- read.dta13(underscore, convert.underscore = T)
+dd118 <- read.dta13(underscore, convert.underscore = TRUE)
 
 test_that("generate.factors TRUE", {
   expect_true(datacompare(dd, dd118))
@@ -114,7 +114,7 @@ dd <- data.frame(v.1 = as.numeric(1:2),
 
 underscore <- system.file("extdata", "underscore.dta", package = "readstata13")
 
-dd118 <- read.dta13(underscore, convert.underscore = F)
+dd118 <- read.dta13(underscore, convert.underscore = FALSE)
 
 test_that("generate.factors TRUE", {
   expect_true(datacompare(dd, dd118))
@@ -178,11 +178,11 @@ test_that("encoding UTF-8 (Stata 14)", {
 test_that("Reading of strls", {
   strl <- system.file("extdata", "statacar.dta", package = "readstata13")
 
-  ddstrlf <- read.dta13(strl, replace.strl = F)
+  ddstrlf <- read.dta13(strl, replace.strl = FALSE)
   ddstrlfref <- paste0("11_", 1:8)
   expect_equal(ddstrlf$modelStrL, ddstrlfref)
 
-  ddstrl <- read.dta13(strl, replace.strl = T)
+  ddstrl <- read.dta13(strl, replace.strl = TRUE)
   expect_equal(ddstrl$model, ddstrl$modelStrL)
 })
 

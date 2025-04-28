@@ -157,7 +157,7 @@ save.dta13 <- function(data, file, data.label = NULL, time.stamp = TRUE,
     }
 
     data <- data.frame(rownames = rwn,
-                       data, stringsAsFactors = F)
+                       data, stringsAsFactors = FALSE)
   }
   rownames(data) <- NULL
 

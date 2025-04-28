@@ -83,7 +83,7 @@ get.filepath <- function(path = "") {
 #' @author Jan Marvin Garbuszus \email{jan.garbuszus@@ruhr-uni-bochum.de}
 #' @author Sebastian Jeworutzki \email{sebastian.jeworutzki@@ruhr-uni-bochum.de}
 #' @export
-get.lang <- function(dat, print = T) {
+get.lang <- function(dat, print = TRUE) {
   ex <- attr(dat, "expansion.fields")
 
   lang <- list()
@@ -125,7 +125,7 @@ get.lang <- function(dat, print = T) {
 #' @export
 get.label.name <- function(dat, var.name = NULL, lang = NA) {
   vnames  <- names(dat)
-  if (is.na(lang) | lang == get.lang(dat, F)$default) {
+  if (is.na(lang) | lang == get.lang(dat, FALSE)$default) {
     labelsets <- attr(dat, "val.labels")
     names(labelsets) <- vnames
   } else if (is.character(lang)) {
@@ -321,7 +321,7 @@ NULL
 #' @export
 varlabel <- function(dat, var.name = NULL, lang = NA) {
   vnames <- names(dat)
-  if (is.na(lang) | lang == get.lang(dat, F)$default) {
+  if (is.na(lang) | lang == get.lang(dat, FALSE)$default) {
     varlabel <- attr(dat, "var.labels")
     names(varlabel) <- vnames
   } else if (is.character(lang)) {
@@ -377,7 +377,7 @@ varlabel <- function(dat, var.name = NULL, lang = NA) {
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
-  if (is.na(lang) | lang == get.lang(dat, F)$default) {
+  if (is.na(lang) | lang == get.lang(dat, FALSE)$default) {
     return(dat)
   } else if (is.character(lang)) {
     vnames <- names(dat)
@@ -388,7 +388,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
     oldval.labels <- oldval.labels[!is.na(oldval.labels)]
     oldval.labtab <- lapply(oldval.labels, function(x) get.label(dat, x))
 
-    oldlang <- get.lang(dat, F)$default
+    oldlang <- get.lang(dat, FALSE)$default
 
     cat("Replacing value labels. This might take some time...\n")
     pb <- txtProgressBar(min = 1,max = length(val.labels) + 1)

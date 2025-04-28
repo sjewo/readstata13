@@ -276,8 +276,9 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
           data[[v]][nas] <- NA
         }
         attr(data, "missing") <- missings
-      } else
+      } else {
         warning("'missing.type' only applicable to version >= 8 files")
+      }
     }
   }
 

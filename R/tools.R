@@ -28,16 +28,17 @@ read.encoding <- function(x, fromEncoding, encoding) {
 }
 
 save.encoding <- function(x, encoding) {
-  sapply(x, function(s)
-           ifelse(Encoding(s) == "unknown",
-                    iconv(s,
-                          to = encoding,
-                          sub = "byte"),
-                    iconv(s,  from = Encoding(s),
-                          to = encoding,
-                          sub = "byte")
-           )
-        )
+  sapply(x, function(s) {
+    ifelse(Encoding(s) == "unknown",
+           iconv(s,
+                 to = encoding,
+                 sub = "byte"),
+           iconv(s,  from = Encoding(s),
+                 to = encoding,
+                 sub = "byte") 
+    ) 
+  }
+  )
 }
 
 # Function to check if directory exists

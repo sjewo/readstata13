@@ -218,11 +218,11 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
 
   sstr     <- 2045
   sstrl    <- 32768
-  salias   <- 65525
+  #salias   <- 65525
   sdouble  <- 65526
   sfloat   <- 65527
-  slong    <- 65528
-  sint     <- 65529
+  #slong    <- 65528
+  #sint     <- 65529
   sbyte    <- 65530
 
   if (version < 117) {
@@ -230,8 +230,8 @@ read.dta13 <- function(file, convert.factors = TRUE, generate.factors = FALSE,
     sstrl   <- 255
     sdouble <- 255
     sfloat  <- 254
-    slong   <- 253
-    sint    <- 252
+    #slong   <- 253
+    #sint    <- 252
     sbyte   <- 251
   }
 

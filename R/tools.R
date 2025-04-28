@@ -382,7 +382,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
     return(dat)
   } else if (is.character(lang)) {
     vnames <- names(dat)
-    types <- attr(dat, "types")
+    #types <- attr(dat, "types")
     label <- attr(dat, "label.table")
     val.labels <- get.label.name(dat, NULL, lang)
     oldval.labels <- get.label.name(dat)
@@ -399,7 +399,7 @@ set.lang <- function(dat, lang = NA, generate.factors = FALSE) {
     for (i in which(val.labels != "")) {
 
         labname <- val.labels[i]
-        vartype <- types[i]
+        #vartype <- types[i]
         labtable <- label[[labname]]
         varname <- names(val.labels)[i]
 

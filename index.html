@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>Import Stata Data Files • readstata13</title>
 <script src="deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Import Stata Data Files">
 <meta name="description" content="Function to read and write the Stata file format.">
@@ -81,7 +81,7 @@
 <p>To install the current release from github you need the platform specific build tools. On Windows a current installation of <a href="https://cran.r-project.org/bin/windows/Rtools/" class="external-link">Rtools</a> is necessary, while OS X users need to install <a href="https://apps.apple.com/us/app/xcode/id497799835" class="external-link">Xcode</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sjewo/readstata13"</span>, ref<span class="op">=</span><span class="st">"0.11"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sjewo/readstata13"</span>, ref<span class="op">=</span><span class="st">"v0.11.0"</span><span class="op">)</span></span></code></pre></div>
 <p>To install the current development version from github:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"sjewo/readstata13"</span>, ref<span class="op">=</span><span class="st">"testing"</span><span class="op">)</span></span></code></pre></div>
@@ -94,24 +94,24 @@
 <col width="50%">
 <col width="50%">
 </colgroup>
-<thead><tr class="header">
+<thead><tr>
 <th align="left">Version</th>
 <th align="left">Changes</th>
 </tr></thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td align="left">0.11.0</td>
 <td align="left">Initial support for Stata 18. Import .dtas files (Stata framesets) via <code><a href="reference/read.dtas.html">read.dtas()</a></code>. Alias variables are currently ignored with a warning.</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left"></td>
 <td align="left">The <code>select.cols</code> argument accepts either variable names or column indices.</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left"></td>
 <td align="left">Fix compilation on musl and other non-glibc based systems.</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left"></td>
 <td align="left">Add package alias to readstata13.Rd</td>
 </tr>
@@ -181,8 +181,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Jan Marvin Garbuszus <br><small class="roles"> Author </small>  </li>
-<li>Sebastian Jeworutzki <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2671-5253" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Jan Marvin Garbuszus <br><small class="roles"> Author </small>   </li>
+<li>Sebastian Jeworutzki <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0002-2671-5253" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -205,7 +205,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer>

@@ -1,0 +1,55 @@
+# Parse Stata business calendar files
+
+Create conversion table for business calendar dates.
+
+## Usage
+
+``` r
+stbcal(stbcalfile)
+```
+
+## Arguments
+
+- stbcalfile:
+
+  *stbcal-file* Stata business calendar file created by Stata.
+
+## Value
+
+Returns a data.frame with two cols:
+
+- range::
+
+  The date matching the businessdate. Date format.
+
+- buisdays::
+
+  The Stata business calendar day. Integer format.
+
+## Details
+
+Stata 12 introduced business calendar format. Business dates are integer
+numbers in a certain range of days, weeks, months or years. In this
+range some days are omitted (e.g. weekends or holidays). If a business
+calendar was created, a stbcal file matching this calendar was created.
+This file is required to read the business calendar. This parser reads
+the stbcal- file and returns a data.frame with dates matching business
+calendar dates.
+
+A dta-file containing Stata business dates imported with read.stata13()
+shows in formats which stdcal file is required (e.g. " sp500.stbcal).
+
+Stata allows adding a short description called purpose. This is added as
+an attribute of the resulting data.frame.
+
+## Author
+
+Jan Marvin Garbuszus <jan.garbuszus@ruhr-uni-bochum.de>
+
+Sebastian Jeworutzki <sebastian.jeworutzki@ruhr-uni-bochum.de>
+
+## Examples
+
+``` r
+sp500 <- stbcal(system.file("extdata/sp500.stbcal", package="readstata13"))
+```

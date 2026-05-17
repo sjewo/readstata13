@@ -1,0 +1,243 @@
+# Read Stata Binary Files
+
+`read.dta13` reads a Stata dta-file and imports the data into a
+data.frame.
+
+## Usage
+
+``` r
+read.dta13(
+  file,
+  convert.factors = TRUE,
+  generate.factors = FALSE,
+  encoding = "UTF-8",
+  fromEncoding = NULL,
+  convert.underscore = FALSE,
+  missing.type = FALSE,
+  convert.dates = TRUE,
+  replace.strl = TRUE,
+  add.rownames = FALSE,
+  nonint.factors = FALSE,
+  select.rows = NULL,
+  select.cols = NULL,
+  strlexport = FALSE,
+  strlpath = ".",
+  tz = "GMT"
+)
+```
+
+## Arguments
+
+- file:
+
+  *character.* Path to the dta file you want to import.
+
+- convert.factors:
+
+  *logical.* If `TRUE`, factors from Stata value labels are created.
+
+- generate.factors:
+
+  *logical.* If `TRUE` and convert.factors is TRUE, missing factor
+  labels are created from integers. If duplicated labels are found,
+  unique labels will be generated according the following scheme:
+  "label\_(integer code)".
+
+- encoding:
+
+  *character.* Strings can be converted from Windows-1252 or UTF-8 to
+  system encoding. Options are "latin1" or "UTF-8" to specify target
+  encoding explicitly. Since Stata 14 files are UTF-8 encoded and may
+  contain strings which can't be displayed in the current locale. Set
+  encoding=NULL to stop reencoding.
+
+- fromEncoding:
+
+  *character.* We expect strings to be encoded as "CP1252" for Stata
+  Versions 13 and older. For dta files saved with Stata 14 or newer
+  "UTF-8" is used. In some situation the used encoding can differ for
+  Stata 14 files and must be manually set.
+
+- convert.underscore:
+
+  *logical.* If `TRUE`, "\_" in variable names will be changed to "."
+
+- missing.type:
+
+  *logical.* Stata knows 27 different missing types: ., .a, .b, ..., .z.
+  If `TRUE`, attribute `missing` will be created.
+
+- convert.dates:
+
+  *logical.* If `TRUE`, Stata dates are converted.
+
+- replace.strl:
+
+  *logical.* If `TRUE`, replace the reference to a strL string in the
+  data.frame with the actual value. The strl attribute will be removed
+  from the data.frame (see details).
+
+- add.rownames:
+
+  *logical.* If `TRUE`, the first column will be used as rownames.
+  Variable will be dropped afterwards.
+
+- nonint.factors:
+
+  *logical.* If `TRUE`, factors labels will be assigned to variables of
+  type float and double.
+
+- select.rows:
+
+  *integer.* Vector of one or two numbers. If single value rows from
+  1:val are selected. If two values of a range are selected the rows in
+  range will be selected.
+
+- select.cols:
+
+  *character.* or *numeric.* Vector of variables to select. Either
+  variable names or position.
+
+- strlexport:
+
+  *logical.* Should strl content be exported as binary files?
+
+- strlpath:
+
+  *character.* Path for strl export.
+
+- tz:
+
+  *character.* time zone specification to be used for POSIXct values.
+  ‘""’ is the current time zone, and ‘"GMT"’ is UTC (Universal Time,
+  Coordinated).
+
+## Value
+
+The function returns a data.frame with attributes. The attributes
+include
+
+- datalabel::
+
+  Dataset label
+
+- time.stamp::
+
+  Timestamp of file creation
+
+- formats::
+
+  Stata display formats. May be used with
+  [`sprintf`](https://rdrr.io/r/base/sprintf.html)
+
+- types::
+
+  Stata data type (see Stata Corp 2014)
+
+- val.labels::
+
+  For each variable the name of the associated value labels in "label"
+
+- var.labels::
+
+  Variable labels
+
+- version::
+
+  dta file format version
+
+- label.table::
+
+  List of value labels.
+
+- strl::
+
+  Character vector with long strings for the new strl string variable
+  type. The name of every element is the identifier.
+
+- expansion.fields::
+
+  list providing variable name, characteristic name and the contents of
+  Stata characteristic field.
+
+- missing::
+
+  List of numeric vectors with Stata missing type for each variable.
+
+- byteorder::
+
+  Byteorder of the dta-file. LSF or MSF.
+
+- orig.dim::
+
+  Dimension recorded inside the dta-file.
+
+## Details
+
+If the filename is a url, the file will be downloaded as a temporary
+file and read afterwards.
+
+Stata files are encoded in ansinew. Depending on your system's default
+encoding certain characters may appear wrong. Using a correct encoding
+may fix these.
+
+Variable names stored in the dta-file will be used in the resulting
+data.frame. Stata types char, byte, and int will become integer; float
+and double will become numerics. R only knows a single missing type,
+while Stata knows 27, so all Stata missings will become NA in R. If you
+need to keep track of Statas original missing types, you may use
+`missing.type=TRUE`.
+
+Stata dates are converted to R's Date class the same way foreign handles
+dates.
+
+Stata 13 introduced a new character type called strL. strLs are able to
+store strings up to 2 billion characters. While R is able to store
+strings of this size in a character vector, the printed representation
+of such vectors looks rather cluttered, so it's possible to save only a
+reference in the data.frame with option `replace.strl=FALSE`.
+
+In R, you may use rownames to store characters (see for instance
+`data(swiss)`). In Stata, this is not possible and rownames have to be
+stored as a variable. If you want to use rownames, set add.rownames to
+TRUE. Then the first variable of the dta-file will hold the rownames of
+the resulting data.frame.
+
+Reading dta-files of older and newer versions than 13 was introduced
+with version 0.8.
+
+Stata 18 introduced alias variables and frame files. Alias variables are
+currently ignored when reading the file and a warning is printed. Stata
+frame files (file extension \`.dtas\`) contain zipped \`dta\` files
+which can be imported with [`read.dtas`](read.dtas.md).
+
+## Note
+
+read.dta13 uses GPL 2 licensed code by Thomas Lumley and R-core members
+from foreign::read.dta().
+
+## References
+
+Stata Corp (2014): Description of .dta file format
+<https://www.stata.com/help.cgi?dta>
+
+## See also
+
+[`read.dta`](https://rdrr.io/pkg/foreign/man/read.dta.html) in package
+`foreign` and `memisc` for dta files from Stata versions \< 13 and
+`read_dta` in package `haven` for Stata version \>= 13.
+
+## Author
+
+Jan Marvin Garbuszus <jan.garbuszus@ruhr-uni-bochum.de>
+
+Sebastian Jeworutzki <sebastian.jeworutzki@ruhr-uni-bochum.de>
+
+## Examples
+
+``` r
+if (FALSE) { # \dontrun{
+  library(readstata13)
+  r13 <- read.dta13("https://www.stata-press.com/data/r13/auto.dta")
+} # }
+```

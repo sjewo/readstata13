@@ -49,7 +49,7 @@ while OS X users need to install
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("sjewo/readstata13", ref="0.11")
+remotes::install_github("sjewo/readstata13", ref="v0.11.0")
 ```
 
 To install the current development version from github:

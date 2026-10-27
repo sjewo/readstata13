@@ -483,7 +483,6 @@ List read_pre13_dta(FILE * file,
 
 
     int32_t nlen = 0, labn = 0, txtlen = 0, noff = 0, val = 0;
-    std::string tag(5, '\0');
 
     bool haslabel = false;
 
